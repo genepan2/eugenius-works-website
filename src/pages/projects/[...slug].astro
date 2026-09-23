@@ -1,0 +1,63 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSortedProjects, hasDetailPage } from '../../content';
+
+// Only projects that have body content get a detail page. Projects without a
+// body appear in the lists and are not linked anywhere.
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getSortedProjects();
+  return projects.filter(hasDetailPage).map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+};
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={project.data.title} description={project.data.description}>
+  <article>
+    <h1 class="text-3xl font-semibold">{project.data.title}</h1>
+    <p class="mt-4 leading-relaxed">{project.data.description}</p>
+    <p class="mt-2 text-sm text-neutral-600">
+      {
+        project.data.url && (
+          <a href={project.data.url} class="underline hover:no-underline">
+            Website
+          </a>
+        )
+      }
+      {project.data.url && project.data.repo && <span> · </span>}
+      {
+        project.data.repo && (
+          <a href={project.data.repo} class="underline hover:no-underline">
+            Repository
+          </a>
+        )
+      }
+    </p>
+
+    {
+      project.data.cover && (
+        <Image
+          src={project.data.cover}
+          alt={project.data.title}
+          class="mt-8 max-w-full"
+          widths={[400, 800]}
+        />
+      )
+    }
+
+    <div class="prose mt-10">
+      <Content />
+    </div>
+  </article>
+
+  <p class="mt-12">
+    <a href="/projects" class="underline hover:no-underline">All projects</a>
+  </p>
+</BaseLayout>

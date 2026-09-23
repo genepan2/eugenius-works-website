@@ -1,0 +1,96 @@
+---
+import '../styles/global.css';
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  AUTHOR,
+  ENTITY,
+  NAV_LINKS,
+  FOOTER_LINKS,
+  CLOUDFLARE_ANALYTICS_TOKEN,
+} from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+const pageTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+const analyticsEnabled =
+  import.meta.env.PROD && CLOUDFLARE_ANALYTICS_TOKEN !== 'REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={AUTHOR} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="/rss.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+
+    {
+      analyticsEnabled && (
+        <script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": "${CLOUDFLARE_ANALYTICS_TOKEN}"}`}
+        />
+      )
+    }
+  </head>
+  <body class="bg-white text-black font-sans antialiased">
+    <div class="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-10">
+      <header class="mb-14">
+        <nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+          <a href="/" class="font-medium underline hover:no-underline">{SITE_NAME}</a>
+          {
+            NAV_LINKS.map((link) => (
+              <a href={link.href} class="underline hover:no-underline">
+                {link.label}
+              </a>
+            ))
+          }
+        </nav>
+      </header>
+
+      <main class="flex-1">
+        <slot />
+      </main>
+
+      <footer class="mt-20 border-t border-neutral-300 pt-6 text-sm text-neutral-600">
+        <div class="flex flex-wrap gap-x-6 gap-y-2">
+          {
+            FOOTER_LINKS.map((link) => (
+              <a href={link.href} class="underline hover:no-underline">
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+        <p class="mt-4">
+          © {new Date().getFullYear()} {ENTITY} · <a
+            href="/imprint"
+            class="underline hover:no-underline">Imprint</a
+          > · <a href="/privacy" class="underline hover:no-underline">Privacy</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

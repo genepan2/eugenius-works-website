@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { COMPANY } from '../consts';
+
+const LAST_UPDATED = '2026-09-22';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="How this site handles personal data: hosting, cookieless analytics, and the contact form."
+>
+  <h1 class="text-3xl font-semibold">Privacy Policy</h1>
+  <p class="mt-3 text-sm text-neutral-600">
+    Last updated: <time datetime={LAST_UPDATED}>{LAST_UPDATED}</time>
+  </p>
+
+  <p class="mt-8 leading-relaxed">
+    This policy describes what this website actually does with personal data. It is short
+    because the site does very little: it serves static pages, counts page views without
+    cookies, and forwards contact form messages by email.
+  </p>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">1. Controller</h2>
+    <p class="mt-4 leading-relaxed">
+      {COMPANY.legalName}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {
+        COMPANY.country
+      }. Registry code {COMPANY.regNo}. Managing director {COMPANY.director}.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      For data protection questions, including any request listed in section 7, write to <a
+        href={`mailto:${COMPANY.email}`}
+        class="underline hover:no-underline">{COMPANY.email}</a
+      >.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">2. Hosting</h2>
+    <p class="mt-4 leading-relaxed">
+      The site is hosted on Cloudflare Pages. To deliver pages and to protect the site
+      against attacks, Cloudflare processes your IP address and request metadata such as the
+      time of the request, the page requested, the referrer, and your browser's user agent.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Legal basis: legitimate interest in operating a secure and available website,
+      Art. 6(1)(f) GDPR. Cloudflare acts as a processor on behalf of the controller.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">3. Analytics</h2>
+    <p class="mt-4 leading-relaxed">
+      The site uses Cloudflare Web Analytics. It is cookieless: it sets no cookies, does not
+      fingerprint your device or browser, and does not track you across other sites. It
+      collects only aggregated page-view data, such as how often a page was viewed and the
+      broad referrer category.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Legal basis: legitimate interest in understanding which pages are read,
+      Art. 6(1)(f) GDPR.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      This is why the site shows no cookie banner. A consent banner is required for storing
+      or reading information on your device that is not strictly necessary. Nothing here
+      stores or reads anything, so there is nothing to consent to.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">4. Cookies and local storage</h2>
+    <p class="mt-4 leading-relaxed">
+      This site sets no cookies and uses no local storage, session storage, or comparable
+      technology.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">5. Contact form</h2>
+    <p class="mt-4 leading-relaxed">
+      The contact form on the homepage collects your name, your email address, and your
+      message. These are used to read and answer your enquiry, and for nothing else.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Legal basis: Art. 6(1)(b) GDPR where the enquiry concerns a contract or steps taken
+      before entering one, and otherwise legitimate interest in answering messages sent to
+      the company, Art. 6(1)(f) GDPR.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Submissions are delivered by email through Resend (Resend, Inc., United States), which
+      acts as a processor. The transfer to the United States relies on the EU-US Data
+      Privacy Framework and on standard contractual clauses.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      The form contains a hidden spam-prevention field, a honeypot. It is invisible to
+      people and to screen readers, so it collects nothing from real visitors; only
+      automated submissions fill it in, and those are discarded.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Retention: enquiries are kept only as long as needed to handle them and any follow-up,
+      then deleted.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">6. RSS feed</h2>
+    <p class="mt-4 leading-relaxed">
+      The feed at <a href="/rss.xml" class="underline hover:no-underline">/rss.xml</a> is a
+      static file. Requesting it collects nothing beyond the hosting data described in
+      section 2.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">7. Your rights</h2>
+    <p class="mt-4 leading-relaxed">
+      You have the right to access your personal data, to have it corrected or erased, to
+      restrict its processing, to receive it in a portable form, and to object to processing
+      based on legitimate interest.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      You also have the right to lodge a complaint with a supervisory authority. The
+      competent authority here is the Estonian Data Protection Inspectorate (Andmekaitse
+      Inspektsioon), <a href="https://www.aki.ee/en" class="underline hover:no-underline"
+        >https://www.aki.ee/en</a
+      >.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">8. What this site does not do</h2>
+    <p class="mt-4 leading-relaxed">
+      There is no profiling and no automated decision-making. Personal data is not sold, and
+      it is not shared with advertising networks. The site carries no advertising, no social
+      media embeds, and no third-party trackers beyond the hosting and analytics described
+      above.
+    </p>
+  </section>
+</BaseLayout>

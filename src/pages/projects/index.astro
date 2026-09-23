@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSortedProjects, hasDetailPage } from '../../content';
+
+const projects = await getSortedProjects();
+---
+
+<BaseLayout
+  title="Projects"
+  description="Browser extensions, small utilities, and larger projects built by Eugenious Works."
+>
+  <h1 class="text-3xl font-semibold">Projects</h1>
+  <p class="mt-4 leading-relaxed">
+    Things I build and run. Some are open source, some are not, and some are barely more
+    than a weekend of work that stuck.
+  </p>
+
+  <ul class="mt-12 space-y-10">
+    {
+      projects.map((project) => (
+        <li>
+          <h2 class="text-lg font-medium">
+            {hasDetailPage(project) ? (
+              <a href={`/projects/${project.id}`} class="underline hover:no-underline">
+                {project.data.title}
+              </a>
+            ) : (
+              project.data.title
+            )}
+          </h2>
+          {project.data.cover && (
+            <Image
+              src={project.data.cover}
+              alt={project.data.title}
+              class="mt-3 max-w-full"
+              widths={[400, 800]}
+            />
+          )}
+          <p class="mt-2 leading-relaxed">{project.data.description}</p>
+          <p class="mt-2 text-sm text-neutral-600">
+            {project.data.url && (
+              <a href={project.data.url} class="underline hover:no-underline">
+                Website
+              </a>
+            )}
+            {project.data.url && project.data.repo && <span> · </span>}
+            {project.data.repo && (
+              <a href={project.data.repo} class="underline hover:no-underline">
+                Repository
+              </a>
+            )}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

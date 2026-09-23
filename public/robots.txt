@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eugenius-works.com/sitemap-index.xml

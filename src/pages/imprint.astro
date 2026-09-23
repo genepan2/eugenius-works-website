@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { COMPANY } from '../consts';
+---
+
+<BaseLayout
+  title="Imprint"
+  description={`Provider identification and legal details for ${COMPANY.legalName}.`}
+>
+  <h1 class="text-3xl font-semibold">Imprint</h1>
+
+  <section class="mt-10">
+    <h2 class="text-xl font-semibold">Provider identification</h2>
+    <p class="mt-4 leading-relaxed">
+      This disclosure is made under the Estonian Information Society Services Act
+      (infoühiskonna teenuse seadus) and the EU e-Commerce Directive 2000/31/EC.
+    </p>
+
+    <dl class="mt-6 space-y-3">
+      <div>
+        <dt class="text-sm text-neutral-600">Legal name</dt>
+        <dd>{COMPANY.legalName}</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-neutral-600">Address</dt>
+        <dd>
+          {COMPANY.street}<br />
+          {COMPANY.postalCode}{' '}{COMPANY.city}<br />
+          {COMPANY.country}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm text-neutral-600">Registry code</dt>
+        <dd>{COMPANY.regNo}</dd>
+      </div>
+      <!-- TODO: add VAT number here if the company is VAT-registered -->
+      <div>
+        <dt class="text-sm text-neutral-600">Phone</dt>
+        <dd>
+          <a href={`tel:${COMPANY.phone.replace(/\s/g, '')}`} class="underline hover:no-underline">
+            {COMPANY.phone}
+          </a>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm text-neutral-600">Email</dt>
+        <dd>
+          <a href={`mailto:${COMPANY.email}`} class="underline hover:no-underline">
+            {COMPANY.email}
+          </a>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm text-neutral-600">Managing director</dt>
+        <dd>{COMPANY.director}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">Responsible for content</h2>
+    <p class="mt-4 leading-relaxed">
+      {COMPANY.director}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {
+        COMPANY.country
+      }.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">Online dispute resolution</h2>
+    <p class="mt-4 leading-relaxed">
+      The EU online dispute resolution platform is available at <a
+        href="https://ec.europa.eu/consumers/odr"
+        class="underline hover:no-underline">https://ec.europa.eu/consumers/odr</a
+      >. {COMPANY.legalName} is not obliged and not willing to participate in dispute settlement
+      proceedings before a consumer arbitration board.
+    </p>
+  </section>
+
+  <section class="mt-12">
+    <h2 class="text-xl font-semibold">Liability for links</h2>
+    <p class="mt-4 leading-relaxed">
+      This site links to external websites whose content is outside the operator's control.
+      No responsibility is taken for the content of those sites. Responsibility for them
+      rests with their respective operators.
+    </p>
+  </section>
+</BaseLayout>
