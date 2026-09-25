@@ -9,7 +9,7 @@
 RESEND_API_KEY="re_replace_with_your_resend_api_key"
 
 # Sender address. Must be on a domain verified in Resend.
-CONTACT_FROM="Eugenious Works <contact@eugenius-works.com>"
+CONTACT_FROM="Eugenius Works <contact@eugenius-works.com>"
 
 # Where contact form submissions are delivered.
 CONTACT_TO="info@eugenius-works.com"

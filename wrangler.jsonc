@@ -16,7 +16,7 @@
     "not_found_handling": "404-page"
   },
   "vars": {
-    "CONTACT_FROM": "Eugenious Works <contact@eugenius-works.com>",
+    "CONTACT_FROM": "Eugenius Works <contact@eugenius-works.com>",
     "CONTACT_TO": "hey@eugenius-works.com"
   }
 }
