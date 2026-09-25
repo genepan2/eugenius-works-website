@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "eugenius-works-website",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-09-25",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Only API requests invoke the Worker. Every page, stylesheet, image and
+    // the RSS feed is served directly from the asset store without running
+    // the Worker. Hence the array form scoped to "/api/*", not `true`.
+    "run_worker_first": ["/api/*"],
+    // Serve Astro's own dist/404.html for an unmatched path. Without this the
+    // default returns a bare 404 with an empty body and the custom page is
+    // ignored.
+    "not_found_handling": "404-page"
+  }
+}

@@ -1,23 +1,17 @@
 /**
- * POST /api/contact
+ * Cloudflare Worker entry point.
  *
- * Takes a homepage contact form submission and forwards it by email through the
- * Resend REST API. Deployed by Cloudflare Pages alongside the static build; the
- * Astro output stays static and needs no adapter.
+ * Serves the static Astro build from the ASSETS binding and handles
+ * POST /api/contact, which forwards a homepage contact form submission by
+ * email through the Resend REST API. The Astro output stays static and needs
+ * no adapter.
  */
 
 interface Env {
   RESEND_API_KEY?: string;
   CONTACT_FROM?: string;
   CONTACT_TO?: string;
-}
-
-// Cloudflare passes { request, env, params, next, ... } to the handler. Only the
-// two fields this function uses are typed here, so no @cloudflare/workers-types
-// dependency is needed for one file.
-interface PagesContext {
-  request: Request;
-  env: Env;
+  ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
 const MAX_MESSAGE_LENGTH = 5000;
@@ -67,7 +61,7 @@ async function readFields(request: Request): Promise<Record<string, string>> {
   return fields;
 }
 
-export const onRequest = async ({ request, env }: PagesContext): Promise<Response> => {
+async function handleContact(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'POST') {
     return fail('Method not allowed.', 405);
   }
@@ -103,8 +97,9 @@ export const onRequest = async ({ request, env }: PagesContext): Promise<Respons
     return fail(`Please keep the message under ${MAX_MESSAGE_LENGTH} characters.`, 400);
   }
 
-  // The key is missing until the owner sets it in the Cloudflare Pages dashboard.
-  // Say the form is unconfigured without revealing which binding is absent.
+  // The key is missing until the owner sets it in the Worker's dashboard under
+  // Settings > Variables and Secrets. Say the form is unconfigured without
+  // revealing which binding is absent.
   if (!env.RESEND_API_KEY || !env.CONTACT_FROM || !env.CONTACT_TO) {
     return fail('The contact form is not configured yet. Please send an email instead.', 503);
   }
@@ -135,4 +130,21 @@ export const onRequest = async ({ request, env }: PagesContext): Promise<Respons
   }
 
   return json({ ok: true }, 200);
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const { pathname } = new URL(request.url);
+
+    if (pathname === '/api/contact') return handleContact(request, env);
+
+    // Any other /api/ path answers as JSON. Falling through would serve the
+    // HTML 404 page to something that asked for an API.
+    if (pathname.startsWith('/api/')) return fail('Not found.', 404);
+
+    // Safety net only: run_worker_first is scoped to "/api/*", so normal page
+    // and asset requests are served from the asset store without ever
+    // reaching this Worker.
+    return env.ASSETS.fetch(request);
+  },
 };

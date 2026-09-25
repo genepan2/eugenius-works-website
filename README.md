@@ -69,29 +69,31 @@ grep -r PLACEHOLDER src/
 
 ## Contact form
 
-The homepage form posts to `functions/api/contact.ts`, a Cloudflare Pages Function that
-forwards the message by email through the Resend REST API. The Astro build stays static —
-Pages serves the function alongside it, so there is no adapter and no server output mode.
+The homepage form posts to `/api/contact`, handled by `src/worker.ts`. The site is a
+Cloudflare **Worker with static assets**, configured by `wrangler.jsonc`: the Worker
+serves the static Astro build from the `ASSETS` binding and runs only for `/api/*`
+requests. The Astro build stays static — there is no adapter and no server output mode.
 
-It needs three environment variables, set in the Cloudflare Pages dashboard under
-**Settings > Environment variables**:
+It needs three environment variables, set on the Worker under
+**Settings > Variables and Secrets**:
 
-| Variable | Meaning |
-|---|---|
-| `RESEND_API_KEY` | Resend API key, from https://resend.com/api-keys |
-| `CONTACT_FROM` | Sender address, must be on the verified domain |
-| `CONTACT_TO` | Where submissions are delivered |
+| Variable | Kind | Meaning |
+|---|---|---|
+| `RESEND_API_KEY` | Secret (encrypted) | Resend API key, from https://resend.com/api-keys |
+| `CONTACT_FROM` | Variable | Sender address, must be on the verified domain |
+| `CONTACT_TO` | Variable | Where submissions are delivered |
 
 Before any mail will send, `eugenius-works.com` must be verified as a sending domain in
 Resend. That means adding the DKIM, SPF, and DMARC records Resend gives you to Cloudflare
 DNS and waiting for verification to pass. `CONTACT_FROM` must be an address on that
 verified domain — Resend rejects a sender on an unverified one.
 
-Until `RESEND_API_KEY` is set the function returns 503 and the form shows a message asking
+Until `RESEND_API_KEY` is set the Worker returns 503 and the form shows a message asking
 the visitor to email instead, so the site is safe to deploy before Resend is configured.
 
-For local testing, copy `.dev.vars.example` to `.dev.vars` and run `wrangler pages dev`.
-`.dev.vars` is gitignored and must never be committed.
+For local testing, copy `.dev.vars.example` to `.dev.vars`, then run `npm run build`
+followed by `npx wrangler dev`. `.dev.vars` supplies the three values locally, is
+gitignored, and must never be committed.
 
 ## Before deploying
 
