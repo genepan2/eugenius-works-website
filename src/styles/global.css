@@ -6,6 +6,14 @@
     "Helvetica Neue", Arial, sans-serif;
 }
 
+/* The header links scroll to the homepage sections. Respect a reduced-motion
+   preference rather than forcing the animation on everyone. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Rendered markdown bodies. Plain typography, no plugin, no design tokens. */
 .prose > * + * {
   margin-top: 1.25rem;

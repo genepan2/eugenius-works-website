@@ -6,7 +6,8 @@ import {
   AUTHOR,
   ENTITY,
   NAV_LINKS,
-  FOOTER_LINKS,
+  FOOTER_SITE_LINKS,
+  FOOTER_LEGAL_LINKS,
   CLOUDFLARE_ANALYTICS_TOKEN,
 } from '../consts';
 
@@ -58,8 +59,11 @@ const analyticsEnabled =
   <body class="bg-white text-black font-sans antialiased">
     <div class="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-10">
       <header class="mb-14">
-        <nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-          <a href="/" class="font-medium underline hover:no-underline">{SITE_NAME}</a>
+        {/*
+          The two words are the wordmark. A small gap and no separator keeps
+          them reading as "Eugenius Works" rather than as a menu.
+        */}
+        <nav class="flex items-baseline gap-x-2 text-lg font-medium" aria-label="Sections">
           {
             NAV_LINKS.map((link) => (
               <a href={link.href} class="underline hover:no-underline">
@@ -77,19 +81,23 @@ const analyticsEnabled =
       <footer class="mt-20 border-t border-neutral-300 pt-6 text-sm text-neutral-600">
         <div class="flex flex-wrap gap-x-6 gap-y-2">
           {
-            FOOTER_LINKS.map((link) => (
+            FOOTER_SITE_LINKS.map((link) => (
               <a href={link.href} class="underline hover:no-underline">
                 {link.label}
               </a>
             ))
           }
         </div>
-        <p class="mt-4">
-          © {new Date().getFullYear()} {ENTITY} · <a
-            href="/imprint"
-            class="underline hover:no-underline">Imprint</a
-          > · <a href="/privacy" class="underline hover:no-underline">Privacy</a>
-        </p>
+        <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+          {
+            FOOTER_LEGAL_LINKS.map((link) => (
+              <a href={link.href} class="underline hover:no-underline">
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+        <p class="mt-4">© {new Date().getFullYear()} {ENTITY}</p>
       </footer>
     </div>
   </body>

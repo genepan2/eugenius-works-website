@@ -14,16 +14,30 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
       I am Eugen Panov. I build small software tools and write about design, development,
       artificial intelligence, entrepreneurship, and business.
     </p>
-    <p class="mt-4 text-lg leading-relaxed">
-      Eugenious Works is the Estonian company behind that work. <a
-        href="/about"
-        class="underline hover:no-underline">More about it</a
-      >.
+  </section>
+
+  {/* The two halves of the company name, and the two header links. */}
+  <section id="eugenius" class="mt-16 scroll-mt-8">
+    <h2 class="text-xl font-semibold">Eugenius</h2>
+    <p class="mt-6 leading-relaxed">
+      I design and build software, mostly small tools that solve a problem I had first and
+      someone else turned out to have too.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      Eugenius Works is the Estonian company behind that work. It is a one-person operation:
+      the projects listed on this site, the occasional client engagement, and the writing.
+      There is no team, no funding, and no plan to acquire either.
+    </p>
+    <p class="mt-4 leading-relaxed">
+      My background is a mix of design and development, which in practice means I am
+      comfortable being the only person on a project and uncomfortable handing off a
+      half-specified one. Most of what I build is deliberately small. Most of what I write is
+      about why that is a reasonable way to work.
     </p>
   </section>
 
-  <section class="mt-16">
-    <h2 class="text-xl font-semibold">Projects</h2>
+  <section id="works" class="mt-16 scroll-mt-8">
+    <h2 class="text-xl font-semibold">Works</h2>
     <ul class="mt-6 space-y-8">
       {
         projects.map((project) => (

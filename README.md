@@ -1,6 +1,6 @@
-# Eugenious Works Website
+# Eugenius Works Website
 
-The personal and professional site for Eugenious Works: a list of projects and a blog.
+The personal and professional site for Eugenius Works: a list of projects and a blog.
 Static Astro, Tailwind CSS v4, markdown content, no backend.
 
 The design is deliberately plain — black and white, system fonts, typography only. Working
