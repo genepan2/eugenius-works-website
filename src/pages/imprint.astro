@@ -34,14 +34,11 @@ import { COMPANY } from '../consts';
         <dd>{COMPANY.regNo}</dd>
       </div>
       <!-- TODO: add VAT number here if the company is VAT-registered -->
-      <div>
-        <dt class="text-sm text-neutral-600">Phone</dt>
-        <dd>
-          <a href={`tel:${COMPANY.phone.replace(/\s/g, '')}`} class="underline hover:no-underline">
-            {COMPANY.phone}
-          </a>
-        </dd>
-      </div>
+      {/*
+        No phone number. The Estonian Information Society Services Act and the
+        EU e-Commerce Directive require contact details allowing rapid and
+        direct communication — the email address satisfies that.
+      */}
       <div>
         <dt class="text-sm text-neutral-600">Email</dt>
         <dd>
