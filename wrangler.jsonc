@@ -14,5 +14,9 @@
     // default returns a bare 404 with an empty body and the custom page is
     // ignored.
     "not_found_handling": "404-page"
+  },
+  "vars": {
+    "CONTACT_FROM": "Eugenious Works <contact@eugenius-works.com>",
+    "CONTACT_TO": "hey@eugenius-works.com"
   }
 }
