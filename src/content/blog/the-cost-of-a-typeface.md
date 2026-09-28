@@ -1,4 +1,5 @@
 ---
+draft: true
 title: The Cost of a Typeface
 description: A note on why this site uses the system font stack, and what a web font actually buys you.
 date: 2026-05-02

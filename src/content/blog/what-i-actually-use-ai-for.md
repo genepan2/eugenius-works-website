@@ -1,4 +1,5 @@
 ---
+draft: true
 title: What I Actually Use AI For
 description: An honest inventory of where language models earn their place in my week, and where they quietly do not.
 date: 2026-07-19

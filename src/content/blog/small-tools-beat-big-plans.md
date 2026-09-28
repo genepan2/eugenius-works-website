@@ -1,4 +1,5 @@
 ---
+draft: true
 title: Small Tools Beat Big Plans
 description: Why I stopped designing platforms and started shipping utilities that solve exactly one problem.
 date: 2026-03-14
