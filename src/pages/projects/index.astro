@@ -28,6 +28,7 @@ const projects = await getSortedProjects();
             ) : (
               project.data.title
             )}
+            <span class="text-sm font-normal text-neutral-600"> · {project.data.status}</span>
           </h2>
           {project.data.cover && (
             <Image

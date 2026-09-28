@@ -50,6 +50,7 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
               ) : (
                 project.data.title
               )}
+              <span class="text-sm font-normal text-neutral-600"> · {project.data.status}</span>
             </h3>
             {project.data.cover && (
               <Image
