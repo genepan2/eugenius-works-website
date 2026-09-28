@@ -74,3 +74,12 @@
   max-width: 100%;
   height: auto;
 }
+
+/* Contact form notices. Hidden until they are the URL fragment, which is how
+   the no-JavaScript form submission shows its result. */
+.target-notice {
+  display: none;
+}
+.target-notice:target {
+  display: block;
+}

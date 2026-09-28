@@ -136,7 +136,19 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
 
-    if (pathname === '/api/contact') return handleContact(request, env);
+    if (pathname === '/api/contact') {
+      const response = await handleContact(request, env);
+
+      // Without JavaScript the browser posts the form itself and would land on
+      // a bare JSON page. Send it back to the homepage instead, where the
+      // #contact-sent or #contact-failed notice shows through :target.
+      const isJson = (request.headers.get('content-type') ?? '').includes('application/json');
+      if (request.method === 'POST' && !isJson) {
+        const fragment = response.ok ? '/#contact-sent' : '/#contact-failed';
+        return Response.redirect(new URL(fragment, request.url).href, 303);
+      }
+      return response;
+    }
 
     // Any other /api/ path answers as JSON. Falling through would serve the
     // HTML 404 page to something that asked for an API.

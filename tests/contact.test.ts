@@ -75,4 +75,22 @@ assert.equal(unknown.status, 404);
 assert.equal(unknown.body.ok, false);
 assert.equal(typeof unknown.body.error, 'string');
 
+// No-JavaScript fallback: a form-encoded post is redirected home, never shown JSON.
+const formPost = (fields: Record<string, string>, ip: string) =>
+  new Request('https://x/api/contact', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', 'CF-Connecting-IP': ip },
+    body: new URLSearchParams(fields),
+  });
+const sentRedirect = await worker.fetch(formPost(valid, '9.9.9.9'), ENV as any, {} as any);
+assert.equal(sentRedirect.status, 303);
+assert.equal(sentRedirect.headers.get('location'), 'https://x/#contact-sent');
+const failRedirect = await worker.fetch(
+  formPost({ ...valid, email: 'nope' }, '9.9.9.10'),
+  ENV as any,
+  {} as any,
+);
+assert.equal(failRedirect.status, 303);
+assert.equal(failRedirect.headers.get('location'), 'https://x/#contact-failed');
+
 console.log('contact worker: all checks passed');
