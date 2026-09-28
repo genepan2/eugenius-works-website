@@ -1,19 +1,18 @@
 # Roadmap: eugenius-works-website
 
-_updated 2026-09-25 by Claude_
+_updated 2026-09-28 by Claude_
 
 The site is live at https://eugenius-works.com — an Astro static build served by a
 Cloudflare Worker, with a contact form that sends through Resend.
 
 ## active
 
-### real project content — open
-next: write the descriptions for Extraseat, Hushspeak and Tripledigit, and decide which
-have public URLs
-last: 2026-09-25
-Placeholder descriptions are in place and marked `<!-- PLACEHOLDER -->`. No project has a
-`url` or `repo` yet, so none links anywhere. No project has body content, so the site
-builds zero detail pages.
+### product scene generator name — open
+next: choose a public name for the product scene generator
+last: 2026-09-28
+The project is listed under a working title, marked `<!-- PLACEHOLDER -->` in
+`src/content/projects/product-scene-generator.md`. The client it was built for must not be
+named on the site.
 
 ### real blog content — open
 next: replace or delete the three placeholder posts
@@ -42,6 +41,11 @@ settles.
 
 ## done
 
+### real project list — 2026-09-28
+Eleven real projects with the owner's own descriptions, and a required `status` field
+(live, in progress, prototype, paused, idea) shown after each title. No client names
+appear. Only Get Eugenius links out.
+
 ### homepage restructure and rename — 2026-09-25
 Company name spelling corrected to "Eugenius" site-wide. Homepage split into `#eugenius`
 and `#works`, `/about` folded in and deleted, navigation reduced to two words, footer
@@ -65,14 +69,8 @@ dashboard on every deploy.
 Services Act and the EU e-Commerce Directive. The privacy policy describes the site's real
 data flows. No cookie banner: the site sets no cookies and the analytics is cookieless.
 
-### initial site build — 2026-09-23
-Astro 7, Tailwind v4, black and white, system fonts. Two content collections. Projects get
-a detail page only when they have body content; drafts are excluded from listings, the RSS
-feed and the sitemap.
-→ docs/2026-09-22-spec-eugenius-works-website.md
-
 ## deferred
 
 Not scheduled. Listed so they are not rediscovered as ideas:
-tag index pages · project ↔ post links · a project `status` field · multi-language
+tag index pages · project ↔ post links · multi-language
 support · dark mode · any visual branding or custom typeface
