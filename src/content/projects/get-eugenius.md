@@ -1,8 +1,8 @@
 ---
 title: Get Eugenius
-description: Freelance design and development practice. Separate site, separate brand.
+status: in progress
+order: 3
 url: https://geteugenius.com
-order: 1
+description: >-
+  My freelance service: images for content, created from the content itself. The image system is the tool I am building to make them.
 ---
-
-<!-- PLACEHOLDER -->

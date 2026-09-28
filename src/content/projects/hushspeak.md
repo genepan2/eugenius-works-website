@@ -1,7 +1,7 @@
 ---
-title: Hushspeak
-description: Speech turned into text on your own machine. The audio never leaves the device, so a private conversation stays one.
-order: 3
+title: HushSpeak
+status: paused
+order: 10
+description: >-
+  Dictation without anyone listening in. Speaking is faster than typing, but in a café you do not want everyone to hear you. HushSpeak reads speech from the webcam: lip reading instead of a microphone.
 ---
-
-<!-- PLACEHOLDER -->
