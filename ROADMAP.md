@@ -1,6 +1,6 @@
 # Roadmap: eugenius-works-website
 
-_updated 2026-09-28 by Claude_
+_updated 2026-09-29 by Claude_
 
 The site is live at https://eugenius-works.com — an Astro static build served by a
 Cloudflare Worker, with a contact form that sends through Resend.
@@ -15,10 +15,17 @@ The project is listed under a working title, marked `<!-- PLACEHOLDER -->` in
 named on the site.
 
 ### real blog content — open
-next: replace or delete the three placeholder posts
-last: 2026-09-23
-`src/content/blog/` holds 4 seed posts, one of them `draft: true`. All are invented and
-marked `<!-- PLACEHOLDER -->`.
+next: write the first real post
+last: 2026-09-29
+All four seed posts are now `draft: true`, so the blog, the RSS feed and the sitemap are
+empty and the homepage hides its Writing section. Delete the seed posts once real ones
+exist.
+
+### eugenius section text — open
+next: write the Eugenius section in your own words
+last: 2026-09-29
+The invented bio is gone. The section now holds two facts only: the Estonian company, and
+what runs under it. → src/pages/index.astro
 
 ### cloudflare web analytics token — open
 next: set `CF_BEACON_TOKEN` in `src/consts.ts`, or soften the privacy policy's analytics
