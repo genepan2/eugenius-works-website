@@ -79,19 +79,19 @@ const analyticsEnabled =
       </main>
 
       <footer class="mt-20 border-t border-neutral-300 pt-6 text-sm text-neutral-600">
-        <div class="flex flex-wrap gap-x-6 gap-y-2">
+        <div class="flex flex-wrap gap-x-6">
           {
             FOOTER_SITE_LINKS.map((link) => (
-              <a href={link.href} class="underline hover:no-underline">
+              <a href={link.href} class="inline-block py-2 underline hover:no-underline">
                 {link.label}
               </a>
             ))
           }
         </div>
-        <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        <div class="flex flex-wrap gap-x-6">
           {
             FOOTER_LEGAL_LINKS.map((link) => (
-              <a href={link.href} class="underline hover:no-underline">
+              <a href={link.href} class="inline-block py-2 underline hover:no-underline">
                 {link.label}
               </a>
             ))
