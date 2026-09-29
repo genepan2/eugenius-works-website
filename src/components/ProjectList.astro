@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  /** Heading level for each project title, so the list fits the page outline. */
+  level?: 'h2' | 'h3';
+}
+
+const { projects, level = 'h3' } = Astro.props;
+const Title = level;
+---
+
+<ul class="space-y-8">
+  {
+    projects.map((project) => (
+      <li>
+        <Title class="font-medium">
+          <a href={`/works/${project.id}`} class="underline hover:no-underline">
+            {project.data.title}
+          </a>
+          <span class="text-sm font-normal text-neutral-600"> · {project.data.status}</span>
+        </Title>
+        <p class="mt-1 leading-relaxed">{project.data.description}</p>
+      </li>
+    ))
+  }
+</ul>

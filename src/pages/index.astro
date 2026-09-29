@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSortedProjects, hasDetailPage, getPublishedPosts } from '../content';
+import ProjectList from '../components/ProjectList.astro';
+import { getSortedProjects, getPublishedPosts } from '../content';
 
 const projects = await getSortedProjects();
 const posts = (await getPublishedPosts()).slice(0, 5);
@@ -34,46 +34,9 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
 
   <section id="works" class="mt-16 scroll-mt-8">
     <h2 class="text-xl font-semibold">Works</h2>
-    <ul class="mt-6 space-y-8">
-      {
-        projects.map((project) => (
-          <li>
-            <h3 class="font-medium">
-              {hasDetailPage(project) ? (
-                <a href={`/projects/${project.id}`} class="underline hover:no-underline">
-                  {project.data.title}
-                </a>
-              ) : (
-                project.data.title
-              )}
-              <span class="text-sm font-normal text-neutral-600"> · {project.data.status}</span>
-            </h3>
-            {project.data.cover && (
-              <Image
-                src={project.data.cover}
-                alt={project.data.title}
-                class="mt-3 max-w-full"
-                widths={[400, 800]}
-              />
-            )}
-            <p class="mt-1 leading-relaxed">{project.data.description}</p>
-            <p class="mt-1 text-sm text-neutral-600">
-              {project.data.url && (
-                <a href={project.data.url} class="underline hover:no-underline">
-                  Website
-                </a>
-              )}
-              {project.data.url && project.data.repo && <span> · </span>}
-              {project.data.repo && (
-                <a href={project.data.repo} class="underline hover:no-underline">
-                  Repository
-                </a>
-              )}
-            </p>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="mt-6">
+      <ProjectList projects={projects} />
+    </div>
   </section>
 
   {posts.length > 0 && (

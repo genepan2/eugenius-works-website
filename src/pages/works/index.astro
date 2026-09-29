@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import { getSortedProjects } from '../../content';
+
+const projects = await getSortedProjects();
+---
+
+<BaseLayout title="Works" description="Products, tools and experiments by Eugen Panov.">
+  <h1 class="text-3xl font-semibold">Works</h1>
+  <p class="mt-4 leading-relaxed">
+    Everything I build under Eugenius Works, from live products to ideas.
+  </p>
+  <div class="mt-12">
+    <ProjectList projects={projects} level="h2" />
+  </div>
+</BaseLayout>

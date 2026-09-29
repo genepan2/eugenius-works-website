@@ -41,6 +41,7 @@ export const NAV_LINKS = [
 // arrays. Row 1 is the site itself, row 2 is legal and social.
 export const FOOTER_SITE_LINKS = [
   { label: 'Home', href: '/' },
+  { label: 'Works', href: '/works' },
   { label: 'Blog', href: '/blog' },
   { label: 'RSS', href: '/rss.xml' },
 ];
