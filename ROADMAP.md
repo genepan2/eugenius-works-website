@@ -21,12 +21,6 @@ All four seed posts are now `draft: true`, so the blog, the RSS feed and the sit
 empty and the homepage hides its Writing section. Delete the seed posts once real ones
 exist.
 
-### eugenius section text — open
-next: write the Eugenius section in your own words
-last: 2026-09-29
-The invented bio is gone. The section now holds two facts only: the Estonian company, and
-what runs under it. → src/pages/index.astro
-
 ### cloudflare web analytics token — open
 next: set `CF_BEACON_TOKEN` in `src/consts.ts`, or soften the privacy policy's analytics
 section until it is set
@@ -47,6 +41,9 @@ shipped. The owner was still thinking through the fuller structure; revisit when
 settles.
 
 ## done
+
+### eugenius section text — 2026-09-29
+The owner's own about text replaced the invented bio.
 
 ### real project list — 2026-09-28
 Eleven real projects with the owner's own descriptions, and a required `status` field
@@ -70,11 +67,6 @@ Resend-backed, sending confirmed end to end. Honeypot, validation, per-IP rate l
 and a clean 502 with no key or upstream error leaked on failure. `RESEND_API_KEY` is a
 dashboard secret; the two addresses live in `wrangler.jsonc`, which overrides the
 dashboard on every deploy.
-
-### legal pages — 2026-09-25
-`/imprint` and `/privacy`, written for an Estonian entity under the Information Society
-Services Act and the EU e-Commerce Directive. The privacy policy describes the site's real
-data flows. No cookie banner: the site sets no cookies and the analytics is cookieless.
 
 ## deferred
 
