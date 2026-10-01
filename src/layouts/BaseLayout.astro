@@ -63,10 +63,16 @@ const analyticsEnabled =
           The two words are the wordmark. A small gap and no separator keeps
           them reading as "Eugenius Works" rather than as a menu.
         */}
-        <nav class="flex items-baseline gap-x-2 text-lg font-medium" aria-label="Sections">
+        <nav
+          class="flex items-baseline gap-x-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+          aria-label="Sections"
+        >
           {
             NAV_LINKS.map((link) => (
-              <a href={link.href} class="underline hover:no-underline">
+              <a
+                href={link.href}
+                class="decoration-2 underline-offset-4 hover:underline focus-visible:underline"
+              >
                 {link.label}
               </a>
             ))
