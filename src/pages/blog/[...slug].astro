@@ -21,7 +21,6 @@ const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
-  folio={date}
   ogType="article"
   publishedTime={post.data.date}
   jsonLd={postLd(post.data.title, post.data.date, new URL(Astro.url.pathname, Astro.site).href)}
@@ -51,7 +50,7 @@ const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post
     </div>
   </article>
 
-  <p class="fine reading mt-10">
-    <a href="/blog/">All posts</a>
-  </p>
+  <nav class="pager fine reading mt-16" aria-label="More writing">
+    <a href="/blog/" class="pager-prev"><span class="label">All posts</span></a>
+  </nav>
 </BaseLayout>

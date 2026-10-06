@@ -27,3 +27,6 @@ npm-debug.log*
 .impeccable/review/
 .impeccable/mocks/
 .impeccable/build/
+
+# other agents' worktrees
+.claude/

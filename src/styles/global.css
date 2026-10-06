@@ -106,6 +106,15 @@ a:hover {
   text-align: center;
   text-wrap: balance;
 }
+/* A long work headline steps down one size, as a print ad would. */
+.headline-long {
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+}
+@media (min-width: 64rem) {
+  .headline {
+    max-width: 22ch;
+  }
+}
 .headline-left {
   margin-inline: 0;
   text-align: left;
@@ -532,6 +541,10 @@ a:hover {
 .reading-head {
   text-align: center;
 }
+.reading-head .headline {
+  font-size: clamp(2.25rem, 4.6vw, 4rem);
+  max-width: 22ch;
+}
 .reading-head .fine {
   margin-top: 1rem;
 }
@@ -556,11 +569,20 @@ a:hover {
   letter-spacing: -0.01em;
   margin-top: 2.25em;
 }
+.prose.copy,
+.reading.copy {
+  line-height: 1.6;
+}
 .prose h2 {
-  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
+  font-size: clamp(1.625rem, 2.5vw, 2.125rem);
 }
 .prose h3 {
-  font-size: 1.375rem;
+  font-size: 1.25rem;
+}
+.prose hr {
+  margin-block: 2.25em;
+  border: 0;
+  border-top: 1px solid var(--color-ink);
 }
 .prose ul,
 .prose ol {
@@ -577,6 +599,7 @@ a:hover {
 }
 .prose blockquote {
   padding-left: 1.5rem;
+  border-left: 1px solid var(--color-ink);
   font-size: 1.375rem;
   line-height: 1.4;
 }
@@ -588,6 +611,11 @@ a:hover {
   overflow-x: auto;
   padding: 1rem;
   border: 1px solid var(--color-ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.prose pre code {
+  font-size: 0.85em;
 }
 .prose img {
   max-width: 100%;

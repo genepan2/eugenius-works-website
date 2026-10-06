@@ -75,11 +75,11 @@ const posts = (await getPublishedPosts()).slice(0, 5);
       <section class="mt-24">
         <div class="section-head">
           <h2 class="headline headline-left">Writing.</h2>
+          <p class="fine">
+            <a href="/blog/">All posts</a>
+          </p>
         </div>
         <PostList posts={posts} />
-        <p class="fine mt-4">
-          <a href="/blog/">All posts</a>
-        </p>
       </section>
     )
   }

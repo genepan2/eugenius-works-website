@@ -9,6 +9,8 @@ export default defineConfig({
   site: SITE_URL,
   trailingSlash: 'always',
   integrations: [sitemap()],
+  // No highlighter: it would color the code and write inline styles the CSP blocks.
+  markdown: { syntaxHighlight: false },
   // No inlining: every script is its own file, so the CSP can say script-src 'self'.
   vite: { plugins: [tailwindcss()], build: { assetsInlineLimit: 0 } },
 });

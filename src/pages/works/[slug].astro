@@ -54,7 +54,7 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
       )
     }
 
-    <h1 class="headline">{headline}</h1>
+    <h1 class:list={['headline', headline.length >= 64 && 'headline-long']}>{headline}</h1>
 
     {
       (copy || hasBody) && (
