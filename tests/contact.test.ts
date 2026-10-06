@@ -87,14 +87,14 @@ const formPost = (fields: Record<string, string>, ip: string) =>
   });
 const sentRedirect = await worker.fetch(formPost(valid, '9.9.9.9'), ENV as any, {} as any);
 assert.equal(sentRedirect.status, 303);
-assert.equal(sentRedirect.headers.get('location'), 'https://x/#contact-sent');
+assert.equal(sentRedirect.headers.get('location'), 'https://x/contact/#contact-sent');
 const failRedirect = await worker.fetch(
   formPost({ ...valid, email: 'nope' }, '9.9.9.10'),
   ENV as any,
   {} as any,
 );
 assert.equal(failRedirect.status, 303);
-assert.equal(failRedirect.headers.get('location'), 'https://x/#contact-failed');
+assert.equal(failRedirect.headers.get('location'), 'https://x/contact/#contact-failed');
 
 // Origin: a foreign origin is 403 and sends nothing; the same origin passes.
 const withHeaders = (headers: Record<string, string>, ip: string, body: unknown = valid) =>
@@ -141,14 +141,14 @@ assert.equal(limited.headers.get('retry-after'), '600');
 // A form-encoded 429 redirects to the busy notice.
 const busy429 = await worker.fetch(formPost(valid, '10.0.0.8'), ENV as any, {} as any);
 assert.equal(busy429.status, 303);
-assert.equal(busy429.headers.get('location'), 'https://x/#contact-busy');
+assert.equal(busy429.headers.get('location'), 'https://x/contact/#contact-busy');
 
 // A Resend 500 is a 502, and a form-encoded post redirects to the busy notice.
 resendStatus = 500;
 assert.equal((await run(post(valid, '10.0.0.9'))).status, 502);
 const busy502 = await worker.fetch(formPost(valid, '10.0.0.10'), ENV as any, {} as any);
 assert.equal(busy502.status, 303);
-assert.equal(busy502.headers.get('location'), 'https://x/#contact-busy');
+assert.equal(busy502.headers.get('location'), 'https://x/contact/#contact-busy');
 resendStatus = 200;
 
 console.log('contact worker: all checks passed');

@@ -186,16 +186,16 @@ export default {
       const response = await handleContact(request, env);
 
       // Without JavaScript the browser posts the form itself and would land on
-      // a bare JSON page. Send it back to the homepage instead, where the
+      // a bare JSON page. Send it back to the contact page instead, where the
       // #contact-sent, #contact-failed (bad input) or #contact-busy (anything
       // else) notice shows through :target.
       const isJson = (request.headers.get('content-type') ?? '').includes('application/json');
       if (request.method === 'POST' && !isJson) {
         const fragment = response.ok
-          ? '/#contact-sent'
+          ? '/contact/#contact-sent'
           : response.status === 400
-            ? '/#contact-failed'
-            : '/#contact-busy';
+            ? '/contact/#contact-failed'
+            : '/contact/#contact-busy';
         return Response.redirect(new URL(fragment, request.url).href, 303);
       }
       return response;
