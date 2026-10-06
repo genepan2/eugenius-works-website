@@ -18,5 +18,6 @@
   "vars": {
     "CONTACT_FROM": "Eugenius Works <contact@eugenius-works.com>",
     "CONTACT_TO": "hey@eugenius-works.com"
-  }
+  },
+  "observability": { "enabled": true }
 }
