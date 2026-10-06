@@ -31,16 +31,16 @@ status, from live product to bare idea. The company name is the structure of the
 
 - Static Astro site served by a Cloudflare Worker with static assets, at eugenius-works.com.
 - Content is Markdown in the repository: `src/content/projects/` and `src/content/blog/`.
-- A contact form on the homepage sends through Resend. No email address is shown outside
-  the imprint.
+- A contact form on its own page, `/contact/`, sends through Resend. No email address is
+  shown outside the imprint.
 - English only. Multi-language support is deferred.
 - Get Eugenius, the freelance service, is a separate site with a separate brand. Here it is
   one ordinary project entry.
 
 ## Capabilities and Constraints
 
-- Routes: `/`, `/works`, `/works/<slug>`, `/blog`, `/blog/<slug>`, `/imprint`, `/privacy`,
-  `/404`, `/rss.xml`. Old `/projects` URLs redirect to `/works`.
+- Routes: `/`, `/works/`, `/works/<slug>/`, `/contact/`, `/blog/`, `/blog/<slug>/`,
+  `/imprint/`, `/privacy/`, `/404`, `/rss.xml`. Old `/projects` URLs redirect to `/works`.
 - Each project has a required status: live, in progress, prototype, paused, idea.
 - The contact form must work without JavaScript.
 - No cookies, no tracking beyond cookieless Cloudflare Web Analytics, no cookie banner.
@@ -53,8 +53,14 @@ status, from live product to bare idea. The company name is the structure of the
 - **Black and white only.** The interface carries no color. Reason, from the owner: images
   for blog articles and projects come later and will be colorful, so the interface must
   stay out of their way. Typeface, layout and motion are free.
+- **Plain structure, text only.** No dots, no circles, no status symbols, no picture
+  stand-ins, no decorative devices. The owner rejected a status-dot system on 2026-10-06.
+  Status is a word.
 - The two-word navigation "Eugenius" / "Works" and the two homepage sections of the same
-  names.
+  names. **The landing page holds only these two sections.** The contact form, the blog
+  and everything else live on separate pages.
+- **Image before code.** A visual change is shown to the owner as an image (a rendered
+  mockup) and approved before it is built.
 - The owner's own texts: the about text and the project descriptions. They are not
   rewritten without his approval.
 - No "hire me", no sales language.
