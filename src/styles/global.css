@@ -94,12 +94,16 @@ a:hover {
 
 /* Type roles. One large element per section: the display word. */
 .word {
-  font-size: clamp(2.75rem, 11vw, 6rem);
+  font-size: clamp(3.5rem, 11vw, 6rem);
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.035em;
   overflow-wrap: break-word;
   margin-block: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 2.5vw, 2rem);
+}
+/* Work titles can be long: a lower floor keeps them whole at 320px. */
+.word-long {
+  font-size: clamp(2.75rem, 11vw, 6rem);
 }
 main > :first-child .word,
 main > .word:first-child,
@@ -142,8 +146,8 @@ main > .sr-only + section .word {
 .reading dl > div + div {
   margin-top: 0.85rem;
 }
-.page-head .fine {
-  margin-top: 0.75rem;
+.page-head .word {
+  margin-bottom: 0.5rem;
 }
 .cover {
   display: block;
@@ -160,6 +164,11 @@ main > .sr-only + section .word {
 .ledger tbody tr,
 .ledger li {
   border-bottom: 1px solid var(--color-ink);
+}
+/* The footer rule closes the list. */
+.ledger tbody tr:last-child,
+.ledger li:last-child {
+  border-bottom: 0;
 }
 .ledger th,
 .ledger td {
@@ -331,7 +340,7 @@ main > .sr-only + section .word {
   padding-left: 1.5rem;
 }
 .prose ul {
-  list-style: disc;
+  list-style-type: "–  ";
 }
 .prose ol {
   list-style: decimal;
@@ -397,20 +406,14 @@ main > .sr-only + section .word {
 .target-notice {
   display: none;
 }
-.target-notice:target {
+.target-notice:target,
+.target-notice.is-shown {
   display: block;
 }
 /* After a successful no-JavaScript send, the form goes away. The notice comes
    before the form in the markup, so the sibling combinator reaches it. */
 #contact-sent:target ~ #contact-form {
   display: none;
-}
-
-/* The header links scroll to the homepage sections. */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
 }
 
 @media print {

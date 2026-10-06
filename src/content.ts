@@ -19,14 +19,6 @@ export async function getPublishedPosts() {
   return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
-/** Zero-padded catalog number, as in `Nº 004`. */
-export const workNumber = (index: number) => String(index + 1).padStart(3, '0');
-
-const NUMBER_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty'];
-
-/** `11` → `Eleven`, for counts that open a sentence. Digits past twenty. */
-export const numberWord = (n: number) => NUMBER_WORDS[n] ?? String(n);
-
 /**
  * A meta description of at most `max` characters: whole sentences while they fit.
  * If the first sentence alone is too long, cut it at a word boundary and add `…`.

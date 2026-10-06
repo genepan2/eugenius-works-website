@@ -4,8 +4,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { workLd } from '../../jsonld';
-import { getSortedProjects, metaDescription, numberWord, workNumber } from '../../content';
-import { AUTHOR } from '../../consts';
+import { getSortedProjects, metaDescription } from '../../content';
 
 // Every work gets its own page. The markdown body is optional: it continues
 // the description when it holds more than comments and whitespace.
@@ -15,15 +14,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { slug: project.id },
     props: {
       project,
-      index: i,
-      total: projects.length,
       prev: projects.at(i - 1)!,
       next: projects[(i + 1) % projects.length],
     },
   }));
 };
 
-const { project, index, total, prev, next } = Astro.props;
+const { project, prev, next } = Astro.props;
 const { data } = project;
 const { Content } = await render(project);
 const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
@@ -36,7 +33,7 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
 >
   <article>
     <header class="page-head">
-      <h1 class="word">{data.title}</h1>
+      <h1 class="word word-long">{data.title}</h1>
       <p class="fine">{data.status}</p>
     </header>
 
@@ -59,7 +56,7 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
               <a href={data.url} rel="noopener" aria-label={`${data.title} website`}>
                 Website
               </a>
-              {' · '}
+              {', '}
             </>
           )
         }
@@ -69,14 +66,11 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
               <a href={data.repo} rel="noopener" aria-label={`${data.title} repository`}>
                 Repository
               </a>
-              {' · '}
+              {', '}
             </>
           )
         }
         <a href={`/contact/?re=${encodeURIComponent(data.title)}`}>Send a note</a>
-      </p>
-      <p>
-        Nº {workNumber(index)} of {numberWord(total).toLowerCase()} works by <a href="/">{AUTHOR}</a>
       </p>
     </div>
   </article>

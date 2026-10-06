@@ -35,7 +35,7 @@ const {
 } = Astro.props;
 const hasPosts = (await getPublishedPosts()).length > 0;
 const imageUrl = new URL(image, Astro.site).href;
-const imageAlt = 'Eugenius Works: a row of black dots and the line "When something is missing, I build it myself."';
+const imageAlt = 'Eugenius Works. I studied communication design because I was fascinated by good ideas in advertising.';
 const pageTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 

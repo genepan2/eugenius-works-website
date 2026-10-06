@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout title="Contact" description="Send a note to Eugen Panov. The message is delivered by email.">
   <h1 id="contact" class="word">Contact</h1>
-  <p class="fine max-w-[36rem]">
+  <p class="copy max-w-[36rem]">
     Your message is delivered to me by email. The <a href="/privacy/">privacy policy</a> says what
     happens to it.
   </p>
@@ -94,7 +94,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           // Focus moves to the notice, so a screen reader announces it and
           // keyboard focus is not lost with the hidden form.
           form.classList.add('hidden');
-          successBox.style.display = 'block';
+          successBox.classList.add('is-shown');
           successBox.focus();
           return;
         }
