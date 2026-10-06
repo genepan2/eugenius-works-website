@@ -18,100 +18,89 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "The headline of an ad or an index page. Centered, sentence case, ends with a period." },
-      "display-long": { "displayName": "Display, long", "purpose": "A work headline of 64 characters or more steps down one size." },
-      "display-reading": { "displayName": "Display, reading", "purpose": "The headline of a post, the imprint and the privacy page." },
-      "title": { "displayName": "Title", "purpose": "Index row headlines and legal subheads." },
-      "signature": { "displayName": "Signature", "purpose": "The name that signs an ad at the bottom right. The only use of weight 700." },
-      "body": { "displayName": "Body", "purpose": "Ad copy in 17rem columns or a 34rem measure." },
-      "body-reading": { "displayName": "Body, reading", "purpose": "Post bodies and legal pages in a 36rem column." },
+      "display": { "displayName": "Display", "purpose": "The display word: one for each landing section or page. No period." },
+      "headline": { "displayName": "Headline", "purpose": "The title of a blog post. It replaces the display word on a post page." },
+      "title": { "displayName": "Title", "purpose": "Subheads of the legal pages." },
+      "body": { "displayName": "Body", "purpose": "The about text, the work descriptions, form input." },
+      "body-reading": { "displayName": "Body, reading", "purpose": "Post bodies, work pages and legal pages in the 36rem column." },
+      "body-strong": { "displayName": "Body, strong", "purpose": "The name of a work in the table and the title of a post in the list." },
       "quote": { "displayName": "Quote", "purpose": "Block quotes in a post, behind a 1px ink rule." },
       "wordmark": { "displayName": "Wordmark", "purpose": "The two words in the running head." },
-      "label": { "displayName": "Label", "purpose": "Fine print: folio, captions, row numbers, meta, form labels, pager, footer." }
+      "label": { "displayName": "Label", "purpose": "Fine print: the status word, dates, form labels, work meta, pager, footer." }
     },
     "shadows": [],
     "strokes": [
-      { "name": "keyline", "value": "1px solid #000", "purpose": "Ad frame, index hairlines, footer rule, field underline, textarea rules, notice, code block, quote rule, link underline." },
-      { "name": "coupon", "value": "1.5px dashed #000", "purpose": "The reply coupon only." },
-      { "name": "ring", "value": "2px solid #000", "purpose": "Focus outline (3px offset) and the paused dot." }
-    ],
-    "dotFactors": [
-      { "status": "live", "factor": 1, "form": "solid" },
-      { "status": "in progress", "factor": 0.6, "form": "solid" },
-      { "status": "prototype", "factor": 0.32, "form": "solid" },
-      { "status": "idea", "factor": 0.14, "form": "solid" },
-      { "status": "paused", "factor": 0.6, "form": "ring, 2px stroke, no fill" }
+      { "name": "hairline", "value": "1px solid #000", "purpose": "Table and list rules, pager rule, footer rule, field borders, notice, code block, quote rule, link underline." },
+      { "name": "focus", "value": "2px solid #000", "purpose": "Focus outline with a 3px offset." }
     ],
     "motion": [
-      { "name": "dot-travel-duration", "value": "450ms", "purpose": "The dot of a work travels between an index and its ad (view transition group work-dot)." },
-      { "name": "dot-travel-ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Exponential ease-out for the dot travel." },
-      { "name": "page-crossfade", "value": "150ms", "purpose": "The root crossfade of the same cross-document view transition." },
-      { "name": "state-change", "value": "0ms", "purpose": "Hover and focus change at once. No transition." },
-      { "name": "motion-guard", "value": "@media (prefers-reduced-motion: no-preference)", "purpose": "All motion and smooth scrolling stand inside this guard." }
+      { "name": "state-change", "value": "0ms", "purpose": "Hover and focus change at once. No transition, no animation, no page transition." }
     ],
     "breakpoints": [
-      { "name": "hero-wrap", "value": "max-width: 359px" },
-      { "name": "caption-band", "value": "max-width: 30rem" },
-      { "name": "index-stack", "value": "max-width: 40rem" },
-      { "name": "closing-two-columns", "value": "min-width: 56rem" },
-      { "name": "headline-measure", "value": "min-width: 64rem" },
-      { "name": "first-viewport-fit", "value": "min-width: 64rem and min-height: 45rem" }
+      { "name": "rows-stack", "value": "max-width: 40rem" },
+      { "name": "touch-targets", "value": "pointer: coarse" }
+    ],
+    "enforcedByTests": [
+      "Only black and white in the build output.",
+      "No style attribute in the built HTML.",
+      "No border-radius other than 0.",
+      "No <circle> element."
     ]
   },
   "components": [
     {
-      "name": "Status Dot",
+      "name": "Display Word",
       "kind": "custom",
-      "refersTo": "status-dot",
-      "description": "A circle whose size is the status of the work: live, in progress, prototype, paused as a ring, idea.",
-      "html": "<div class=\"ds-dots\"><span class=\"ds-dot\" data-status=\"live\"></span><span class=\"ds-dot\" data-status=\"in progress\"></span><span class=\"ds-dot\" data-status=\"prototype\"></span><span class=\"ds-dot\" data-status=\"paused\"></span><span class=\"ds-dot\" data-status=\"idea\"></span></div>",
-      "css": ".ds-dots { --dot: 5rem; display: flex; align-items: flex-end; gap: calc(var(--dot) * 0.1); color: var(--color-ink, #000); } .ds-dot { display: inline-block; flex: none; width: max(3px, calc(var(--dot, 1rem) * var(--f))); aspect-ratio: 1; border-radius: 50%; background: currentColor; } .ds-dot[data-status='live'] { --f: 1; } .ds-dot[data-status='in progress'] { --f: 0.6; } .ds-dot[data-status='prototype'] { --f: 0.32; } .ds-dot[data-status='idea'] { --f: 0.14; } .ds-dot[data-status='paused'] { --f: 0.6; box-sizing: border-box; background: none; border: 2px solid currentColor; }"
+      "refersTo": "display",
+      "description": "One word at the left edge. The only large element of a section or a page.",
+      "html": "<section class=\"ds-word-section\"><h2 class=\"ds-word\">Eugenius</h2><p class=\"ds-word-copy\">Today my focus is on automation and AI. When something is missing, I build it myself. You'll find some of it here.</p></section>",
+      "css": ".ds-word-section { color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-word { margin: 0 0 clamp(1.25rem, 2.5vw, 2rem); font-size: clamp(2.75rem, 11vw, 6rem); font-weight: 600; line-height: 1; letter-spacing: -0.035em; overflow-wrap: break-word; } .ds-word-copy { max-width: 36rem; margin: 0; font-size: 1.1875rem; line-height: 1.5; text-wrap: pretty; }"
     },
     {
-      "name": "The Ad",
-      "kind": "card",
-      "refersTo": "ad",
-      "description": "The frame of every feature surface: keyline, picture field, centered headline with a period, flush-left copy, signature at the bottom right.",
-      "html": "<article class=\"ds-ad\"><div class=\"ds-ad-field\"><span class=\"ds-ad-dot\"></span></div><h1 class=\"ds-ad-headline\">When something is missing, I build it myself.</h1><p class=\"ds-ad-copy\">Today my focus is on automation and AI. When something is missing, I build it myself. You'll find some of it here.</p><div class=\"ds-ad-signature\"><p class=\"ds-ad-name\">Eugenius.</p><p class=\"ds-ad-fine\">Eugen Panov</p></div></article>",
-      "css": ".ds-ad { border: 1px solid var(--color-ink, #000); padding: clamp(1.25rem, 4vw, 4rem); background: var(--color-paper, #fff); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-ad-field { display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; min-height: 12rem; } .ds-ad-dot { width: calc(9rem * 0.6); aspect-ratio: 1; border-radius: 50%; background: currentColor; } .ds-ad-headline { max-width: 18ch; margin: 2rem auto 0; font-size: clamp(2.25rem, 6.2vw, 5.25rem); font-weight: 600; line-height: 1.02; letter-spacing: -0.025em; text-align: center; text-wrap: balance; } .ds-ad-copy { max-width: 34rem; margin: 1.75rem auto 0; font-size: 1.1875rem; line-height: 1.5; text-wrap: pretty; } .ds-ad-signature { margin-top: 2.5rem; margin-left: auto; width: fit-content; text-align: right; } .ds-ad-name { margin: 0; font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; } .ds-ad-fine { margin: 0.35rem 0 0; font-size: 0.875rem; line-height: 1.4; }"
+      "name": "Works Table",
+      "kind": "custom",
+      "refersTo": "work-row",
+      "description": "Rows between hairlines: name and status word at the left, the full description at the right. Rows stack at 40rem and below.",
+      "html": "<table class=\"ds-ledger\"><tbody><tr><th scope=\"row\"><a class=\"ds-ledger-name\" href=\"#\">ExtraSeat</a><span class=\"ds-ledger-fine\">live</span></th><td><p>AI experts who join real video calls as participants.</p></td></tr><tr><th scope=\"row\"><a class=\"ds-ledger-name\" href=\"#\">HushSpeak</a><span class=\"ds-ledger-fine\">paused</span></th><td><p>Dictation without anyone listening in.</p></td></tr></tbody></table>",
+      "css": ".ds-ledger { width: 100%; border-collapse: collapse; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; } .ds-ledger tr { border-bottom: 1px solid var(--color-ink, #000); } .ds-ledger th, .ds-ledger td { vertical-align: top; text-align: left; padding: 1.25rem 0; } .ds-ledger th { width: 16rem; padding-right: 2rem; font-weight: 400; } .ds-ledger-name { display: block; color: inherit; font-weight: 600; text-decoration: none; } .ds-ledger-name:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-ledger-name:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-ledger-fine { font-size: 0.875rem; line-height: 1.4; } .ds-ledger td p { max-width: 44rem; margin: 0; } @media (max-width: 40rem) { .ds-ledger tbody, .ds-ledger tr, .ds-ledger th, .ds-ledger td { display: block; } .ds-ledger th { width: auto; padding: 1.25rem 0 0.35rem; } .ds-ledger td { padding-top: 0; } }"
     },
     {
-      "name": "Ruled Index Row",
-      "kind": "custom",
-      "refersTo": "index-row",
-      "description": "A work in the index. The whole row is the target and inverts on hover or focus.",
-      "html": "<ol class=\"ds-index\"><li class=\"ds-index-row\"><span class=\"ds-index-fine\">001</span><span class=\"ds-index-dot\"><span class=\"ds-index-live\"></span></span><h3 class=\"ds-index-headline\"><a href=\"#\">The headline of a work is its problem.</a></h3><p class=\"ds-index-fine ds-index-meta\">Title, live</p></li><li class=\"ds-index-row\"><span class=\"ds-index-fine\">002</span><span class=\"ds-index-dot\"><span class=\"ds-index-paused\"></span></span><h3 class=\"ds-index-headline\"><a href=\"#\">A paused work shows a ring.</a></h3><p class=\"ds-index-fine ds-index-meta\">Title, paused</p></li></ol>",
-      "css": ".ds-index { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-index-row { position: relative; display: grid; grid-template-columns: 3.5ch 1.6rem 1fr auto; align-items: baseline; column-gap: clamp(0.75rem, 2vw, 1.5rem); padding-block: 1rem; border-bottom: 1px solid var(--color-ink, #000); isolation: isolate; } .ds-index-row::before { content: ''; position: absolute; inset: 0 -0.5rem; z-index: -1; } .ds-index-dot { align-self: start; height: calc(clamp(1.375rem, 2.5vw, 2.125rem) * 1.15); display: flex; align-items: center; justify-content: center; } .ds-index-live, .ds-index-paused { flex: none; aspect-ratio: 1; border-radius: 50%; } .ds-index-live { width: 1.6rem; background: currentColor; } .ds-index-paused { box-sizing: border-box; width: calc(1.6rem * 0.6); border: 2px solid currentColor; } .ds-index-headline { margin: 0; font-size: clamp(1.375rem, 2.5vw, 2.125rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; } .ds-index-headline a { color: inherit; text-decoration: none; outline: none; } .ds-index-headline a::after { content: ''; position: absolute; inset: 0; } .ds-index-fine { margin: 0; font-size: 0.875rem; line-height: 1.4; font-variant-numeric: tabular-nums; } .ds-index-meta { text-align: right; } .ds-index-row:hover, .ds-index-row:has(a:focus-visible) { color: var(--color-paper, #fff); } .ds-index-row:hover::before, .ds-index-row:has(a:focus-visible)::before { background: var(--color-ink, #000); } .ds-index-row:has(a:focus-visible)::before { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; }"
+      "name": "Contact Form",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Plain boxed fields with fine-print labels and the solid button. On /contact/ only.",
+      "html": "<form class=\"ds-form\"><div><label class=\"ds-form-label\" for=\"ds-form-name\">Name</label><input class=\"ds-form-field\" id=\"ds-form-name\" type=\"text\"></div><div><label class=\"ds-form-label\" for=\"ds-form-message\">Message</label><textarea class=\"ds-form-field ds-form-textarea\" id=\"ds-form-message\" rows=\"3\"></textarea></div><button type=\"button\" class=\"ds-form-button\">Send</button></form>",
+      "css": ".ds-form { max-width: 36rem; color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; caret-color: var(--color-ink, #000); } .ds-form > div + div, .ds-form > div + button { margin-top: 1.25rem; } .ds-form-label { display: block; font-size: 0.875rem; line-height: 1.4; } .ds-form-field { display: block; box-sizing: border-box; width: 100%; margin-top: 0.3rem; padding: 0.5rem 0.65rem; border: 1px solid var(--color-ink, #000); border-radius: 0; background: var(--color-paper, #fff); color: inherit; font: inherit; } .ds-form-textarea { resize: none; field-sizing: content; min-height: calc(3lh + 1rem); } .ds-form-field:focus-visible, .ds-form-button:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-form-button { min-height: 44px; padding: 0.6rem 1.5rem; border: 1px solid var(--color-ink, #000); border-radius: 0; background: var(--color-ink, #000); color: var(--color-paper, #fff); font: inherit; font-weight: 600; cursor: pointer; } .ds-form-button:hover { background: var(--color-paper, #fff); color: var(--color-ink, #000); }"
     },
     {
       "name": "Button",
       "kind": "button",
       "refersTo": "button",
-      "description": "The one element that is inverted at rest: solid ink, paper on hover, still solid ink when disabled.",
+      "description": "Solid ink at rest, paper on hover, still solid ink when disabled.",
       "html": "<button class=\"ds-button\">Send</button> <button class=\"ds-button\" disabled>Sending…</button>",
       "css": ".ds-button { min-height: 44px; padding: 0.6rem 1.5rem; border: 1px solid var(--color-ink, #000); border-radius: 0; background: var(--color-ink, #000); color: var(--color-paper, #fff); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; font-weight: 600; cursor: pointer; } .ds-button:hover { background: var(--color-paper, #fff); color: var(--color-ink, #000); } .ds-button:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-button:disabled { background: var(--color-ink, #000); color: var(--color-paper, #fff); cursor: progress; }"
     },
     {
-      "name": "Reply Coupon",
-      "kind": "input",
-      "refersTo": "coupon",
-      "description": "The contact form: a dashed frame, underline fields, a ruled textarea and the solid button.",
-      "html": "<form class=\"ds-coupon\"><div><label class=\"ds-coupon-label\" for=\"ds-coupon-name\">Name</label><input class=\"ds-coupon-input\" id=\"ds-coupon-name\" type=\"text\"></div><div><label class=\"ds-coupon-label\" for=\"ds-coupon-message\">Message</label><textarea class=\"ds-coupon-textarea\" id=\"ds-coupon-message\" rows=\"3\"></textarea></div><button type=\"button\" class=\"ds-coupon-button\">Send</button></form>",
-      "css": ".ds-coupon { display: grid; gap: 1.75rem; border: 1.5px dashed var(--color-ink, #000); padding: clamp(1.25rem, 4vw, 3rem); background: var(--color-paper, #fff); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; caret-color: var(--color-ink, #000); } .ds-coupon-label { display: block; font-size: 0.875rem; line-height: 1.4; } .ds-coupon-input { display: block; width: 100%; padding: 0.4rem 0; border: 0; border-bottom: 1px solid var(--color-ink, #000); border-radius: 0; background: none; color: inherit; font: inherit; } .ds-coupon-textarea { display: block; width: 100%; border: 0; border-radius: 0; padding: 0; color: inherit; font: inherit; line-height: 1.75rem; resize: none; field-sizing: content; min-height: calc(3 * 1.75rem); background: repeating-linear-gradient(to bottom, transparent 0 calc(1.75rem - 1px), var(--color-ink, #000) calc(1.75rem - 1px) 1.75rem); background-attachment: local; } .ds-coupon-input:focus-visible, .ds-coupon-textarea:focus-visible, .ds-coupon-button:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-coupon-button { justify-self: start; min-height: 44px; padding: 0.6rem 1.5rem; border: 1px solid var(--color-ink, #000); border-radius: 0; background: var(--color-ink, #000); color: var(--color-paper, #fff); font: inherit; font-weight: 600; cursor: pointer; } .ds-coupon-button:hover { background: var(--color-paper, #fff); color: var(--color-ink, #000); }"
+      "name": "Notice",
+      "kind": "custom",
+      "refersTo": "notice",
+      "description": "One form for success, failure and busy. The words carry the meaning.",
+      "html": "<p class=\"ds-notice\">Thank you. Your message is on its way. I will reply to the address you gave.</p>",
+      "css": ".ds-notice { max-width: 36rem; margin: 0; padding: 0.6rem 0.9rem; border: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; }"
     },
     {
       "name": "Running Head",
       "kind": "nav",
       "refersTo": "link",
-      "description": "The two-word wordmark at the left and an optional folio in fine print at the right.",
-      "html": "<header class=\"ds-head\"><nav class=\"ds-head-wordmark\"><a href=\"#\">Eugenius</a><a href=\"#\">Works</a></nav><p class=\"ds-head-folio\">Nº 004 / 011</p></header>",
-      "css": ".ds-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-block: 1.25rem 1.5rem; color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-head-wordmark { display: flex; gap: 0.3em; font-size: 1rem; font-weight: 600; } .ds-head-wordmark a { display: inline-flex; align-items: center; min-height: 36px; padding-inline: 0.15em; margin-inline: -0.15em; color: inherit; text-decoration: none; } .ds-head-wordmark a:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); } .ds-head-wordmark a:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-head-folio { margin: 0; font-size: 0.875rem; line-height: 1.4; font-variant-numeric: tabular-nums; }"
+      "description": "The two-word wordmark at the top left. Each word is a link to its landing section.",
+      "html": "<header class=\"ds-head\"><nav class=\"ds-head-wordmark\"><a href=\"#\">Eugenius</a><a href=\"#\">Works</a></nav></header>",
+      "css": ".ds-head { display: flex; padding-block: 1.25rem 1.5rem; color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-head-wordmark { display: flex; gap: 0.3em; font-size: 1rem; font-weight: 600; } .ds-head-wordmark a { display: inline-flex; align-items: center; min-height: 36px; padding-inline: 0.15em; margin-inline: -0.15em; color: inherit; text-decoration: none; } .ds-head-wordmark a:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); } .ds-head-wordmark a:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; }"
     },
     {
       "name": "Text Link",
       "kind": "custom",
       "refersTo": "link",
-      "description": "Underlined at rest, inverted at once on hover, ringed on focus.",
+      "description": "Underlined at rest, inverted at once on hover, outlined on focus.",
       "html": "<p class=\"ds-link-copy\">The <a class=\"ds-link\" href=\"#\">privacy policy</a> says what happens to it.</p>",
       "css": ".ds-link-copy { margin: 0; color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; } .ds-link { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-link:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); } .ds-link:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; }"
     },
@@ -120,49 +109,62 @@
       "kind": "nav",
       "refersTo": "link",
       "description": "A hairline, two rows of fine-print links, and the copyright line.",
-      "html": "<footer class=\"ds-foot\"><ul><li><a href=\"#\">Home</a></li><li><a href=\"#\">Works</a></li><li><a href=\"#\">Blog</a></li><li><a href=\"#\">Send a note</a></li></ul><ul><li><a href=\"#\">Imprint</a></li><li><a href=\"#\">Privacy</a></li></ul><p>© Eugenius Works OÜ</p></footer>",
-      "css": ".ds-foot { padding-block: 1rem 2.5rem; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 0.875rem; line-height: 1.4; } .ds-foot ul { display: flex; flex-wrap: wrap; column-gap: 1.25rem; margin: 0; padding: 0; list-style: none; } .ds-foot a { display: inline-flex; align-items: center; min-height: 36px; color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-foot a:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); } .ds-foot a:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-foot p { margin: 0.75rem 0 0; }"
+      "html": "<footer class=\"ds-foot\"><ul><li><a href=\"#\">Home</a></li><li><a href=\"#\">Works</a></li><li><a href=\"#\">Contact</a></li></ul><ul><li><a href=\"#\">Imprint</a></li><li><a href=\"#\">Privacy</a></li><li><a href=\"#\">X</a></li></ul><p>© Eugenius Works OÜ</p></footer>",
+      "css": ".ds-foot { padding-block: 1rem 2.5rem; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 0.875rem; line-height: 1.4; } .ds-foot ul { display: flex; flex-wrap: wrap; column-gap: 1.25rem; margin: 0; padding: 0; list-style: none; } .ds-foot a { display: inline-flex; align-items: center; min-height: 36px; padding-inline: 8px; margin-inline: -8px; color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-foot a:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); } .ds-foot a:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-foot p { margin: 0.75rem 0 0; }"
     }
   ],
   "narrative": {
-    "northStar": "The Long-Copy Ad",
-    "overview": "Every work is one black-and-white print ad in the manner of the 1960s big-idea campaigns. The problem is the headline. The name only signs it. A keyline frames the ad. A white picture field stands at the top. A centered headline follows, then narrow flush-left copy columns, then a signature at the bottom right.\n\nThe system has one ink and one typeface. There is no gray, no color, no shadow, no gradient and no rounded corner. The only round form is the status dot. The dot is the picture of a work, and its size is the status of the work. Interface color stays out, because the images that come later are in color and must stand alone.\n\nStates are binary. An element is ink on paper, or it inverts to paper on ink at once. One thing moves: the dot of a work travels into its ad when the visitor opens the work.",
+    "northStar": "Two words",
+    "overview": "The company name is the structure of the site. \"Eugenius\" is the person and \"Works\" is the work. The landing page holds these two sections and nothing else. Each section starts with its word, set large at the left edge. Everything below the word is normal text.\n\nThe system is plain and has only text. It has one ink, one typeface and one left axis. Lists are rows between hairlines. Status is a word. Forms are plain boxes. There is no symbol, no frame, no picture stand-in and no motion. Interface color stays out, because the images that come later are in color and must stand alone.\n\nThe owner selected this structure from a rendered mockup (`.impeccable/mocks/plain/c-desktop.png`) after he rejected an earlier version with status dots. A visual change is shown to the owner as a rendered image and approved before it is built.",
     "keyCharacteristics": [
       "One ink on one paper. No third value.",
-      "One typeface, Jost, in three weights: 400, 600, 700.",
-      "Three line types: a 1px solid keyline and hairline, a 1.5px dashed coupon line, a 2px ring.",
-      "The dot is the only picture and the only round form.",
-      "Hover inverts at once. Only the dot moves.",
-      "Headlines are sentence case and end with a period."
+      "One typeface, Jost, in two weights: 400 and 600.",
+      "One display word for each landing section or page. No other large element.",
+      "One left axis. Nothing is centered.",
+      "Hairlines of 1px rule the rows. Corners are square.",
+      "Status is a word.",
+      "No motion."
     ],
     "rules": [
-      { "name": "The One Ink Rule", "body": "The interface has two values and no value between them. Gray, tint, opacity and gradient are not available. The default Tailwind palette is removed (`--color-*: initial`), so no other color utility exists.", "section": "colors" },
+      { "name": "The One Ink Rule", "body": "The interface has two values and no value between them. Gray, tint, opacity and gradient are not available. The default Tailwind palette is removed (`--color-*: initial`). A test fails the build output when it finds a color other than black or white.", "section": "colors" },
       { "name": "The Color Is For Pictures Rule", "body": "Color enters the site only through images: a work `cover`, a post `cover`, an image in a post body. The interface around them stays ink and paper.", "section": "colors" },
       { "name": "The No-Highlight Rule", "body": "Code blocks have no syntax colors. Syntax highlighting is off in the build configuration.", "section": "colors" },
-      { "name": "The Period Rule", "body": "A display headline is a sentence in sentence case and ends with a period. This is also true for one-word headlines (\"Works.\", \"Imprint.\"). The signature also ends with a period when it is the name \"Eugenius.\". Subheads and post titles keep the words of their author.", "section": "typography" },
-      { "name": "The Two Sizes Of Small Rule", "body": "Small text is 0.875rem fine print or 1rem wordmark. Nothing is smaller than 0.875rem.", "section": "typography" },
-      { "name": "The Flat Paper Rule", "body": "Nothing stands above the paper. Separation comes from a line or from white space, not from depth.", "section": "elevation" },
-      { "name": "The Dot Is The Only Circle Rule", "body": "A circle always means a work and its status. No other element is round.", "section": "shapes" }
+      { "name": "The One Word Rule", "body": "Each landing section and each page has exactly one large element: its display word, or the post title on a post page. No second large line, no headline sentence, no subtitle in a display size.", "section": "typography" },
+      { "name": "The Status Is A Word Rule", "body": "The status of a work is the plain word in fine print under its name: live, in progress, prototype, paused, idea. No symbol, size or shape carries status.", "section": "typography" },
+      { "name": "The Flat Paper Rule", "body": "Nothing stands above the paper. Separation comes from a hairline or from white space, not from depth.", "section": "elevation" },
+      { "name": "The Square Rule", "body": "No rounded corner and no circle, in CSS or in SVG. The tests fail the build when one appears.", "section": "shapes" },
+      { "name": "The No Inline Style Rule", "body": "The built HTML has no `style` attribute. All styling is in the stylesheet. A test enforces this.", "section": "shapes" }
     ],
     "dos": [
-      "Do use only `colors.ink` and `colors.paper`. Show a state through inversion, a line or a word.",
-      "Do build each new feature surface as an ad: keyline, picture field, centered headline with a period, flush-left copy columns, signature at the bottom right.",
-      "Do show the status of a work as a dot with the recorded factors (1, 0.6, 0.32, 0.14, and the 2px ring for paused), and write the status in text next to it.",
-      "Do make hover an immediate swap of ink and paper. Give keyboard focus the 2px ink outline with 3px offset.",
-      "Do keep the disabled button solid ink. Tell the visitor about the state with the label and the cursor.",
-      "Do keep all motion inside `prefers-reduced-motion: no-preference`.",
-      "Do set long text in the 36rem column at line-height 1.6.",
-      "Do let a cover image replace the picture field, and move the status dot into the signature."
+      "Do show a visual change to the owner as a rendered image, and build it only after he approves it.",
+      "Do use only `colors.ink` and `colors.paper`. Show a state through inversion, a hairline or a word.",
+      "Do start each page with one display word at the left edge, and set everything else as normal text.",
+      "Do keep all content on the one left axis.",
+      "Do write the status of a work as a word in fine print.",
+      "Do rule lists with 1px ink hairlines and keep all corners square.",
+      "Do give keyboard focus the 2px ink outline with 3px offset.",
+      "Do set long text in the 36rem column.",
+      "Do keep the disabled button solid ink, and tell the visitor about the state with the label and the cursor."
     ],
     "donts": [
       "Don't add gray, opacity, a tint, a gradient or a shadow. An element is ink or paper.",
       "Don't add a second typeface to the interface. The monospace stack is for code in post bodies only.",
-      "Don't round a corner. The dot is the only circle, and a circle means a work.",
-      "Don't use the dashed line outside the reply coupon.",
-      "Don't add motion to hover, to scroll or to page entry. The dot travel is the one motion.",
-      "Don't scale a snapshot of the dot in a transition. The transition group draws the circle.",
-      "Don't color code. Syntax highlighting stays off.",
-      "Don't let the hero dots wrap at 360px or more. Calculate the row divisor again when the works change."
+      "Don't round a corner or draw a circle. The tests fail.",
+      "Don't write a `style` attribute into the markup. The tests fail.",
+      "Don't add a second large element to a section or a page.",
+      "Don't center content.",
+      "Don't add motion: no transition, no animation, no page transition.",
+      "Don't color code. Syntax highlighting stays off."
+    ],
+    "rejected": [
+      "Status dots, or any symbol, size or shape that carries status.",
+      "Circles of any kind.",
+      "Frames around content (the keyline \"ad\" frame).",
+      "A headline sentence above the about text.",
+      "Picture stand-ins: a drawn device in the place of a real image.",
+      "A dashed coupon around the contact form.",
+      "Page transitions.",
+      "A contact form, a blog list or any third section on the landing page."
     ]
   }
 }
