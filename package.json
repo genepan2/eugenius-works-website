@@ -3,12 +3,16 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "test": "node tests/contact.test.ts && node tests/site.test.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -17,5 +21,8 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.3",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "wrangler": "4.147.0"
   }
 }

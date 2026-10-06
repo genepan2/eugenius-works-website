@@ -4,7 +4,8 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import StatusDot from '../../components/StatusDot.astro';
-import { getSortedProjects, splitDescription, workNumber } from '../../content';
+import { workLd } from '../../jsonld';
+import { getSortedProjects, metaDescription, splitDescription, workNumber } from '../../content';
 
 // Every work is one ad. The markdown body is optional: it continues the copy
 // when it holds more than comments and whitespace.
@@ -35,14 +36,16 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
 
 <BaseLayout
   title={data.title}
-  description={data.description}
+  description={metaDescription(data.description)}
+  jsonLd={workLd(data.title, data.description, new URL(Astro.url.pathname, Astro.site).href, data.url)}
   folio={`Nº ${workNumber(index)} / ${String(total).padStart(3, '0')}`}
 >
   <article class="ad">
     {
       data.cover ? (
         <figure>
-          <Image src={data.cover} alt={data.title} class="cover" widths={[640, 1280, 1920]} />
+          <Image src={data.cover} alt={data.title} class="cover" widths={[640, 1280, 1920]}
+            sizes="(min-width: 76rem) 992px, 100vw" loading="eager" />
         </figure>
       ) : (
         <div class="field work-field">
@@ -98,7 +101,7 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
     aria-label="More works"
   >
     <a
-      href={`/works/${prev.project.id}`}
+      href={`/works/${prev.project.id}/`}
       rel="prev"
       aria-label={`Previous work: ${prev.project.data.title}`}
     >
@@ -106,9 +109,9 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
       <StatusDot status={prev.project.data.status} />
       <span class="label">Nº {workNumber(prev.index)} {prev.project.data.title}</span>
     </a>
-    <a href="/works"><span class="label">All works</span></a>
+    <a href="/works/"><span class="label">All works</span></a>
     <a
-      href={`/works/${next.project.id}`}
+      href={`/works/${next.project.id}/`}
       rel="next"
       aria-label={`Next work: ${next.project.data.title}`}
     >

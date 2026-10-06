@@ -7,6 +7,8 @@ import { SITE_URL } from './src/consts.ts';
 
 export default defineConfig({
   site: SITE_URL,
+  trailingSlash: 'always',
   integrations: [sitemap()],
-  vite: { plugins: [tailwindcss()] },
+  // No inlining: every script is its own file, so the CSP can say script-src 'self'.
+  vite: { plugins: [tailwindcss()], build: { assetsInlineLimit: 0 } },
 });

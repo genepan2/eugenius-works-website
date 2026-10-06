@@ -22,8 +22,8 @@ export const COMPANY = {
   city: 'Tallinn',
   country: 'Estonia',
   regNo: '17328762',
-  // Used for the imprint, the privacy policy, and as the contact form delivery
-  // address. Changing it here changes all three.
+  // Shown on the imprint and the privacy policy. The contact form's delivery
+  // address is CONTACT_TO in wrangler.jsonc, not this value.
   email: 'hey@eugenius-works.com',
   director: 'Eugen Panov',
 };
@@ -41,14 +41,14 @@ export const NAV_LINKS = [
 // arrays. Row 1 is the site itself, row 2 is legal and social.
 export const FOOTER_SITE_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'Works', href: '/works' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Works', href: '/works/' },
+  { label: 'Blog', href: '/blog/' },
   { label: 'RSS', href: '/rss.xml' },
 ];
 
 export const FOOTER_LEGAL_LINKS = [
-  { label: 'Imprint', href: '/imprint' },
-  { label: 'Privacy', href: '/privacy' },
+  { label: 'Imprint', href: '/imprint/' },
+  { label: 'Privacy', href: '/privacy/' },
   { label: 'LinkedIn', href: LINKEDIN_URL },
   { label: 'X', href: X_URL },
 ];

@@ -1,4 +1,5 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../";
 @import "@fontsource-variable/jost/wght.css";
 
 /* Metric-matched stand-in while Jost loads, so the swap does not move the layout.
@@ -121,6 +122,11 @@ a:hover {
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
+}
+/* Reading pages: long URLs wrap at any width, also at 200% zoom. */
+.reading,
+.reading .copy {
+  overflow-wrap: anywhere;
 }
 .copy {
   font-size: 1.1875rem;
@@ -544,6 +550,11 @@ a:hover {
 .target-notice:target {
   display: block;
 }
+/* After a successful no-JavaScript send, the form goes away. The notice comes
+   before the form in the markup, so the sibling combinator reaches it. */
+#contact-sent:target ~ #contact-form {
+  display: none;
+}
 
 /* The one authored motion: the dot of a work travels into its ad. */
 @media (prefers-reduced-motion: no-preference) {
@@ -576,5 +587,8 @@ a:hover {
   body {
     background: #fff;
     color: #000;
+  }
+  main a[href^="http"]::after {
+    content: " (" attr(href) ")";
   }
 }

@@ -5,6 +5,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts } from '../../content';
 import { AUTHOR } from '../../consts';
+import { postLd } from '../../jsonld';
 
 // Drafts are excluded here too, so they get no page in the build output.
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -17,11 +18,18 @@ const { Content } = await render(post);
 const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} folio={date}>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  folio={date}
+  ogType="article"
+  publishedTime={post.data.date}
+  jsonLd={postLd(post.data.title, post.data.date, new URL(Astro.url.pathname, Astro.site).href)}
+>
   <article>
     {
       post.data.cover && (
-        <Image src={post.data.cover} alt="" class="cover mb-10" widths={[640, 1280, 1920]} />
+        <Image src={post.data.cover} alt="" class="cover mb-10" widths={[640, 1280, 1920]} sizes="(min-width: 76rem) 1120px, 100vw" loading="eager" />
       )
     }
     <header class="reading-head">
@@ -44,6 +52,6 @@ const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post
   </article>
 
   <p class="fine reading mt-10">
-    <a href="/blog">All posts</a>
+    <a href="/blog/">All posts</a>
   </p>
 </BaseLayout>

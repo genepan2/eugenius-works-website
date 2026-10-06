@@ -24,7 +24,7 @@ const Title = level;
           <StatusDot status={project.data.status} transition={named ? project.id : undefined} />
         </span>
         <Title class="index-headline">
-          <a href={`/works/${project.id}`}>{projectHeadline(project)}</a>
+          <a href={`/works/${project.id}/`}>{projectHeadline(project)}</a>
         </Title>
         <p class="meta fine">
           {project.data.title}, {project.data.status}
