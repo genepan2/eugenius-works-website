@@ -7,6 +7,12 @@ colors:
 typography:
   display:
     fontFamily: "Jost Variable, Jost Fallback, sans-serif"
+    fontSize: "clamp(3.5rem, 11vw, 6rem)"
+    fontWeight: 600
+    lineHeight: 1
+    letterSpacing: "-0.035em"
+  display-long:
+    fontFamily: "Jost Variable, Jost Fallback, sans-serif"
     fontSize: "clamp(2.75rem, 11vw, 6rem)"
     fontWeight: 600
     lineHeight: 1
@@ -152,7 +158,8 @@ The palette is two values: pure black ink on pure white paper.
 "Jost Fallback" is local Arial or Helvetica with adjusted metrics (`size-adjust: 96%`, `ascent-override: 111%`, `descent-override: 39%`, `line-gap-override: 0%`). The font swap does not move the layout.
 
 ### Hierarchy
-- **Display** (600, `clamp(2.75rem, 11vw, 6rem)`, line-height 1, tracking -0.035em): the display word. "Eugenius" and "Works" on the landing page. On other pages it is the page word: "Works", the title of a work, "Blog", "Contact", "Imprint", "Privacy", "Not found". It has no period. Long words can break.
+- **Display** (600, `clamp(3.5rem, 11vw, 6rem)`, line-height 1, tracking -0.035em): the display word. "Eugenius" and "Works" on the landing page. On other pages it is the page word: "Works", the title of a work, "Blog", "Contact", "Imprint", "Privacy", "Not found". It has no period. Long words can break.
+- **Display, long** (600, `clamp(2.75rem, 11vw, 6rem)`): the title of a work on its own page. The lower floor keeps a long title whole on a 320px screen.
 - **Headline** (600, `clamp(2.25rem, 4.6vw, 4rem)`, line-height 1.05, tracking -0.025em, max 22ch, balanced): the title of a blog post. It replaces the display word on a post page.
 - **Title** (600, 1.75rem, line-height 1.2, tracking -0.01em): subheads of the legal pages. A post body `h2` is `clamp(1.625rem, 2.5vw, 2.125rem)` and an `h3` is 1.25rem, both 600 at line-height 1.15.
 - **Body** (400, 1.1875rem, line-height 1.5): the about text, the work descriptions, form input. `text-wrap: pretty`, manual hyphens.
@@ -192,6 +199,8 @@ The system is flat. There are no shadows, no blur, no layers and no tonal steps.
 ### Named Rules
 **The Flat Paper Rule.** Nothing stands above the paper. Separation comes from a hairline or from white space, not from depth.
 
+**The No Motion Rule.** Nothing moves. There is no transition, no animation, no page transition and no smooth scrolling. A state changes at once.
+
 ## Shapes
 
 All corners are square (radius 0). The system has no circle and no rounded form. Two tests enforce this on the build output: no `border-radius` other than 0, and no `<circle>` element.
@@ -205,7 +214,9 @@ Hairlines divide rows. They do not enclose content. Only form fields, notices an
 ### Named Rules
 **The Square Rule.** No rounded corner and no circle, in CSS or in SVG. The tests fail the build when one appears.
 
-**The No Inline Style Rule.** The built HTML has no `style` attribute. All styling is in the stylesheet. A test enforces this.
+**The No Inline Style Rule.** The built HTML has no `style` attribute. All styling is in the stylesheet. A test enforces this. The scripts also change classes only.
+
+**The No Dots Rule.** No dot of any kind. Lists in a post body use a dash marker (`list-style-type: "–  "`), not a round bullet. Separators in a line of text are commas, not middle dots.
 
 ## Components
 
@@ -223,26 +234,26 @@ The wordmark stands at the top left: the two words "Eugenius" and "Works", weigh
 
 ### Works Table
 A real table with visually hidden column heads ("Work", "Description").
-- A 1px ink hairline above the table and below each row. Cell padding 1.25rem above and below. Text aligns to the top.
+- A 1px ink hairline above the table and between the rows. The last row has no rule below it: the footer rule closes the page. Cell padding 1.25rem above and below. Text aligns to the top.
 - **Left cell:** the name of the work as a link, weight 600, no underline at rest. Under it the status word in fine print.
 - **Right cell:** the full description in body text.
 - **Hover:** only the name is a link. It inverts and gets an underline. The row itself has no hover state.
 
 ### Post List
-A list in the same ruled form: a hairline above, a hairline under each item, 1.25rem padding. Each item is the post title (600, body size, underlined link) and the date in fine print. An empty blog shows the line "No posts yet." and the footer shows no blog link.
+A list in the same ruled form: a hairline above and between the items, none under the last item, 1.25rem padding. Each item is the post title (600, body size, underlined link) and the date in fine print. On a post page the date and the tags stand in one line with commas between them. An empty blog shows the line "No posts yet." and the footer shows no blog link.
 
 ### Work Page
-The display word is the title of the work, with the status word in fine print below it. Then the description and the optional body in the reading column. Then two lines of fine print: the links (Website, Repository, Send a note) and the number of the work. The pager closes the page.
+The display word is the title of the work in the long display role, with the status word in fine print 0.5rem below it. Then the description and the optional body in the reading column. Then one line of fine print with the links (Website, Repository, Send a note), with commas between them. The pager closes the page.
 
 ### Pager
 Fine print above a 1px hairline: previous work at the left, "All works" in the center, next work at the right. Plain underlined links, minimum height 36px. At 40rem and below the three links stack at the left edge. A post has one link, "All posts".
 
 ### Contact Form
-The form is on `/contact/` only. It is 36rem wide, 2rem below the intro text.
+The form is on `/contact/` only. The intro sentence above it is body text, 36rem wide. The form is 36rem wide, 2rem below the intro.
 - **Fields:** a fine-print label above each field. The field is a plain box: 1px ink border, paper background, padding 0.5rem 0.65rem, body type. Fields are 1.25rem apart.
 - **Textarea:** the same box. It is at least six lines high, grows with the content and cannot be resized by hand.
 - **Focus:** the 2px ink outline with 3px offset.
-- **Notice:** success, failure and busy use the same form, a 1px ink box with padding 0.6rem 0.9rem. The words carry the meaning. After a successful send the notice replaces the form. The form works without JavaScript.
+- **Notice:** success, failure and busy use the same form, a 1px ink box with padding 0.6rem 0.9rem. The words carry the meaning. After a successful send the notice replaces the form. The script shows it with a class, not with an inline style. The form works without JavaScript.
 
 ### Button
 - **Shape:** square, 1px ink border, minimum height 44px, padding 0.6rem 1.5rem, weight 600.
@@ -257,7 +268,7 @@ A 1px hairline, then two rows of fine-print links (the site, then legal and soci
 Ink background, paper text, fine print. It is off screen until it gets focus, then stands at the top left.
 
 ### Code and Quotes (post bodies)
-Inline code and code blocks use the monospace stack. A code block has a 1px ink border, 1rem padding and horizontal scroll, and no colors. A horizontal rule is a 1px ink line.
+Inline code and code blocks use the monospace stack. A code block has a 1px ink border, 1rem padding and horizontal scroll, and no colors. A horizontal rule is a 1px ink line. An unordered list uses a dash marker (`"–  "`), and an ordered list uses decimals.
 
 ### Social Card
 `scripts/og/og.html` draws the 1200 × 630 card: "Eugenius" and "Works" on two lines at 150px, weight 600, at the left, with the first sentence of the about text below at 34px.
@@ -282,7 +293,8 @@ Inline code and code blocks use the monospace stack. A code block has a 1px ink 
 - **Don't** write a `style` attribute into the markup. The tests fail.
 - **Don't** add a second large element to a section or a page.
 - **Don't** center content.
-- **Don't** add motion: no transition, no animation, no page transition.
+- **Don't** add motion: no transition, no animation, no page transition, no smooth scrolling.
+- **Don't** use a round bullet or a middle dot. Lists use a dash marker and separators are commas.
 - **Don't** color code. Syntax highlighting stays off.
 
 ### Rejected, do not reintroduce:
@@ -295,3 +307,5 @@ The owner saw these in an earlier build and rejected them on 2026-10-06 ("remove
 - A dashed coupon around the contact form.
 - Page transitions.
 - A contact form, a blog list or any third section on the landing page.
+- Round bullets in lists.
+- Middle-dot separators.

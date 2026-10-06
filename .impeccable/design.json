@@ -8,37 +8,104 @@
         "role": "primary",
         "displayName": "Ink",
         "canonical": "#000",
-        "tonalRamp": ["#000", "#000", "#000", "#000", "#000", "#000", "#000", "#000"]
+        "tonalRamp": [
+          "#000",
+          "#000",
+          "#000",
+          "#000",
+          "#000",
+          "#000",
+          "#000",
+          "#000"
+        ]
       },
       "paper": {
         "role": "neutral",
         "displayName": "Paper",
         "canonical": "#fff",
-        "tonalRamp": ["#fff", "#fff", "#fff", "#fff", "#fff", "#fff", "#fff", "#fff"]
+        "tonalRamp": [
+          "#fff",
+          "#fff",
+          "#fff",
+          "#fff",
+          "#fff",
+          "#fff",
+          "#fff",
+          "#fff"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "The display word: one for each landing section or page. No period." },
-      "headline": { "displayName": "Headline", "purpose": "The title of a blog post. It replaces the display word on a post page." },
-      "title": { "displayName": "Title", "purpose": "Subheads of the legal pages." },
-      "body": { "displayName": "Body", "purpose": "The about text, the work descriptions, form input." },
-      "body-reading": { "displayName": "Body, reading", "purpose": "Post bodies, work pages and legal pages in the 36rem column." },
-      "body-strong": { "displayName": "Body, strong", "purpose": "The name of a work in the table and the title of a post in the list." },
-      "quote": { "displayName": "Quote", "purpose": "Block quotes in a post, behind a 1px ink rule." },
-      "wordmark": { "displayName": "Wordmark", "purpose": "The two words in the running head." },
-      "label": { "displayName": "Label", "purpose": "Fine print: the status word, dates, form labels, work meta, pager, footer." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "The display word: one for each landing section or page. No period."
+      },
+      "display-long": {
+        "displayName": "Display, long",
+        "purpose": "The title of a work on its own page. The lower floor keeps a long title whole on a 320px screen."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The title of a blog post. It replaces the display word on a post page."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Subheads of the legal pages."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "The about text, the work descriptions, form input."
+      },
+      "body-reading": {
+        "displayName": "Body, reading",
+        "purpose": "Post bodies, work pages and legal pages in the 36rem column."
+      },
+      "body-strong": {
+        "displayName": "Body, strong",
+        "purpose": "The name of a work in the table and the title of a post in the list."
+      },
+      "quote": {
+        "displayName": "Quote",
+        "purpose": "Block quotes in a post, behind a 1px ink rule."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "The two words in the running head."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Fine print: the status word, dates, form labels, work meta, pager, footer."
+      }
     },
     "shadows": [],
     "strokes": [
-      { "name": "hairline", "value": "1px solid #000", "purpose": "Table and list rules, pager rule, footer rule, field borders, notice, code block, quote rule, link underline." },
-      { "name": "focus", "value": "2px solid #000", "purpose": "Focus outline with a 3px offset." }
+      {
+        "name": "hairline",
+        "value": "1px solid #000",
+        "purpose": "Table and list rules, pager rule, footer rule, field borders, notice, code block, quote rule, link underline."
+      },
+      {
+        "name": "focus",
+        "value": "2px solid #000",
+        "purpose": "Focus outline with a 3px offset."
+      }
     ],
     "motion": [
-      { "name": "state-change", "value": "0ms", "purpose": "Hover and focus change at once. No transition, no animation, no page transition." }
+      {
+        "name": "none",
+        "value": "0ms",
+        "purpose": "No motion. No transition, no animation, no page transition, no smooth scrolling. A state changes at once."
+      }
     ],
     "breakpoints": [
-      { "name": "rows-stack", "value": "max-width: 40rem" },
-      { "name": "touch-targets", "value": "pointer: coarse" }
+      {
+        "name": "rows-stack",
+        "value": "max-width: 40rem"
+      },
+      {
+        "name": "touch-targets",
+        "value": "pointer: coarse"
+      }
     ],
     "enforcedByTests": [
       "Only black and white in the build output.",
@@ -54,15 +121,15 @@
       "refersTo": "display",
       "description": "One word at the left edge. The only large element of a section or a page.",
       "html": "<section class=\"ds-word-section\"><h2 class=\"ds-word\">Eugenius</h2><p class=\"ds-word-copy\">Today my focus is on automation and AI. When something is missing, I build it myself. You'll find some of it here.</p></section>",
-      "css": ".ds-word-section { color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-word { margin: 0 0 clamp(1.25rem, 2.5vw, 2rem); font-size: clamp(2.75rem, 11vw, 6rem); font-weight: 600; line-height: 1; letter-spacing: -0.035em; overflow-wrap: break-word; } .ds-word-copy { max-width: 36rem; margin: 0; font-size: 1.1875rem; line-height: 1.5; text-wrap: pretty; }"
+      "css": ".ds-word-section { color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); } .ds-word { margin: 0 0 clamp(1.25rem, 2.5vw, 2rem); font-size: clamp(3.5rem, 11vw, 6rem); font-weight: 600; line-height: 1; letter-spacing: -0.035em; overflow-wrap: break-word; } .ds-word-copy { max-width: 36rem; margin: 0; font-size: 1.1875rem; line-height: 1.5; text-wrap: pretty; }"
     },
     {
       "name": "Works Table",
       "kind": "custom",
       "refersTo": "work-row",
-      "description": "Rows between hairlines: name and status word at the left, the full description at the right. Rows stack at 40rem and below.",
+      "description": "Rows between hairlines: name and status word at the left, the full description at the right. The last row has no rule below it. Rows stack at 40rem and below.",
       "html": "<table class=\"ds-ledger\"><tbody><tr><th scope=\"row\"><a class=\"ds-ledger-name\" href=\"#\">ExtraSeat</a><span class=\"ds-ledger-fine\">live</span></th><td><p>AI experts who join real video calls as participants.</p></td></tr><tr><th scope=\"row\"><a class=\"ds-ledger-name\" href=\"#\">HushSpeak</a><span class=\"ds-ledger-fine\">paused</span></th><td><p>Dictation without anyone listening in.</p></td></tr></tbody></table>",
-      "css": ".ds-ledger { width: 100%; border-collapse: collapse; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; } .ds-ledger tr { border-bottom: 1px solid var(--color-ink, #000); } .ds-ledger th, .ds-ledger td { vertical-align: top; text-align: left; padding: 1.25rem 0; } .ds-ledger th { width: 16rem; padding-right: 2rem; font-weight: 400; } .ds-ledger-name { display: block; color: inherit; font-weight: 600; text-decoration: none; } .ds-ledger-name:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-ledger-name:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-ledger-fine { font-size: 0.875rem; line-height: 1.4; } .ds-ledger td p { max-width: 44rem; margin: 0; } @media (max-width: 40rem) { .ds-ledger tbody, .ds-ledger tr, .ds-ledger th, .ds-ledger td { display: block; } .ds-ledger th { width: auto; padding: 1.25rem 0 0.35rem; } .ds-ledger td { padding-top: 0; } }"
+      "css": ".ds-ledger { width: 100%; border-collapse: collapse; border-top: 1px solid var(--color-ink, #000); color: var(--color-ink, #000); font-family: var(--font-sans, 'Jost Variable', 'Jost Fallback', sans-serif); font-size: 1.1875rem; line-height: 1.5; } .ds-ledger tr { border-bottom: 1px solid var(--color-ink, #000); } .ds-ledger tr:last-child { border-bottom: 0; } .ds-ledger th, .ds-ledger td { vertical-align: top; text-align: left; padding: 1.25rem 0; } .ds-ledger th { width: 16rem; padding-right: 2rem; font-weight: 400; } .ds-ledger-name { display: block; color: inherit; font-weight: 600; text-decoration: none; } .ds-ledger-name:hover { background: var(--color-ink, #000); color: var(--color-paper, #fff); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-ledger-name:focus-visible { outline: 2px solid var(--color-ink, #000); outline-offset: 3px; } .ds-ledger-fine { font-size: 0.875rem; line-height: 1.4; } .ds-ledger td p { max-width: 44rem; margin: 0; } @media (max-width: 40rem) { .ds-ledger tbody, .ds-ledger tr, .ds-ledger th, .ds-ledger td { display: block; } .ds-ledger th { width: auto; padding: 1.25rem 0 0.35rem; } .ds-ledger td { padding-top: 0; } }"
     },
     {
       "name": "Contact Form",
@@ -126,14 +193,56 @@
       "No motion."
     ],
     "rules": [
-      { "name": "The One Ink Rule", "body": "The interface has two values and no value between them. Gray, tint, opacity and gradient are not available. The default Tailwind palette is removed (`--color-*: initial`). A test fails the build output when it finds a color other than black or white.", "section": "colors" },
-      { "name": "The Color Is For Pictures Rule", "body": "Color enters the site only through images: a work `cover`, a post `cover`, an image in a post body. The interface around them stays ink and paper.", "section": "colors" },
-      { "name": "The No-Highlight Rule", "body": "Code blocks have no syntax colors. Syntax highlighting is off in the build configuration.", "section": "colors" },
-      { "name": "The One Word Rule", "body": "Each landing section and each page has exactly one large element: its display word, or the post title on a post page. No second large line, no headline sentence, no subtitle in a display size.", "section": "typography" },
-      { "name": "The Status Is A Word Rule", "body": "The status of a work is the plain word in fine print under its name: live, in progress, prototype, paused, idea. No symbol, size or shape carries status.", "section": "typography" },
-      { "name": "The Flat Paper Rule", "body": "Nothing stands above the paper. Separation comes from a hairline or from white space, not from depth.", "section": "elevation" },
-      { "name": "The Square Rule", "body": "No rounded corner and no circle, in CSS or in SVG. The tests fail the build when one appears.", "section": "shapes" },
-      { "name": "The No Inline Style Rule", "body": "The built HTML has no `style` attribute. All styling is in the stylesheet. A test enforces this.", "section": "shapes" }
+      {
+        "name": "The One Ink Rule",
+        "body": "The interface has two values and no value between them. Gray, tint, opacity and gradient are not available. The default Tailwind palette is removed (`--color-*: initial`). A test fails the build output when it finds a color other than black or white.",
+        "section": "colors"
+      },
+      {
+        "name": "The Color Is For Pictures Rule",
+        "body": "Color enters the site only through images: a work `cover`, a post `cover`, an image in a post body. The interface around them stays ink and paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Highlight Rule",
+        "body": "Code blocks have no syntax colors. Syntax highlighting is off in the build configuration.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Word Rule",
+        "body": "Each landing section and each page has exactly one large element: its display word, or the post title on a post page. No second large line, no headline sentence, no subtitle in a display size.",
+        "section": "typography"
+      },
+      {
+        "name": "The Status Is A Word Rule",
+        "body": "The status of a work is the plain word in fine print under its name: live, in progress, prototype, paused, idea. No symbol, size or shape carries status.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "Nothing stands above the paper. Separation comes from a hairline or from white space, not from depth.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Motion Rule",
+        "body": "Nothing moves. There is no transition, no animation, no page transition and no smooth scrolling. A state changes at once.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Rule",
+        "body": "No rounded corner and no circle, in CSS or in SVG. The tests fail the build when one appears.",
+        "section": "shapes"
+      },
+      {
+        "name": "The No Inline Style Rule",
+        "body": "The built HTML has no `style` attribute. All styling is in the stylesheet. A test enforces this. The scripts also change classes only.",
+        "section": "shapes"
+      },
+      {
+        "name": "The No Dots Rule",
+        "body": "No dot of any kind. Lists in a post body use a dash marker (`list-style-type: \"–  \"`), not a round bullet. Separators in a line of text are commas, not middle dots.",
+        "section": "shapes"
+      }
     ],
     "dos": [
       "Do show a visual change to the owner as a rendered image, and build it only after he approves it.",
@@ -153,7 +262,8 @@
       "Don't write a `style` attribute into the markup. The tests fail.",
       "Don't add a second large element to a section or a page.",
       "Don't center content.",
-      "Don't add motion: no transition, no animation, no page transition.",
+      "Don't add motion: no transition, no animation, no page transition, no smooth scrolling.",
+      "Don't use a round bullet or a middle dot. Lists use a dash marker and separators are commas.",
       "Don't color code. Syntax highlighting stays off."
     ],
     "rejected": [
@@ -164,7 +274,9 @@
       "Picture stand-ins: a drawn device in the place of a real image.",
       "A dashed coupon around the contact form.",
       "Page transitions.",
-      "A contact form, a blog list or any third section on the landing page."
+      "A contact form, a blog list or any third section on the landing page.",
+      "Round bullets in lists.",
+      "Middle-dot separators."
     ]
   }
 }
