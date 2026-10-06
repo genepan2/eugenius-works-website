@@ -172,6 +172,8 @@ a:hover {
   margin-top: clamp(2rem, 5vw, 4rem);
 }
 .columns {
+  /* A flex item with auto margins would shrink to its content and leave the axis. */
+  width: 100%;
   column-width: 17rem;
   column-gap: 2.5rem;
   column-count: 3;
@@ -670,6 +672,22 @@ a:hover {
   }
   .work-field .dot {
     view-transition-name: work-dot;
+  }
+  /* The travelling dot is drawn by the transition box itself, not by scaled
+     snapshots: a scaled snapshot turns soft and gray, and the paused ring's
+     2px stroke would grow or thin with it. The box stays a circle in ink. */
+  ::view-transition-old(work-dot),
+  ::view-transition-new(work-dot) {
+    display: none;
+  }
+  ::view-transition-group(work-dot) {
+    border-radius: 50%;
+    background: var(--color-ink);
+  }
+  html:active-view-transition-type(dot-ring)::view-transition-group(work-dot) {
+    box-sizing: border-box;
+    border: 2px solid var(--color-ink);
+    background: none;
   }
 }
 

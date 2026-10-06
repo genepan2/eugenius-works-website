@@ -31,9 +31,16 @@
 
   addEventListener('pagereveal', (e) => {
     if (!e.viewTransition) return;
+    // The paused ring travels as a ring (see global.css).
+    const ring = (dot) => dot?.dataset.status === 'paused' && e.viewTransition.types?.add('dot-ring');
+    const own = document.querySelector('.work-field .dot');
+    if (own) return ring(own);
     const from = workSlug(window.navigation?.activation?.from?.url);
     if (!from) return;
     const dots = [...document.querySelectorAll(`a[data-slug="${from}"]`)].map(dotOf).filter(Boolean);
-    name(dots.find(inView) ?? dots[0], e.viewTransition);
+    const dot = dots.find(inView) ?? dots[0];
+    if (!dot) return;
+    ring(dot);
+    name(dot, e.viewTransition);
   });
 })();
