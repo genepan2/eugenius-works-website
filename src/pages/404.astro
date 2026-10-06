@@ -1,12 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import StatusDot from '../components/StatusDot.astro';
 ---
 
 <BaseLayout title="Not found" description="This page does not exist.">
-  <h1 class="text-3xl font-semibold">Not found</h1>
-  <p class="mt-4 leading-relaxed">
-    This page does not exist. Try the <a href="/works" class="underline hover:no-underline"
-      >works</a
-    > or the <a href="/blog" class="underline hover:no-underline">blog</a>.
-  </p>
+  <article class="ad">
+    <div class="field work-field">
+      <StatusDot status="idea" />
+    </div>
+    <h1 class="headline">This page is missing.</h1>
+    <div class="columns columns-short copy">
+      <p>
+        And this one I did not build. Try the <a href="/works">works</a> or the <a href="/blog"
+          >blog</a
+        >.
+      </p>
+    </div>
+    <div class="signature-block">
+      <p class="signature">Eugenius.</p>
+    </div>
+  </article>
 </BaseLayout>

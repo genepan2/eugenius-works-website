@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  level?: 'h2' | 'h3';
+}
+
+const { posts, level = 'h3' } = Astro.props;
+const Title = level;
+const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
+---
+
+<ul class="index">
+  {
+    posts.map((post) => (
+      <li class="index-row is-post">
+        <Title class="index-headline">
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
+        </Title>
+        <p class="meta fine">
+          <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
+        </p>
+      </li>
+    ))
+  }
+</ul>

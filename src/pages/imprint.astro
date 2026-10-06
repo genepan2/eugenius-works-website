@@ -7,22 +7,24 @@ import { COMPANY } from '../consts';
   title="Imprint"
   description={`Provider identification and legal details for ${COMPANY.legalName}.`}
 >
-  <h1 class="text-3xl font-semibold">Imprint</h1>
+  <h1 class="headline">Imprint.</h1>
 
-  <section class="mt-10">
-    <h2 class="text-xl font-semibold">Provider identification</h2>
-    <p class="mt-4 leading-relaxed">
+  <div class="reading copy">
+
+  <section>
+    <h2 class="subhead">Provider identification</h2>
+    <p>
       This disclosure is made under the Estonian Information Society Services Act
       (infoühiskonna teenuse seadus) and the EU e-Commerce Directive 2000/31/EC.
     </p>
 
-    <dl class="mt-6 space-y-3">
+    <dl>
       <div>
-        <dt class="text-sm text-neutral-600">Legal name</dt>
+        <dt class="fine">Legal name</dt>
         <dd>{COMPANY.legalName}</dd>
       </div>
       <div>
-        <dt class="text-sm text-neutral-600">Address</dt>
+        <dt class="fine">Address</dt>
         <dd>
           {COMPANY.street}<br />
           {COMPANY.postalCode}{' '}{COMPANY.city}<br />
@@ -30,7 +32,7 @@ import { COMPANY } from '../consts';
         </dd>
       </div>
       <div>
-        <dt class="text-sm text-neutral-600">Registry code</dt>
+        <dt class="fine">Registry code</dt>
         <dd>{COMPANY.regNo}</dd>
       </div>
       <!-- TODO: add VAT number here if the company is VAT-registered -->
@@ -40,46 +42,46 @@ import { COMPANY } from '../consts';
         direct communication — the email address satisfies that.
       */}
       <div>
-        <dt class="text-sm text-neutral-600">Email</dt>
+        <dt class="fine">Email</dt>
         <dd>
-          <a href={`mailto:${COMPANY.email}`} class="underline hover:no-underline">
+          <a href={`mailto:${COMPANY.email}`}>
             {COMPANY.email}
           </a>
         </dd>
       </div>
       <div>
-        <dt class="text-sm text-neutral-600">Managing director</dt>
+        <dt class="fine">Managing director</dt>
         <dd>{COMPANY.director}</dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-12">
-    <h2 class="text-xl font-semibold">Responsible for content</h2>
-    <p class="mt-4 leading-relaxed">
+  <section>
+    <h2 class="subhead">Responsible for content</h2>
+    <p>
       {COMPANY.director}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {
         COMPANY.country
       }.
     </p>
   </section>
 
-  <section class="mt-12">
-    <h2 class="text-xl font-semibold">Online dispute resolution</h2>
-    <p class="mt-4 leading-relaxed">
+  <section>
+    <h2 class="subhead">Online dispute resolution</h2>
+    <p>
       The EU online dispute resolution platform is available at <a
         href="https://ec.europa.eu/consumers/odr"
-        class="underline hover:no-underline">https://ec.europa.eu/consumers/odr</a
+       >https://ec.europa.eu/consumers/odr</a
       >. {COMPANY.legalName} is not obliged and not willing to participate in dispute settlement
       proceedings before a consumer arbitration board.
     </p>
   </section>
 
-  <section class="mt-12">
-    <h2 class="text-xl font-semibold">Liability for links</h2>
-    <p class="mt-4 leading-relaxed">
+  <section>
+    <h2 class="subhead">Liability for links</h2>
+    <p>
       This site links to external websites whose content is outside the operator's control.
       No responsibility is taken for the content of those sites. Responsibility for them
       rests with their respective operators.
     </p>
-  </section>
+  </section>  </div>
 </BaseLayout>

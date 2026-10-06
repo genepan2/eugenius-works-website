@@ -1,47 +1,491 @@
 @import "tailwindcss";
+@import "@fontsource-variable/jost/wght.css";
 
-@theme {
-  /* System font stack only. No web fonts, no @font-face, no external requests. */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+/* Metric-matched stand-in while Jost loads, so the swap does not move the layout.
+   Values measured from the Jost latin file against Arial. */
+@font-face {
+  font-family: "Jost Fallback";
+  src: local("Arial"), local("Helvetica");
+  size-adjust: 96%;
+  ascent-override: 111%;
+  descent-override: 39%;
+  line-gap-override: 0%;
 }
 
-/* The header links scroll to the homepage sections. Respect a reduced-motion
-   preference rather than forcing the animation on everyone. */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
+@theme {
+  /* One ink. The default palette is removed so no other color can slip in. */
+  --color-*: initial;
+  --color-ink: #000;
+  --color-paper: #fff;
+  --font-sans: "Jost Variable", "Jost Fallback", sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  accent-color: var(--color-ink);
+  caret-color: var(--color-ink);
+}
+
+body {
+  font-size: 1.1875rem;
+  line-height: 1.5;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* State vocabulary: rest is ink on paper, hover inverts at once, focus is a ring. */
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -10rem;
+  z-index: 10;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+.page {
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* Running head */
+.running-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 1.25rem 1.5rem;
+}
+.wordmark {
+  display: flex;
+  gap: 0.3em;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.wordmark a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding-inline: 0.15em;
+  margin-inline: -0.15em;
+  text-decoration: none;
+}
+
+/* Type roles */
+.headline {
+  max-width: 18ch;
+  margin-inline: auto;
+  font-size: clamp(2.25rem, 6.2vw, 5.25rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-align: center;
+  text-wrap: balance;
+}
+.headline-left {
+  margin-inline: 0;
+  text-align: left;
+}
+.index-headline {
+  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.subhead {
+  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.copy {
+  font-size: 1.1875rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  hyphens: manual;
+  overflow-wrap: break-word;
+}
+.signature {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.fine {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The ad: picture field, headline, copy columns, signature. */
+.ad {
+  border: 1px solid var(--color-ink);
+  padding: clamp(1.25rem, 4vw, 4rem);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(12rem, 38vh, 24rem);
+}
+.ad > .headline,
+.ad > figure + .headline {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+.columns {
+  column-width: 17rem;
+  column-gap: 2.5rem;
+  column-count: 3;
+  max-width: calc(3 * 17rem + 2 * 2.5rem);
+  margin-top: clamp(1.75rem, 3.5vw, 3rem);
+  margin-inline: auto;
+}
+.columns > * {
+  break-inside: avoid;
+}
+.columns > * + * {
+  margin-top: 0.75em;
+}
+/* Short copy keeps its narrow measure under the headline instead of spreading. */
+.columns-short {
+  max-width: 34rem;
+  column-count: 1;
+}
+.signature-block {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  margin-left: auto;
+  width: fit-content;
+  max-width: 100%;
+  text-align: right;
+}
+.signature-block .fine {
+  margin-top: 0.35rem;
+}
+
+/* Status dot: a circle whose size is the status of the work. */
+.dot {
+  display: inline-block;
+  flex: none;
+  width: max(3px, calc(var(--dot, 1rem) * var(--f)));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+}
+.dot[data-status="live"] { --f: 1; }
+.dot[data-status="in progress"] { --f: 0.6; }
+.dot[data-status="prototype"] { --f: 0.32; }
+.dot[data-status="idea"] { --f: 0.14; }
+.dot[data-status="paused"] {
+  --f: 0.6;
+  background: none;
+  border: 2px solid currentColor;
+}
+
+/* Homepage picture: eleven dots on one baseline, each a link with its caption. */
+.hero-field {
+  container-type: inline-size;
+  position: relative;
+  padding-bottom: 2.5rem;
+}
+/* One row at every width: the status factors add up to 6.66 dots, plus ten
+   gaps of 0.1 dot, so 7.66 dots fill the field (7.75 leaves a little air). */
+.hero-dots {
+  --dot: min(7.5rem, 100cqi / 7.75);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: calc(var(--dot) * 0.1);
+}
+@media (max-width: 359px) {
+  .hero-dots {
+    flex-wrap: wrap;
+  }
+}
+.hero-dot {
+  display: flex;
+  text-decoration: none;
+}
+/* A hit area of at least 28px around the smallest dots, without visible width. */
+.hero-dot .dot {
+  position: relative;
+}
+.hero-dot .dot::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(28px, 100%);
+  height: max(28px, 100%);
+  translate: -50% -50%;
+}
+.hero-dot:hover {
+  background: none;
+  color: var(--color-ink);
+}
+.hero-caption,
+.hero-dot-caption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+.hero-dot-caption {
+  right: 0;
+  visibility: hidden;
+}
+.hero-dot:hover .hero-dot-caption,
+.hero-dot:focus-visible .hero-dot-caption {
+  visibility: visible;
+}
+.hero-field:has(.hero-dot:hover, .hero-dot:focus-visible) .hero-caption {
+  visibility: hidden;
+}
+
+/* The work's own picture: one large dot, left of center and low. */
+.work-field {
+  --dot: clamp(9rem, 26vw, 19rem);
+  align-items: flex-start;
+  padding-left: 18%;
+}
+.cover {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pager a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 36px;
+  text-decoration: none;
+}
+.pager .label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.signature-dot {
+  --dot: 0.9em;
+  margin-right: 0.3em;
+  vertical-align: 0.05em;
+}
+
+/* Section heads on the homepage: headline left, fine print right on the same baseline. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+}
+.section-head .headline {
+  max-width: none;
+}
+
+/* Ruled index. The whole row is the target and inverts on hover or focus. */
+.index {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--color-ink);
+}
+.index-row {
+  --dot: 1.6rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5ch 1.6rem 1fr auto;
+  grid-template-areas: "num dot head meta";
+  align-items: baseline;
+  column-gap: clamp(0.75rem, 2vw, 1.5rem);
+  padding-block: 1rem;
+  padding-inline: 0.5rem;
+  border-bottom: 1px solid var(--color-ink);
+}
+.index-row.is-post {
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "head meta";
+}
+.index-row > .num { grid-area: num; }
+.index-row > .row-dot {
+  grid-area: dot;
+  /* Centered on the first line of the headline, also when it wraps. */
+  align-self: start;
+  height: calc(clamp(1.375rem, 2.5vw, 2.125rem) * 1.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.index-row > .index-headline { grid-area: head; }
+.index-row > .meta {
+  grid-area: meta;
+  text-align: right;
+}
+.index-row a {
+  text-decoration: none;
+}
+.index-row a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.index-row a:hover {
+  background: none;
+}
+.index-row:hover,
+.index-row:has(a:focus-visible) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+/* The ring moves from the link to the whole row it stands for. */
+.index-row a:focus-visible {
+  outline: none;
+}
+.index-row:has(a:focus-visible) {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+@media (max-width: 40rem) {
+  .index-row {
+    grid-template-columns: 3.5ch 1.6rem 1fr;
+    grid-template-areas: "num dot head" ". . meta";
+    row-gap: 0.35rem;
+  }
+  .index-row.is-post {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "meta";
+  }
+  .index-row > .meta {
+    text-align: left;
   }
 }
 
-/* Rendered markdown bodies. Plain typography, no plugin, no design tokens. */
-.prose > * + * {
-  margin-top: 1.25rem;
+/* Reply coupon */
+.coupon {
+  border: 1.5px dashed var(--color-ink);
+  padding: clamp(1.25rem, 4vw, 3rem);
 }
-.prose h1 {
-  font-size: 1.875rem;
+.closing {
+  display: grid;
+  gap: 2rem clamp(2rem, 5vw, 4rem);
+}
+@media (min-width: 56rem) {
+  .closing {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+.field-label {
+  display: block;
+}
+.coupon input[type="text"],
+.coupon input[type="email"] {
+  display: block;
+  width: 100%;
+  padding-block: 0.4rem;
+  border: 0;
+  border-bottom: 1px solid var(--color-ink);
+  border-radius: 0;
+  background: none;
+  font: inherit;
+}
+.coupon textarea {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font: inherit;
+  line-height: 1.75rem;
+  resize: vertical;
+  /* Ruled lines: one ink line under every line of text. */
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(1.75rem - 1px),
+    var(--color-ink) calc(1.75rem - 1px) 1.75rem
+  );
+  background-attachment: local;
+}
+.button {
+  min-height: 44px;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
   font-weight: 600;
-  line-height: 1.2;
+  cursor: pointer;
+}
+.button:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.notice {
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-ink);
+}
+
+/* Reading pages: one column under a centered headline. */
+.reading {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+.reading-head {
+  text-align: center;
+}
+.reading-head .fine {
+  margin-top: 1rem;
+}
+.reading section {
+  margin-top: 3rem;
+}
+.reading section > * + * {
+  margin-top: 1rem;
+}
+.reading dl > div + div {
+  margin-top: 0.85rem;
+}
+
+/* Rendered markdown bodies, in the same one-ink system. */
+.prose > * + * {
+  margin-top: 1em;
+}
+.prose h2,
+.prose h3 {
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-top: 2.25em;
 }
 .prose h2 {
-  font-size: 1.375rem;
-  font-weight: 600;
-  margin-top: 2.25rem;
+  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
 }
 .prose h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-top: 2rem;
-}
-.prose p,
-.prose li {
-  line-height: 1.75;
-}
-.prose a {
-  text-decoration: underline;
-}
-.prose a:hover {
-  text-decoration: none;
+  font-size: 1.375rem;
 }
 .prose ul,
 .prose ol {
@@ -54,25 +498,42 @@
   list-style: decimal;
 }
 .prose li + li {
-  margin-top: 0.375rem;
+  margin-top: 0.35em;
 }
 .prose blockquote {
-  border-left: 2px solid var(--color-neutral-300);
-  padding-left: 1rem;
-  color: var(--color-neutral-600);
+  padding-left: 1.5rem;
+  font-size: 1.375rem;
+  line-height: 1.4;
 }
 .prose code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9em;
+  font-size: 0.85em;
 }
 .prose pre {
   overflow-x: auto;
   padding: 1rem;
-  border: 1px solid var(--color-neutral-300);
+  border: 1px solid var(--color-ink);
 }
 .prose img {
   max-width: 100%;
   height: auto;
+}
+
+/* Fine-print footer */
+.colophon {
+  margin-top: clamp(4rem, 8vw, 7rem);
+  padding-block: 1rem 2.5rem;
+  border-top: 1px solid var(--color-ink);
+}
+.colophon ul {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+}
+.colophon a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
 }
 
 /* Contact form notices. Hidden until they are the URL fragment, which is how
@@ -82,4 +543,38 @@
 }
 .target-notice:target {
   display: block;
+}
+
+/* The one authored motion: the dot of a work travels into its ad. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-group(*) {
+    animation-duration: 450ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  ::view-transition-group(root) {
+    animation-duration: 150ms;
+  }
+}
+
+@media print {
+  .running-head nav,
+  .closing,
+  .colophon ul,
+  .skip-link {
+    display: none;
+  }
+  .ad {
+    border: 0;
+    padding: 0;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
 }

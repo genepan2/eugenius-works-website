@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  status: CollectionEntry<'projects'>['data']['status'];
+  /** The work's slug, when this dot is the one that travels between pages. */
+  transition?: string;
+  class?: string;
+}
+
+// The size factor per status lives in global.css (`.dot[data-status]`); the
+// context sets the base size through `--dot`.
+const { status, transition, class: className } = Astro.props;
+---
+
+<span
+  class:list={['dot', className]}
+  data-status={status}
+  aria-hidden="true"
+  style={transition ? `view-transition-name: dot-${transition}` : undefined}></span>

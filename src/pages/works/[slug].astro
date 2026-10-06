@@ -3,62 +3,118 @@ import type { GetStaticPaths } from 'astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getSortedProjects } from '../../content';
+import StatusDot from '../../components/StatusDot.astro';
+import { getSortedProjects, splitDescription, workNumber } from '../../content';
 
-// Every project gets its own page. The markdown body is optional: a project
-// without one shows its title, status, description and links.
+// Every work is one ad. The markdown body is optional: it continues the copy
+// when it holds more than comments and whitespace.
 export const getStaticPaths: GetStaticPaths = async () => {
   const projects = await getSortedProjects();
-  return projects.map((project) => ({
+  return projects.map((project, i) => ({
     params: { slug: project.id },
-    props: { project },
+    props: {
+      project,
+      index: i,
+      total: projects.length,
+      prev: { project: projects.at(i - 1)!, index: (i - 1 + projects.length) % projects.length },
+      next: { project: projects[(i + 1) % projects.length], index: (i + 1) % projects.length },
+    },
   }));
 };
 
-const { project } = Astro.props;
+const { project, index, total, prev, next } = Astro.props;
+const { data } = project;
 const { Content } = await render(project);
+const split = splitDescription(data.description);
+const headline = data.headline ?? split.headline;
+const copy = split.copy;
+const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
+// Short copy keeps a narrow measure; long copy runs in columns.
+const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : 'columns copy';
 ---
 
-<BaseLayout title={project.data.title} description={project.data.description}>
-  <article>
-    <h1 class="text-3xl font-semibold">{project.data.title}</h1>
-    <p class="mt-2 text-sm text-neutral-600">{project.data.status}</p>
-    <p class="mt-6 leading-relaxed">{project.data.description}</p>
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  folio={`Nº ${workNumber(index)} / ${String(total).padStart(3, '0')}`}
+>
+  <article class="ad">
     {
-      (project.data.url || project.data.repo) && (
-        <p class="mt-4 text-sm text-neutral-600">
-          {project.data.url && (
-            <a href={project.data.url} class="underline hover:no-underline">
-              Website
-            </a>
-          )}
-          {project.data.url && project.data.repo && <span> · </span>}
-          {project.data.repo && (
-            <a href={project.data.repo} class="underline hover:no-underline">
-              Repository
-            </a>
-          )}
-        </p>
+      data.cover ? (
+        <figure>
+          <Image src={data.cover} alt={data.title} class="cover" widths={[640, 1280, 1920]} />
+        </figure>
+      ) : (
+        <div class="field work-field">
+          <StatusDot status={data.status} transition={project.id} />
+        </div>
       )
     }
 
+    <h1 class="headline">{headline}</h1>
+
     {
-      project.data.cover && (
-        <Image
-          src={project.data.cover}
-          alt={project.data.title}
-          class="mt-8 max-w-full"
-          widths={[400, 800]}
-        />
+      (copy || hasBody) && (
+        <div class={columns}>
+          {copy && <p>{copy}</p>}
+          {hasBody && <Content />}
+        </div>
       )
     }
 
-    <div class="prose mt-10">
-      <Content />
+    <div class="signature-block">
+      <p class="signature">
+        {data.cover && <StatusDot status={data.status} transition={project.id} class="signature-dot" />}
+        {data.title}
+      </p>
+      <p class="fine">
+        {data.status}
+        {
+          data.url && (
+            <>
+              {' · '}
+              <a href={data.url} rel="noopener" aria-label={`${data.title} website`}>
+                Website
+              </a>
+            </>
+          )
+        }
+        {
+          data.repo && (
+            <>
+              {' · '}
+              <a href={data.repo} rel="noopener" aria-label={`${data.title} repository`}>
+                Repository
+              </a>
+            </>
+          )
+        }
+      </p>
     </div>
   </article>
 
-  <p class="mt-12">
-    <a href="/works" class="underline hover:no-underline">All works</a>
-  </p>
+  <nav
+    class="pager fine mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2"
+    aria-label="More works"
+  >
+    <a
+      href={`/works/${prev.project.id}`}
+      rel="prev"
+      aria-label={`Previous work: ${prev.project.data.title}`}
+    >
+      <span aria-hidden="true">←</span>
+      <StatusDot status={prev.project.data.status} />
+      <span class="label">Nº {workNumber(prev.index)} {prev.project.data.title}</span>
+    </a>
+    <a href="/works"><span class="label">All works</span></a>
+    <a
+      href={`/works/${next.project.id}`}
+      rel="next"
+      aria-label={`Next work: ${next.project.data.title}`}
+    >
+      <span class="label">Nº {workNumber(next.index)} {next.project.data.title}</span>
+      <StatusDot status={next.project.data.status} />
+      <span aria-hidden="true">→</span>
+    </a>
+  </nav>
 </BaseLayout>

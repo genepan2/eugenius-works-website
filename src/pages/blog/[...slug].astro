@@ -1,8 +1,10 @@
 ---
 import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts } from '../../content';
+import { AUTHOR } from '../../consts';
 
 // Drafts are excluded here too, so they get no page in the build output.
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -12,23 +14,36 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
+const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout title={post.data.title} description={post.data.description} folio={date}>
   <article>
-    <h1 class="text-3xl font-semibold">{post.data.title}</h1>
-    <p class="mt-3 text-sm text-neutral-600">
-      <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
-      {post.data.tags.length > 0 && <span> · {post.data.tags.join(', ')}</span>}
-    </p>
+    {
+      post.data.cover && (
+        <Image src={post.data.cover} alt="" class="cover mb-10" widths={[640, 1280, 1920]} />
+      )
+    }
+    <header class="reading-head">
+      <h1 class="headline">{post.data.title}</h1>
+      <p class="fine">
+        <time datetime={post.data.date.toISOString()}>{date}</time>
+        {post.data.tags.length > 0 && <span> · {post.data.tags.join(', ')}</span>}
+      </p>
+    </header>
 
-    <div class="prose mt-10">
+    <div class="reading prose copy mt-12">
       <Content />
+    </div>
+
+    <div class="reading">
+      <div class="signature-block">
+        <p class="signature">{AUTHOR}</p>
+      </div>
     </div>
   </article>
 
-  <p class="mt-12">
-    <a href="/blog" class="underline hover:no-underline">All posts</a>
+  <p class="fine reading mt-10">
+    <a href="/blog">All posts</a>
   </p>
 </BaseLayout>

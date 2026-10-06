@@ -1,141 +1,126 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectList from '../components/ProjectList.astro';
-import { getSortedProjects, getPublishedPosts } from '../content';
+import PostList from '../components/PostList.astro';
+import StatusDot from '../components/StatusDot.astro';
+import { getSortedProjects, getPublishedPosts, numberWord, workNumber } from '../content';
 
 const projects = await getSortedProjects();
 const posts = (await getPublishedPosts()).slice(0, 5);
-const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
 ---
 
 <BaseLayout>
-  <section>
-    {/* The header wordmark shows the name; this gives the page its top heading. */}
-    <h1 class="sr-only">Eugenius Works</h1>
-    <p class="text-lg leading-relaxed">
-      I am Eugen Panov. I build software and write about design, development, artificial
-      intelligence, entrepreneurship, and business.
-    </p>
-  </section>
-
   {/* The two halves of the company name, and the two header links. */}
-  <section id="eugenius" class="mt-24 scroll-mt-8">
-    <h2 class="text-[clamp(3.5rem,14vw,6rem)] leading-none font-semibold tracking-[-0.04em]">Eugenius</h2>
-    <p class="mt-8 leading-relaxed">
-      I studied communication design because I was fascinated by good ideas in advertising.
-      After that, I spent years freelancing in print and web, and when a project called for
-      it, backend too.
-    </p>
-    <p class="mt-4 leading-relaxed">
-      Today my focus is on automation and AI. When something is missing, I build it myself.
-      You'll find some of it here.
-    </p>
-    <p class="mt-4 leading-relaxed">
-      What interests me in all of this is how problems get solved, in design, technology and
-      business. That's what I write about here.
-    </p>
-  </section>
+  <section id="eugenius" class="ad scroll-mt-8">
+    <div class="field hero-field">
+      <ul class="hero-dots">
+        {
+          projects.map((project, i) => (
+            <li class="flex">
+              <a
+                href={`/works/${project.id}`}
+                class="hero-dot"
+                aria-label={`${project.data.title}, ${project.data.status}`}
+              >
+                <StatusDot status={project.data.status} transition={project.id} />
+                <span class="hero-dot-caption fine" aria-hidden="true">
+                  Nº {workNumber(i)} {project.data.title}, {project.data.status}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="hero-caption fine">
+        {numberWord(projects.length)} works. The larger the dot, the closer to finished.
+      </p>
+    </div>
 
-  <section id="works" class="mt-28 scroll-mt-8">
-    <h2 class="text-[clamp(3.5rem,14vw,6rem)] leading-none font-semibold tracking-[-0.04em]">Works</h2>
-    <div class="mt-10">
-      <ProjectList projects={projects} />
+    <h1 class="headline">When something is missing, I build it myself.</h1>
+
+    <div class="columns copy">
+      <p>
+        I studied communication design because I was fascinated by good ideas in advertising.
+        After that, I spent years freelancing in print and web, and when a project called for
+        it, backend too.
+      </p>
+      <p>
+        Today my focus is on automation and AI. When something is missing, I build it myself.
+        You'll find some of it here.
+      </p>
+      <p>
+        What interests me in all of this is how problems get solved, in design, technology and
+        business. That's what I write about here.
+      </p>
+    </div>
+
+    <div class="signature-block">
+      <p class="signature">Eugenius.</p>
+      <p class="fine">Eugen Panov</p>
     </div>
   </section>
 
-  {posts.length > 0 && (
-  <section class="mt-16">
-    <h2 class="text-xl font-semibold">Writing</h2>
-    <ul class="mt-6 space-y-8">
-      {
-        posts.map((post) => (
-          <li>
-            <h3 class="font-medium">
-              <a href={`/blog/${post.id}`} class="underline hover:no-underline">
-                {post.data.title}
-              </a>
-            </h3>
-            <p class="mt-1 text-sm text-neutral-600">
-              <time datetime={post.data.date.toISOString()}>
-                {dateFormat.format(post.data.date)}
-              </time>
-              {post.data.tags.length > 0 && <span> · {post.data.tags.join(', ')}</span>}
-            </p>
-            <p class="mt-1 leading-relaxed">{post.data.description}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="mt-8">
-      <a href="/blog" class="underline hover:no-underline">All posts</a>
-    </p>
+  <section id="works" class="mt-24 scroll-mt-8">
+    <div class="section-head">
+      <h2 class="headline headline-left">Works.</h2>
+      <p class="fine">{projects.length} works, from idea to live.</p>
+    </div>
+    <ProjectList projects={projects} />
   </section>
-  )}
 
-  <section class="mt-16">
-    <h2 id="contact" class="text-xl font-semibold">Contact</h2>
-    <p class="mt-4 leading-relaxed">
-      Send a note. Your message is delivered to me by email — see the <a
-        href="/privacy"
-        class="underline hover:no-underline">privacy policy</a
-      > for what happens to it.
-    </p>
+  {
+    posts.length > 0 && (
+      <section class="mt-24">
+        <div class="section-head">
+          <h2 class="headline headline-left">Writing.</h2>
+        </div>
+        <PostList posts={posts} />
+        <p class="fine mt-4">
+          <a href="/blog">All posts</a>
+        </p>
+      </section>
+    )
+  }
 
-    <p id="contact-error" class="mt-6 hidden border border-black px-3 py-2" role="alert"></p>
+  <section class="closing mt-24">
+    <div>
+      <h2 id="contact" class="headline headline-left scroll-mt-8">Send a note.</h2>
+      <p class="fine mt-4 max-w-[36rem]">
+        Your message is delivered to me by email. The <a href="/privacy">privacy policy</a> says
+        what happens to it.
+      </p>
+    </div>
+
+    <div class="coupon">
+    <p id="contact-error" class="notice hidden" role="alert"></p>
 
     {/*
       Both notices are hidden until needed. With JavaScript, the script below
       shows them. Without it, /api/contact redirects to #contact-sent or
       #contact-failed, and the :target rule in global.css shows the notice.
     */}
-    <p
-      id="contact-sent"
-      class="target-notice mt-6 leading-relaxed"
-      role="status"
-      tabindex="-1"
-    >
-      Thank you — your message is on its way. I will reply to the address you gave.
+    <p id="contact-sent" class="target-notice notice" role="status" tabindex="-1">
+      Thank you. Your message is on its way. I will reply to the address you gave.
     </p>
 
-    <p id="contact-failed" class="target-notice mt-6 border border-black px-3 py-2">
+    <p id="contact-failed" class="target-notice notice">
       Your message could not be sent. Please check the fields and try again.
     </p>
 
-    <form id="contact-form" class="mt-6 space-y-5" method="post" action="/api/contact">
+    <form id="contact-form" class="space-y-7" method="post" action="/api/contact">
       <div>
-        <label for="name" class="block text-sm">Name</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          autocomplete="name"
-          class="mt-1 w-full border border-neutral-500 px-3 py-2 focus:border-black focus:outline-none"
-        />
+        <label for="name" class="field-label fine">Name</label>
+        <input id="name" name="name" type="text" required autocomplete="name" />
       </div>
 
       <div>
-        <label for="email" class="block text-sm">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autocomplete="email"
-          class="mt-1 w-full border border-neutral-500 px-3 py-2 focus:border-black focus:outline-none"
-        />
+        <label for="email" class="field-label fine">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email" />
       </div>
 
       <div>
-        <label for="message" class="block text-sm">Message</label>
-        <textarea
-          id="message"
-          name="message"
-          rows="6"
-          required
-          maxlength="5000"
-          class="mt-1 w-full border border-neutral-500 px-3 py-2 focus:border-black focus:outline-none"
-        ></textarea>
+        <label for="message" class="field-label fine">Message</label>
+        <textarea id="message" name="message" rows="6" required maxlength="5000"></textarea>
       </div>
 
       {/*
@@ -147,13 +132,7 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
         <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
       </div>
 
-      <button
-        id="contact-submit"
-        type="submit"
-        class="border border-black px-4 py-2 hover:bg-black hover:text-white disabled:opacity-50"
-      >
-        Send
-      </button>
+      <button id="contact-submit" type="submit" class="button">Send</button>
     </form>
 
     <script>
@@ -167,6 +146,7 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
         if (!button || !errorBox || !successBox) return;
 
         errorBox.classList.add('hidden');
+        form.removeAttribute('aria-describedby');
         button.disabled = true;
         button.textContent = 'Sending…';
 
@@ -196,9 +176,11 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
           errorBox.classList.remove('hidden');
         }
 
+        form.setAttribute('aria-describedby', 'contact-error');
         button.disabled = false;
         button.textContent = 'Send';
       });
     </script>
+    </div>
   </section>
 </BaseLayout>
