@@ -4,7 +4,6 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts } from '../../content';
-import { AUTHOR } from '../../consts';
 import { postLd } from '../../jsonld';
 
 // Drafts are excluded here too, so they get no page in the build output.
@@ -26,31 +25,33 @@ const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post
   jsonLd={postLd(post.data.title, post.data.date, new URL(Astro.url.pathname, Astro.site).href)}
 >
   <article>
-    {
-      post.data.cover && (
-        <Image src={post.data.cover} alt="" class="cover mb-10" widths={[640, 1280, 1920]} sizes="(min-width: 76rem) 1120px, 100vw" loading="eager" />
-      )
-    }
-    <header class="reading-head">
-      <h1 class="headline">{post.data.title}</h1>
+    <header class="page-head">
+      <h1 class="title">{post.data.title}</h1>
       <p class="fine">
         <time datetime={post.data.date.toISOString()}>{date}</time>
         {post.data.tags.length > 0 && <span> · {post.data.tags.join(', ')}</span>}
       </p>
     </header>
 
-    <div class="reading prose copy mt-12">
-      <Content />
-    </div>
+    {
+      post.data.cover && (
+        <Image
+          src={post.data.cover}
+          alt=""
+          class="cover mt-8 max-w-[36rem]"
+          widths={[640, 1280, 1920]}
+          sizes="(min-width: 40rem) 576px, 100vw"
+          loading="eager"
+        />
+      )
+    }
 
-    <div class="reading">
-      <div class="signature-block">
-        <p class="signature">{AUTHOR}</p>
-      </div>
+    <div class="reading prose copy mt-10">
+      <Content />
     </div>
   </article>
 
-  <nav class="pager fine reading mt-16" aria-label="More writing">
-    <a href="/blog/" class="pager-prev"><span class="label">All posts</span></a>
-  </nav>
+  <p class="fine mt-12">
+    <a href="/blog/" class="inline-flex min-h-9 items-center">All posts</a>
+  </p>
 </BaseLayout>

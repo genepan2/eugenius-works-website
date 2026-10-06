@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import jostLatin from '@fontsource-variable/jost/files/jost-latin-wght-normal.woff2?url';
-import dotTravel from '../scripts/dot-travel.js?url';
 import {
   SITE_NAME,
   SITE_DESCRIPTION,
@@ -17,8 +16,6 @@ import { getPublishedPosts } from '../content';
 interface Props {
   title?: string;
   description?: string;
-  /** Fine print at the right of the running head, such as `Nº 004 / 011` or a date. */
-  folio?: string;
   noindex?: boolean;
   ogType?: 'website' | 'article';
   publishedTime?: Date;
@@ -30,7 +27,6 @@ interface Props {
 const {
   title,
   description = SITE_DESCRIPTION,
-  folio,
   noindex = false,
   ogType = 'website',
   publishedTime,
@@ -64,7 +60,6 @@ const analyticsEnabled =
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={jostLatin} as="font" type="font/woff2" crossorigin />
-    <script is:inline src={dotTravel}></script>
 
     <meta property="og:type" content={ogType} />
     {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
@@ -107,7 +102,6 @@ const analyticsEnabled =
         <nav class="wordmark" aria-label="Primary">
           {NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
         </nav>
-        {folio && <p class="fine">{folio}</p>}
       </header>
 
       <main id="content" class="flex-1">
@@ -118,7 +112,10 @@ const analyticsEnabled =
         <nav aria-label="Footer">
           <ul>
             {
-              FOOTER_SITE_LINKS.map((link) => (
+              FOOTER_SITE_LINKS.filter(
+                // Without a published post the blog is empty: no link to it.
+                (link) => hasPosts || link.href !== '/blog/',
+              ).map((link) => (
                 <li>
                   <a href={link.href}>{link.label}</a>
                 </li>

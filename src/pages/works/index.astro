@@ -1,15 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProjectList from '../../components/ProjectList.astro';
+import WorkTable from '../../components/WorkTable.astro';
 import { getSortedProjects } from '../../content';
 
 const projects = await getSortedProjects();
 ---
 
 <BaseLayout title="Works" description="Products, tools and experiments by Eugen Panov.">
-  <h1 class="headline">Works.</h1>
-  <p class="fine mt-4 text-center">{projects.length} works, from idea to live.</p>
-  <div class="mt-10">
-    <ProjectList projects={projects} level="h2" />
-  </div>
+  <h1 class="word">Works</h1>
+  <WorkTable projects={projects} />
 </BaseLayout>

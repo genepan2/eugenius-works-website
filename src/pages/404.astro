@@ -1,23 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import StatusDot from '../components/StatusDot.astro';
+import { getPublishedPosts } from '../content';
+
+const hasPosts = (await getPublishedPosts()).length > 0;
 ---
 
 <BaseLayout title="Not found" description="This page does not exist." noindex>
-  <article class="ad">
-    <div class="field work-field">
-      <StatusDot status="idea" />
-    </div>
-    <h1 class="headline">This page is missing.</h1>
-    <div class="columns columns-short copy">
-      <p>
-        And this one I did not build. Try the <a href="/works/">works</a> or the <a href="/blog/"
-          >blog</a
-        >.
-      </p>
-    </div>
-    <div class="signature-block">
-      <p class="signature">Eugenius.</p>
-    </div>
-  </article>
+  <h1 class="word">Not found</h1>
+  <p class="reading">
+    This page does not exist. Try the <a href="/works/">works</a>{
+      hasPosts && (
+        <>
+          {' '}or the <a href="/blog/">blog</a>
+        </>
+      )
+    }.
+  </p>
 </BaseLayout>

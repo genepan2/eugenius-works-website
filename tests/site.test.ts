@@ -74,6 +74,7 @@ for (const file of [
   '_redirects',
   'favicon.svg',
   'og.png',
+  'contact/index.html',
 ]) {
   has(file);
 }
@@ -84,6 +85,69 @@ for (const file of files.filter((f) => /\.(html|css|js|xml|svg|txt)$/.test(f))) 
   const text = readFileSync(file, 'utf8');
   for (const banned of ['neutral-', 'fonts.googleapis', 'fonts.gstatic']) {
     assert.ok(!text.includes(banned), `${relative(DIST, file)} contains "${banned}"`);
+  }
+}
+
+// One ink. Built CSS and SVG carry only black, white and transparent. In HTML the
+// only color is the theme-color meta tag; links and JSON-LD hold `#fragments`
+// and URLs, which are not colors, so the HTML is not scanned for hex.
+const NEUTRAL_HEX = new Set(['#000', '#fff', '#000000', '#ffffff', '#0000', '#00000000']);
+const NAMED = /\b(gr[ae]y|silver|red|blue|green|yellow|orange|purple|pink|brown|navy|teal)\b/i;
+const ZERO_OR_FULL = '(?:0|100|255|1)(?:%|deg)?';
+
+function colorProblems(raw: string): string[] {
+  const bad: string[] = [];
+  // Tailwind probes color support with throwaway colors inside @supports.
+  const text = raw.replace(/@supports[^{]*\{/g, '{').replace(/url\([^)]*\)/g, '');
+
+  for (const [hex] of text.matchAll(/#[0-9a-fA-F]{3,8}(?![\w-])/g)) {
+    if (!NEUTRAL_HEX.has(hex.toLowerCase())) bad.push(hex);
+  }
+  for (const [call, fn, args] of text.matchAll(/\b(rgba?|hsla?|oklch|oklab|lab|lch|color)\(([^)]*)\)/g)) {
+    const ok =
+      (/^rgba?$/.test(fn) && /^\s*(0[\s,]+0[\s,]+0|255[\s,]+255[\s,]+255)\b/.test(args)) ||
+      (/^hsla?$/.test(fn) && /^\s*[\d.]+(deg)?[\s,]+[\d.]+%[\s,]+(0|100)%/.test(args)) ||
+      (/^(oklch|oklab|lab|lch)$/.test(fn) &&
+        new RegExp(`^\\s*(?:0|1|100)(?:%)?[\\s,]+0[\\s,]+(?:0|none)`).test(args));
+    if (!ok) bad.push(call);
+  }
+  for (const [call, args] of [...text.matchAll(/\bcolor-mix\(([^)]*)\)/g)].map((m): [string, string] => [m[0], m[1]])) {
+    const words = args.replace(/\bin\s+[\w-]+/, '').replace(/[\d.]+%/g, '').split(/[\s,]+/).filter(Boolean);
+    const neutral = ['currentcolor', 'transparent', 'black', 'white'];
+    if (!words.every((w) => neutral.includes(w.toLowerCase()))) bad.push(call);
+  }
+  // Named colors count only as values of color-bearing properties.
+  for (const [, prop, value] of text.matchAll(
+    /(?:^|[;{\s])((?:[\w-]*color|background|border[\w-]*|outline[\w-]*|fill|stroke|[\w-]*shadow)\s*):\s*([^;}{]+)/g,
+  )) {
+    if (NAMED.test(value)) bad.push(`${prop.trim()}: ${value.trim()}`);
+  }
+  for (const [, attr, value] of text.matchAll(/\s(fill|stroke|stop-color|color)="([^"]*)"/g)) {
+    if (NAMED.test(value)) bad.push(`${attr}="${value}"`);
+  }
+  return bad;
+}
+
+for (const file of files) {
+  const name = relative(DIST, file);
+  if (/\.(css|svg)$/.test(file)) {
+    assert.deepEqual(colorProblems(readFileSync(file, 'utf8')), [], `${name}: a color other than black or white`);
+  }
+  if (file.endsWith('.html')) {
+    const html = readFileSync(file, 'utf8');
+    const theme = html.match(/<meta name="theme-color" content="([^"]*)"/)?.[1];
+    assert.ok(theme === undefined || NEUTRAL_HEX.has(theme.toLowerCase()), `${name}: theme-color ${theme}`);
+    // No inline styling of any kind: every rule lives in a stylesheet the CSP allows.
+    assert.ok(!/\sstyle="/.test(html), `${name}: has a style attribute`);
+    assert.ok(!/<style[\s>]/.test(html), `${name}: has a <style> element`);
+  }
+  // The owner banned dots and circles: no rounded corners, no circles.
+  if (file.endsWith('.css')) {
+    const radii = [...readFileSync(file, 'utf8').matchAll(/border-radius:\s*([^;}]+)/g)].map((m) => m[1].trim());
+    assert.deepEqual(radii.filter((r) => !/^0(px)?$/.test(r)), [], `${name}: non-zero border-radius`);
+  }
+  if (/\.(html|svg)$/.test(file)) {
+    assert.ok(!/<circle[\s>]/.test(readFileSync(file, 'utf8')), `${name}: has a <circle>`);
   }
 }
 

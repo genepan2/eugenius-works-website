@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+---
+
+<table class="ledger">
+  <thead>
+    <tr>
+      <th class="sr-only" scope="col">Work</th>
+      <th class="sr-only" scope="col">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      projects.map((project) => (
+        <tr>
+          <th scope="row">
+            <a class="name" href={`/works/${project.id}/`}>
+              {project.data.title}
+            </a>
+            <span class="fine">{project.data.status}</span>
+          </th>
+          <td>
+            <p>{project.data.description}</p>
+          </td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

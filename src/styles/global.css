@@ -75,9 +75,6 @@ a:hover {
 /* Running head */
 .running-head {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
   padding-block: 1.25rem 1.5rem;
 }
 .wordmark {
@@ -95,47 +92,25 @@ a:hover {
   text-decoration: none;
 }
 
-/* Type roles */
-.headline {
-  max-width: 18ch;
-  margin-inline: auto;
-  font-size: clamp(2.25rem, 6.2vw, 5.25rem);
+/* Type roles. One large element per section: the display word. */
+.word {
+  font-size: clamp(2.75rem, 11vw, 6rem);
   font-weight: 600;
-  line-height: 1.02;
-  letter-spacing: -0.025em;
-  text-align: center;
-  text-wrap: balance;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+  margin-block: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 2.5vw, 2rem);
 }
-/* A long work headline steps down one size, as a print ad would. */
-.headline-long {
-  font-size: clamp(2.25rem, 5vw, 4.25rem);
-}
-@media (min-width: 64rem) {
-  .headline {
-    max-width: 22ch;
-  }
-}
-.headline-left {
-  margin-inline: 0;
-  text-align: left;
-}
-.index-headline {
-  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
+main > :first-child .word,
+main > .word:first-child,
+main > .sr-only + section .word {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 .subhead {
-  font-size: clamp(1.375rem, 2.5vw, 2.125rem);
+  font-size: 1.75rem;
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.01em;
-}
-/* Reading pages: long URLs wrap at any width, also at 200% zoom. */
-.reading,
-.reading .copy {
-  overflow-wrap: anywhere;
 }
 .copy {
   font-size: 1.1875rem;
@@ -144,200 +119,109 @@ a:hover {
   hyphens: manual;
   overflow-wrap: break-word;
 }
-.signature {
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
 .fine {
   font-size: 0.875rem;
   line-height: 1.4;
   font-variant-numeric: tabular-nums;
 }
 
-/* The ad: picture field, headline, copy columns, signature. */
-.ad {
-  border: 1px solid var(--color-ink);
-  padding: clamp(1.25rem, 4vw, 4rem);
+/* Reading column: one left axis, about 36rem. Long URLs wrap at any width. */
+.reading {
+  max-width: 36rem;
+  overflow-wrap: anywhere;
 }
-.field {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: clamp(12rem, 38vh, 24rem);
+.reading > * + * {
+  margin-top: 1em;
 }
-.ad > .headline,
-.ad > figure + .headline {
-  margin-top: clamp(2rem, 5vw, 4rem);
+.reading section {
+  margin-top: 3rem;
 }
-.columns {
-  /* A flex item with auto margins would shrink to its content and leave the axis. */
-  width: 100%;
-  column-width: 17rem;
-  column-gap: 2.5rem;
-  column-count: 3;
-  max-width: calc(3 * 17rem + 2 * 2.5rem);
-  margin-top: clamp(1.75rem, 3.5vw, 3rem);
-  margin-inline: auto;
+.reading section > * + * {
+  margin-top: 1rem;
 }
-.columns > * {
-  break-inside: avoid;
+.reading dl > div + div {
+  margin-top: 0.85rem;
 }
-.columns > * + * {
-  margin-top: 0.75em;
-}
-/* Short copy keeps its narrow measure under the headline instead of spreading. */
-.columns-short {
-  max-width: 34rem;
-  column-count: 1;
-}
-.signature-block {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-  margin-left: auto;
-  width: fit-content;
-  max-width: 100%;
-  text-align: right;
-}
-.signature-block .fine {
-  margin-top: 0.35rem;
-}
-
-/* On a desktop screen the whole ad, keyline to keyline, stands in the first view. */
-@media (min-width: 64rem) and (min-height: 45rem) {
-  .ad {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh - 6.5rem);
-    padding-block: 2rem;
-  }
-  .ad > .field {
-    flex: 1;
-    min-height: 0;
-  }
-  .ad > .headline {
-    margin-top: 2rem;
-  }
-  .ad > .columns {
-    margin-top: 1.5rem;
-  }
-  .ad > .signature-block {
-    margin-top: 1.5rem;
-  }
-}
-
-/* Status dot: a circle whose size is the status of the work. */
-.dot {
-  display: inline-block;
-  flex: none;
-  width: max(3px, calc(var(--dot, 1rem) * var(--f)));
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: currentColor;
-}
-.dot[data-status="live"] { --f: 1; }
-.dot[data-status="in progress"] { --f: 0.6; }
-.dot[data-status="prototype"] { --f: 0.32; }
-.dot[data-status="idea"] { --f: 0.14; }
-.dot[data-status="paused"] {
-  --f: 0.6;
-  background: none;
-  border: 2px solid currentColor;
-}
-
-/* Homepage picture: eleven dots on one baseline, each a link with its caption. */
-.hero-field {
-  /* The caption band under the dots: one line, two on phones. */
-  --band: 2.5rem;
-  container-type: inline-size;
-  position: relative;
-  padding-bottom: var(--band);
-}
-@media (max-width: 30rem) {
-  .hero-field {
-    --band: calc(0.75rem + 2 * 1.4 * 0.875rem + 0.25rem);
-  }
-}
-/* One row at every width: the status factors add up to 6.66 dots, plus ten
-   gaps of 0.1 dot, so 7.66 dots fill the field (7.75 leaves a little air). */
-.hero-dots {
-  --dot: min(7.5rem, 100cqi / 7.75);
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: flex-end;
-  gap: calc(var(--dot) * 0.1);
-}
-@media (max-width: 359px) {
-  .hero-dots {
-    flex-wrap: wrap;
-  }
-}
-.hero-dot {
-  display: flex;
-  text-decoration: none;
-}
-/* A hit area of at least 28px around the smallest dots, without visible width. */
-.hero-dot .dot {
-  position: relative;
-}
-.hero-dot .dot::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: max(28px, 100%);
-  height: max(28px, 100%);
-  translate: -50% -50%;
-}
-.hero-dot:hover {
-  background: none;
-  color: var(--color-ink);
-}
-/* The ring goes on the dot itself, round, not on the link's box. */
-.hero-dot:focus-visible {
-  outline: none;
-}
-.hero-dot:hover .dot,
-.hero-dot:focus-visible .dot {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
-}
-.hero-caption,
-.hero-dot-caption {
-  position: absolute;
-  left: 0;
-  top: calc(100% - var(--band) + 0.75rem);
-}
-.hero-dot-caption {
-  right: 0;
-  visibility: hidden;
-}
-.hero-dot:hover .hero-dot-caption,
-.hero-dot:focus-visible .hero-dot-caption {
-  visibility: visible;
-}
-.hero-field:has(.hero-dot:hover, .hero-dot:focus-visible) .hero-caption {
-  visibility: hidden;
-}
-
-/* The work's own picture: one large dot, left of center and low. */
-.work-field {
-  --dot: clamp(9rem, 26vw, 19rem);
-  align-items: flex-start;
-  /* The dot's left edge sits on the left edge of the short copy column. */
-  padding-left: max(0px, calc((100% - 34rem) / 2));
+.page-head .fine {
+  margin-top: 0.75rem;
 }
 .cover {
   display: block;
   width: 100%;
   height: auto;
 }
+
+/* Works and posts: rows ruled by ink hairlines. */
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid var(--color-ink);
+}
+.ledger tbody tr,
+.ledger li {
+  border-bottom: 1px solid var(--color-ink);
+}
+.ledger th,
+.ledger td {
+  vertical-align: top;
+  text-align: left;
+  padding-block: 1.25rem;
+}
+.ledger tbody th {
+  width: 16rem;
+  padding-right: 2rem;
+  font-weight: 400;
+}
+.ledger .name {
+  display: block;
+  font-weight: 600;
+  text-decoration: none;
+}
+.ledger a.name:hover {
+  text-decoration: underline;
+}
+.ledger td p {
+  max-width: 44rem;
+}
+.ledger li {
+  padding-block: 1.25rem;
+}
+@media (max-width: 40rem) {
+  .ledger tbody,
+  .ledger tr,
+  .ledger th,
+  .ledger td {
+    display: block;
+  }
+  .ledger tbody th {
+    width: auto;
+    padding: 1.25rem 0 0.35rem;
+  }
+  .ledger td {
+    padding-top: 0;
+  }
+}
+
+/* Work page */
+.work-meta {
+  margin-top: 1.5rem;
+}
+.work-meta > * + * {
+  margin-top: 0.35rem;
+}
 .pager {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   grid-template-areas: "prev all next";
-  align-items: center;
   column-gap: 1.5rem;
+  margin-top: clamp(3rem, 6vw, 4rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-ink);
+}
+.pager a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
 }
 .pager-prev { grid-area: prev; justify-self: start; }
 .pager-all { grid-area: all; justify-self: center; }
@@ -347,169 +231,49 @@ a:hover {
     grid-template-columns: 1fr;
     grid-template-areas: "prev" "next" "all";
   }
-}
-.pager a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 36px;
-  text-decoration: none;
-}
-.pager .label {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-}
-.signature-dot {
-  --dot: 0.9em;
-  margin-right: 0.3em;
-  vertical-align: 0.05em;
+  .pager-all,
+  .pager-next {
+    justify-self: start;
+  }
 }
 
-/* Section heads on the homepage: headline left, fine print right on the same baseline. */
-.section-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.5rem 2rem;
-}
-.section-head .headline {
-  max-width: none;
-}
-
-/* Ruled index. The whole row is the target and inverts on hover or focus. */
-.index {
+/* Post page */
+.title {
+  font-size: clamp(2.25rem, 4.6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 22ch;
+  text-wrap: balance;
   margin-top: clamp(1.5rem, 3vw, 2.5rem);
-  border-top: 1px solid var(--color-ink);
-}
-.index-row {
-  --dot: 1.6rem;
-  position: relative;
-  display: grid;
-  grid-template-columns: 3.5ch 1.6rem 1fr auto;
-  grid-template-areas: "num dot head meta";
-  align-items: baseline;
-  column-gap: clamp(0.75rem, 2vw, 1.5rem);
-  padding-block: 1rem;
-  border-bottom: 1px solid var(--color-ink);
-  isolation: isolate;
-}
-/* The inverted bar bleeds past the page edge, so the row text keeps the edge. */
-.index-row::before {
-  content: "";
-  position: absolute;
-  inset: 0 -0.5rem;
-  z-index: -1;
-}
-.index-row.is-post {
-  grid-template-columns: 1fr auto;
-  grid-template-areas: "head meta";
-}
-.index-row > .num { grid-area: num; }
-.index-row > .row-dot {
-  grid-area: dot;
-  /* Centered on the first line of the headline, also when it wraps. */
-  align-self: start;
-  height: calc(clamp(1.375rem, 2.5vw, 2.125rem) * 1.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.index-row > .index-headline { grid-area: head; }
-.index-row > .meta {
-  grid-area: meta;
-  text-align: right;
-}
-.index-row a {
-  text-decoration: none;
-}
-.index-row a::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-.index-row a:hover {
-  background: none;
-}
-.index-row:hover,
-.index-row:has(a:focus-visible) {
-  color: var(--color-paper);
-}
-.index-row:hover::before,
-.index-row:has(a:focus-visible)::before {
-  background: var(--color-ink);
-}
-/* The ring moves from the link to the whole row it stands for. */
-.index-row a:focus-visible {
-  outline: none;
-}
-.index-row:has(a:focus-visible)::before {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
-}
-@media (max-width: 40rem) {
-  .index-row {
-    grid-template-columns: 3.5ch 1.6rem 1fr;
-    grid-template-areas: "num dot head" ". . meta";
-    row-gap: 0.35rem;
-  }
-  .index-row.is-post {
-    grid-template-columns: 1fr;
-    grid-template-areas: "head" "meta";
-  }
-  .index-row > .meta {
-    text-align: left;
-  }
 }
 
-/* Reply coupon */
-.coupon {
-  border: 1.5px dashed var(--color-ink);
-  padding: clamp(1.25rem, 4vw, 3rem);
+/* Contact form: plain boxed fields. */
+.contact-form {
+  max-width: 36rem;
+  margin-top: 2rem;
 }
-.closing {
-  display: grid;
-  gap: 2rem clamp(2rem, 5vw, 4rem);
+.contact-form > div + div,
+.contact-form > div + button {
+  margin-top: 1.25rem;
 }
-@media (min-width: 56rem) {
-  .closing {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-}
-.field-label {
+.contact-form label {
   display: block;
 }
-.coupon input[type="text"],
-.coupon input[type="email"] {
+.contact-form input,
+.contact-form textarea {
   display: block;
   width: 100%;
-  padding-block: 0.4rem;
-  border: 0;
-  border-bottom: 1px solid var(--color-ink);
-  border-radius: 0;
-  background: none;
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--color-ink);
+  background: var(--color-paper);
   font: inherit;
 }
-.coupon textarea {
-  display: block;
-  width: 100%;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  font: inherit;
-  line-height: 1.75rem;
+.contact-form textarea {
   resize: none;
   field-sizing: content;
-  min-height: calc(6 * 1.75rem);
-  /* Ruled lines: one ink line under every line of text. */
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 calc(1.75rem - 1px),
-    var(--color-ink) calc(1.75rem - 1px) 1.75rem
-  );
-  background-attachment: local;
+  min-height: calc(6lh + 1rem);
 }
 .button {
   min-height: 44px;
@@ -530,39 +294,19 @@ a:hover {
   cursor: progress;
 }
 .notice {
-  margin-bottom: 1.5rem;
+  max-width: 36rem;
+  margin-top: 1.5rem;
   padding: 0.6rem 0.9rem;
   border: 1px solid var(--color-ink);
-}
-
-/* Reading pages: one column under a centered headline. */
-.reading {
-  max-width: 36rem;
-  margin-inline: auto;
-}
-.reading-head {
-  text-align: center;
-}
-.reading-head .headline {
-  font-size: clamp(2.25rem, 4.6vw, 4rem);
-  max-width: 22ch;
-}
-.reading-head .fine {
-  margin-top: 1rem;
-}
-.reading section {
-  margin-top: 3rem;
-}
-.reading section > * + * {
-  margin-top: 1rem;
-}
-.reading dl > div + div {
-  margin-top: 0.85rem;
 }
 
 /* Rendered markdown bodies, in the same one-ink system. */
 .prose > * + * {
   margin-top: 1em;
+}
+.prose.copy,
+.reading.copy {
+  line-height: 1.6;
 }
 .prose h2,
 .prose h3 {
@@ -570,10 +314,6 @@ a:hover {
   line-height: 1.15;
   letter-spacing: -0.01em;
   margin-top: 2.25em;
-}
-.prose.copy,
-.reading.copy {
-  line-height: 1.6;
 }
 .prose h2 {
   font-size: clamp(1.625rem, 2.5vw, 2.125rem);
@@ -639,6 +379,17 @@ a:hover {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
+  /* Wider targets ("X" is one letter) without moving the visible spacing. */
+  padding-inline: 8px;
+  margin-inline: -8px;
+}
+@media (pointer: coarse) {
+  .wordmark a,
+  .colophon a,
+  .pager a,
+  .skip-link {
+    min-height: 44px;
+  }
 }
 
 /* Contact form notices. Hidden until they are the URL fragment, which is how
@@ -655,52 +406,20 @@ a:hover {
   display: none;
 }
 
-/* The one authored motion: the dot of a work travels into its ad. */
+/* The header links scroll to the homepage sections. */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
-  }
-  @view-transition {
-    navigation: auto;
-  }
-  ::view-transition-group(*) {
-    animation-duration: 450ms;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  ::view-transition-group(root) {
-    animation-duration: 150ms;
-  }
-  .work-field .dot {
-    view-transition-name: work-dot;
-  }
-  /* The travelling dot is drawn by the transition box itself, not by scaled
-     snapshots: a scaled snapshot turns soft and gray, and the paused ring's
-     2px stroke would grow or thin with it. The box stays a circle in ink. */
-  ::view-transition-old(work-dot),
-  ::view-transition-new(work-dot) {
-    display: none;
-  }
-  ::view-transition-group(work-dot) {
-    border-radius: 50%;
-    background: var(--color-ink);
-  }
-  html:active-view-transition-type(dot-ring)::view-transition-group(work-dot) {
-    box-sizing: border-box;
-    border: 2px solid var(--color-ink);
-    background: none;
   }
 }
 
 @media print {
   .running-head nav,
-  .closing,
+  .contact-form,
   .colophon ul,
+  .pager,
   .skip-link {
     display: none;
-  }
-  .ad {
-    border: 0;
-    padding: 0;
   }
   body {
     background: #fff;

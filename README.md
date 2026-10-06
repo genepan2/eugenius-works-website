@@ -35,8 +35,9 @@ order: 4                      # optional sort key, lower first
 `status` is required. It must be one of `live`, `in progress`, `prototype`, `paused`,
 or `idea`. The build fails on any other value.
 
-The project list is at `/works`. Every project gets its own page at `/works/<slug>`.
-Body content is optional. The old `/projects` URLs redirect to `/works`.
+Routes: `/`, `/works/`, `/works/<slug>/`, `/contact/`, `/blog/`, `/blog/<slug>/`, `/imprint/`,
+`/privacy/`, `/rss.xml`. Every project gets its own page at `/works/<slug>/`. Body content
+is optional. The old `/projects` URLs redirect to `/works/`.
 
 Projects with `order` sort first, ascending. Projects without `order` follow, alphabetically
 by title.
@@ -71,7 +72,7 @@ grep -r PLACEHOLDER src/
 
 ## Contact form
 
-The homepage form posts to `/api/contact`, handled by `src/worker.ts`. The site is a
+The form on `/contact/` posts to `/api/contact`, handled by `src/worker.ts`. The site is a
 Cloudflare **Worker with static assets**, configured by `wrangler.jsonc`: the Worker
 serves the static Astro build from the `ASSETS` binding and runs only for `/api/*`
 requests. The Astro build stays static — there is no adapter and no server output mode.

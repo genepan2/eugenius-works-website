@@ -3,12 +3,12 @@ import type { GetStaticPaths } from 'astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import StatusDot from '../../components/StatusDot.astro';
 import { workLd } from '../../jsonld';
-import { getSortedProjects, metaDescription, splitDescription, workNumber } from '../../content';
+import { getSortedProjects, metaDescription, numberWord, workNumber } from '../../content';
+import { AUTHOR } from '../../consts';
 
-// Every work is one ad. The markdown body is optional: it continues the copy
-// when it holds more than comments and whitespace.
+// Every work gets its own page. The markdown body is optional: it continues
+// the description when it holds more than comments and whitespace.
 export const getStaticPaths: GetStaticPaths = async () => {
   const projects = await getSortedProjects();
   return projects.map((project, i) => ({
@@ -17,8 +17,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
       project,
       index: i,
       total: projects.length,
-      prev: { project: projects.at(i - 1)!, index: (i - 1 + projects.length) % projects.length },
-      next: { project: projects[(i + 1) % projects.length], index: (i + 1) % projects.length },
+      prev: projects.at(i - 1)!,
+      next: projects[(i + 1) % projects.length],
     },
   }));
 };
@@ -26,100 +26,68 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { project, index, total, prev, next } = Astro.props;
 const { data } = project;
 const { Content } = await render(project);
-const split = splitDescription(data.description);
-const headline = data.headline ?? split.headline;
-const copy = split.copy;
 const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;
-// Short copy keeps a narrow measure; long copy runs in columns.
-const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : 'columns copy';
 ---
 
 <BaseLayout
   title={data.title}
   description={metaDescription(data.description)}
   jsonLd={workLd(data.title, data.description, new URL(Astro.url.pathname, Astro.site).href, data.url)}
-  folio={`Nº ${workNumber(index)} / ${String(total).padStart(3, '0')}`}
 >
-  <article class="ad">
-    {
-      data.cover ? (
-        <figure>
-          <Image src={data.cover} alt={data.title} class="cover" widths={[640, 1280, 1920]}
-            sizes="(min-width: 76rem) 992px, 100vw" loading="eager" />
-        </figure>
-      ) : (
-        <div class="field work-field">
-          <StatusDot status={data.status} />
-        </div>
-      )
-    }
+  <article>
+    <header class="page-head">
+      <h1 class="word">{data.title}</h1>
+      <p class="fine">{data.status}</p>
+    </header>
 
-    <h1 class:list={['headline', headline.length >= 64 && 'headline-long']}>{headline}</h1>
+    <div class="reading copy mt-8">
+      {
+        data.cover && (
+          <Image src={data.cover} alt={data.title} class="cover mb-6" widths={[640, 1280, 1920]}
+          sizes="(min-width: 40rem) 576px, 100vw" loading="eager" />
+        )
+      }
+      <p>{data.description}</p>
+      {hasBody && <div class="prose"><Content /></div>}
+    </div>
 
-    {
-      (copy || hasBody) && (
-        <div class={columns}>
-          {copy && <p>{copy}</p>}
-          {hasBody && <Content />}
-        </div>
-      )
-    }
-
-    <div class="signature-block">
-      <p class="signature">
-        {data.cover && <StatusDot status={data.status} class="signature-dot" />}
-        {data.title}
-      </p>
-      <p class="fine">
-        {data.status}
+    <div class="work-meta fine">
+      <p>
         {
           data.url && (
             <>
-              {' · '}
               <a href={data.url} rel="noopener" aria-label={`${data.title} website`}>
                 Website
               </a>
+              {' · '}
             </>
           )
         }
         {
           data.repo && (
             <>
-              {' · '}
               <a href={data.repo} rel="noopener" aria-label={`${data.title} repository`}>
                 Repository
               </a>
+              {' · '}
             </>
           )
         }
-        {' · '}
-        <a href="/#contact">Send a note</a>
+        <a href={`/contact/?re=${encodeURIComponent(data.title)}`}>Send a note</a>
+      </p>
+      <p>
+        Nº {workNumber(index)} of {numberWord(total).toLowerCase()} works by <a href="/">{AUTHOR}</a>
       </p>
     </div>
   </article>
 
-  <nav
-    class="pager fine mt-6"
-    aria-label="More works"
-  >
-    <a
-      href={`/works/${prev.project.id}/`}
-      class="pager-prev"
-      rel="prev"
-      aria-label={`Previous work: ${prev.project.data.title}`}
-    >
-      <StatusDot status={prev.project.data.status} />
-      <span class="label">Nº {workNumber(prev.index)} {prev.project.data.title}</span>
+  <nav class="pager fine" aria-label="More works">
+    <a href={`/works/${prev.id}/`} class="pager-prev" rel="prev">
+      Previous: {prev.data.title}
     </a>
-    <a href="/works/" class="pager-all"><span class="label">All works</span></a>
-    <a
-      href={`/works/${next.project.id}/`}
-      class="pager-next"
-      rel="next"
-      aria-label={`Next work: ${next.project.data.title}`}
-    >
-      <span class="label">Nº {workNumber(next.index)} {next.project.data.title}</span>
-      <StatusDot status={next.project.data.status} />
+    <a href="/works/" class="pager-all">All works</a>
+    <a href={`/works/${next.id}/`} class="pager-next" rel="next">
+      Next: {next.data.title}
     </a>
   </nav>
 </BaseLayout>

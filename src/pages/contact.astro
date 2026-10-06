@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Contact" description="Send a note to Eugen Panov. The message is delivered by email.">
+  <h1 id="contact" class="word">Contact</h1>
+  <p class="fine max-w-[36rem]">
+    Your message is delivered to me by email. The <a href="/privacy/">privacy policy</a> says what
+    happens to it.
+  </p>
+
+  <p id="contact-error" class="notice hidden" role="alert" tabindex="-1"></p>
+
+  {/*
+    The notices are hidden until needed. With JavaScript, the script below
+    shows them. Without it, /api/contact redirects to /contact/#contact-sent,
+    #contact-failed or #contact-busy, and the :target rule in global.css
+    shows the notice.
+  */}
+  <p id="contact-sent" class="target-notice notice" role="status" tabindex="-1">
+    Thank you. Your message is on its way. I will reply to the address you gave.
+  </p>
+
+  <p id="contact-failed" class="target-notice notice">
+    Your message could not be sent. Please check the fields and try again.
+  </p>
+
+  <p id="contact-busy" class="target-notice notice">
+    The form is not available right now. Please try again in a few minutes.
+  </p>
+
+  <form id="contact-form" class="contact-form" method="post" action="/api/contact">
+    <div>
+      <label for="name" class="fine">Name</label>
+      <input id="name" name="name" type="text" required autocomplete="name" />
+    </div>
+
+    <div>
+      <label for="email" class="fine">Email</label>
+      <input id="email" name="email" type="email" required autocomplete="email" />
+    </div>
+
+    <div>
+      <label for="message" class="fine">Message</label>
+      <textarea id="message" name="message" rows="6" required maxlength="5000"></textarea>
+    </div>
+
+    {/*
+      Honeypot. Hidden from sighted visitors and from screen readers, and kept
+      out of the tab order. Only bots fill it in; /api/contact drops those.
+    */}
+    <div class="hidden" aria-hidden="true">
+      <label for="company">Company</label>
+      <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <button id="contact-submit" type="submit" class="button">Send</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const button = document.getElementById('contact-submit') as HTMLButtonElement | null;
+    const errorBox = document.getElementById('contact-error');
+    const successBox = document.getElementById('contact-sent');
+    const messageBox = document.getElementById('message') as HTMLTextAreaElement | null;
+
+    // A "Send a note" link from a work page names the work in `re`. Start
+    // the message with it, as plain text, without moving focus.
+    const re = new URLSearchParams(location.search).get('re');
+    if (re && messageBox && !messageBox.value) {
+      const title = re.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim().slice(0, 60);
+      if (title) messageBox.value = `About ${title}: `;
+    }
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!button || !errorBox || !successBox) return;
+
+      errorBox.classList.add('hidden');
+      form.removeAttribute('aria-describedby');
+      button.disabled = true;
+      button.textContent = 'Sending…';
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok && result.ok) {
+          // Replace the form with the thank-you line.
+          // Focus moves to the notice, so a screen reader announces it and
+          // keyboard focus is not lost with the hidden form.
+          form.classList.add('hidden');
+          successBox.style.display = 'block';
+          successBox.focus();
+          return;
+        }
+
+        // Keep the entered values so nothing has to be retyped.
+        errorBox.textContent = result.error ?? 'The message could not be sent.';
+        errorBox.classList.remove('hidden');
+      } catch {
+        errorBox.textContent = 'The message could not be sent. Please check your connection.';
+        errorBox.classList.remove('hidden');
+      }
+
+      // The button was disabled, so focus fell to the page. Put it on the error.
+
+      form.setAttribute('aria-describedby', 'contact-error');
+      button.disabled = false;
+      button.textContent = 'Send';
+      errorBox.focus();
+    });
+  </script>
+</BaseLayout>
