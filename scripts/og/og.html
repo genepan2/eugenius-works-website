@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eugenius Works social card</title>
+<style>
+  /* The eleven dots are the homepage row: same order, same size factors
+     (src/styles/global.css, .dot[data-status]). Paused is a ring. */
+  @font-face {
+    font-family: "Jost OG";
+    src: url("../../node_modules/@fontsource-variable/jost/files/jost-latin-wght-normal.woff2") format("woff2");
+    font-weight: 100 900;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; background: #fff; color: #000; overflow: hidden; }
+  body { position: relative; font-family: "Jost OG", sans-serif; }
+  .frame { position: absolute; inset: 40px; border: 1px solid #000; }
+  .dots {
+    --dot: 125px;
+    position: absolute; left: 120px; right: 120px; top: 100px;
+    display: flex; align-items: flex-end; gap: calc(var(--dot) * 0.1);
+  }
+  .dot {
+    flex: none; width: max(3px, calc(var(--dot) * var(--f))); aspect-ratio: 1;
+    border-radius: 50%; background: #000;
+  }
+  .live { --f: 1; }
+  .progress { --f: 0.6; }
+  .prototype { --f: 0.32; }
+  .idea { --f: 0.14; }
+  .paused { --f: 0.6; background: none; border: 2px solid #000; }
+  h1 {
+    position: absolute; left: 120px; right: 120px; top: 300px;
+    font-size: 64px; font-weight: 600; line-height: 1.02; letter-spacing: -0.025em;
+    text-align: center; text-wrap: balance;
+  }
+  .signature {
+    position: absolute; right: 80px; bottom: 72px;
+    font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+  }
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="dots">
+  <span class="dot live"></span>
+  <span class="dot progress"></span>
+  <span class="dot progress"></span>
+  <span class="dot progress"></span>
+  <span class="dot live"></span>
+  <span class="dot progress"></span>
+  <span class="dot prototype"></span>
+  <span class="dot progress"></span>
+  <span class="dot progress"></span>
+  <span class="dot paused"></span>
+  <span class="dot idea"></span>
+</div>
+<h1>When something is missing, I build it myself.</h1>
+<p class="signature">Eugenius Works</p>
+</body>
+</html>
