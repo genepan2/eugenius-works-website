@@ -12,4 +12,4 @@ RESEND_API_KEY="re_replace_with_your_resend_api_key"
 CONTACT_FROM="Eugenius Works <contact@eugenius-works.com>"
 
 # Where contact form submissions are delivered.
-CONTACT_TO="info@eugenius-works.com"
+CONTACT_TO="hey@eugenius-works.com"

@@ -1,10 +1,10 @@
 # Eugenius Works Website
 
 The personal and professional site for Eugenius Works: a list of projects and a blog.
-Static Astro, Tailwind CSS v4, markdown content, no backend.
+Static Astro, Tailwind CSS v4, markdown content. A small Cloudflare Worker handles the
+contact form (see "Contact form").
 
-The design is deliberately plain — black and white, system fonts, typography only. Working
-infrastructure is the goal of this version, not visual polish.
+The interface is black and white; see DESIGN.md once it exists.
 
 ## Run it locally
 
@@ -23,6 +23,8 @@ Create `src/content/projects/<slug>.md`. The file name is the URL slug.
 ---
 title: Project Name
 description: One or two sentences.
+status: live                  # live | in progress | prototype | paused | idea
+headline: A short line        # optional
 url: https://example.com      # optional
 repo: https://github.com/...  # optional, only when open source
 cover: ../../assets/cover.png # optional, a local file under src/assets/
@@ -30,11 +32,11 @@ order: 4                      # optional sort key, lower first
 ---
 ```
 
-Body content is optional and it decides the routing:
+`status` is required. It must be one of `live`, `in progress`, `prototype`, `paused`,
+or `idea`. The build fails on any other value.
 
-- **No body** — the project shows in the lists only. It gets no detail page and the lists
-  do not link to one.
-- **With a body** — the project also gets a detail page at `/projects/<slug>`.
+The project list is at `/works`. Every project gets its own page at `/works/<slug>`.
+Body content is optional. The old `/projects` URLs redirect to `/works`.
 
 Projects with `order` sort first, ascending. Projects without `order` follow, alphabetically
 by title.
@@ -95,6 +97,28 @@ For local testing, copy `.dev.vars.example` to `.dev.vars`, then run `npm run bu
 followed by `npx wrangler dev`. `.dev.vars` supplies the three values locally, is
 gitignored, and must never be committed.
 
+## Security headers
+
+`public/_headers` sets the response headers for static pages and assets: a Content
+Security Policy, HSTS, `nosniff`, a referrer policy, a permissions policy, and a
+cross-origin opener policy. It also gives `/_astro/*` a long immutable cache, sets the RSS
+content type, and sends `X-Robots-Tag: noindex` on `workers.dev` hosts.
+
+Cloudflare does not apply `_headers` to responses that the Worker creates. The Worker
+sets `nosniff` and `no-store` on its own JSON responses.
+
+The Content Security Policy allows only same-origin scripts, so no page may use an inline
+script.
+
+## Tests
+
+```
+node tests/contact.test.ts
+```
+
+The test runs the Worker with a stubbed `fetch`. It sends no real request. It needs a Node
+version that runs TypeScript files directly.
+
 ## Before deploying
 
 Set `CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts` to the real Cloudflare Web Analytics
@@ -105,8 +129,5 @@ the site builds and runs normally either way. The script is production-only.
 
 - `/tags/<tag>` index pages
 - Links between projects and posts
-- A `status` field on projects
 - Multi-language support
 - Dark mode
-- Visual branding and a custom typeface
-- Deployment and DNS
