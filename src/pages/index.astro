@@ -21,9 +21,10 @@ const posts = (await getPublishedPosts()).slice(0, 5);
               <a
                 href={`/works/${project.id}/`}
                 class="hero-dot"
+                data-slug={project.id}
                 aria-label={`${project.data.title}, ${project.data.status}`}
               >
-                <StatusDot status={project.data.status} transition={project.id} />
+                <StatusDot status={project.data.status} />
                 <span class="hero-dot-caption fine" aria-hidden="true">
                   Nº {workNumber(i)} {project.data.title}, {project.data.status}
                 </span>

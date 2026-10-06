@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostList from '../../components/PostList.astro';
+import StatusDot from '../../components/StatusDot.astro';
 import { getPublishedPosts } from '../../content';
 
 const posts = await getPublishedPosts();
@@ -10,19 +11,31 @@ const posts = await getPublishedPosts();
   title="Blog"
   description="Articles about design, development, artificial intelligence, entrepreneurship, and business."
 >
-  <h1 class="headline">Writing.</h1>
-  <p class="copy mx-auto mt-6 max-w-[36rem] text-center">
-    Design, development, artificial intelligence, entrepreneurship, and business. Newest
-    first.
-  </p>
-
-  {posts.length === 0 && <p class="fine mt-12 text-center">No posts yet.</p>}
-
   {
-    posts.length > 0 && (
-      <div class="mt-10">
-        <PostList posts={posts} level="h2" />
-      </div>
+    posts.length === 0 ? (
+      <article class="ad">
+        <div class="field work-field">
+          <StatusDot status="idea" />
+        </div>
+        <h1 class="headline">Writing.</h1>
+        <div class="columns columns-short copy">
+          <p>Design, development, artificial intelligence, entrepreneurship, and business.</p>
+        </div>
+        <div class="signature-block">
+          <p class="fine">No posts yet.</p>
+        </div>
+      </article>
+    ) : (
+      <>
+        <h1 class="headline">Writing.</h1>
+        <p class="copy mx-auto mt-6 max-w-[36rem] text-center">
+          Design, development, artificial intelligence, entrepreneurship, and business. Newest
+          first.
+        </p>
+        <div class="mt-10">
+          <PostList posts={posts} level="h2" />
+        </div>
+      </>
     )
   }
 </BaseLayout>

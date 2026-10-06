@@ -112,7 +112,7 @@ a:hover {
 }
 .index-headline {
   font-size: clamp(1.375rem, 2.5vw, 2.125rem);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
   text-wrap: balance;
@@ -192,6 +192,29 @@ a:hover {
   margin-top: 0.35rem;
 }
 
+/* On a desktop screen the whole ad, keyline to keyline, stands in the first view. */
+@media (min-width: 64rem) and (min-height: 45rem) {
+  .ad {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 6.5rem);
+    padding-block: 2rem;
+  }
+  .ad > .field {
+    flex: 1;
+    min-height: 0;
+  }
+  .ad > .headline {
+    margin-top: 2rem;
+  }
+  .ad > .columns {
+    margin-top: 1.5rem;
+  }
+  .ad > .signature-block {
+    margin-top: 1.5rem;
+  }
+}
+
 /* Status dot: a circle whose size is the status of the work. */
 .dot {
   display: inline-block;
@@ -213,9 +236,16 @@ a:hover {
 
 /* Homepage picture: eleven dots on one baseline, each a link with its caption. */
 .hero-field {
+  /* The caption band under the dots: one line, two on phones. */
+  --band: 2.5rem;
   container-type: inline-size;
   position: relative;
-  padding-bottom: 2.5rem;
+  padding-bottom: var(--band);
+}
+@media (max-width: 30rem) {
+  .hero-field {
+    --band: calc(0.75rem + 2 * 1.4 * 0.875rem + 0.25rem);
+  }
 }
 /* One row at every width: the status factors add up to 6.66 dots, plus ten
    gaps of 0.1 dot, so 7.66 dots fill the field (7.75 leaves a little air). */
@@ -252,11 +282,20 @@ a:hover {
   background: none;
   color: var(--color-ink);
 }
+/* The ring goes on the dot itself, round, not on the link's box. */
+.hero-dot:focus-visible {
+  outline: none;
+}
+.hero-dot:hover .dot,
+.hero-dot:focus-visible .dot {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
 .hero-caption,
 .hero-dot-caption {
   position: absolute;
   left: 0;
-  bottom: 0;
+  top: calc(100% - var(--band) + 0.75rem);
 }
 .hero-dot-caption {
   right: 0;
@@ -274,12 +313,29 @@ a:hover {
 .work-field {
   --dot: clamp(9rem, 26vw, 19rem);
   align-items: flex-start;
-  padding-left: 18%;
+  /* The dot's left edge sits on the left edge of the short copy column. */
+  padding-left: max(0px, calc((100% - 34rem) / 2));
 }
 .cover {
   display: block;
   width: 100%;
   height: auto;
+}
+.pager {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "prev all next";
+  align-items: center;
+  column-gap: 1.5rem;
+}
+.pager-prev { grid-area: prev; justify-self: start; }
+.pager-all { grid-area: all; justify-self: center; }
+.pager-next { grid-area: next; justify-self: end; }
+@media (max-width: 40rem) {
+  .pager {
+    grid-template-columns: 1fr;
+    grid-template-areas: "prev" "next" "all";
+  }
 }
 .pager a {
   display: inline-flex;
@@ -325,8 +381,15 @@ a:hover {
   align-items: baseline;
   column-gap: clamp(0.75rem, 2vw, 1.5rem);
   padding-block: 1rem;
-  padding-inline: 0.5rem;
   border-bottom: 1px solid var(--color-ink);
+  isolation: isolate;
+}
+/* The inverted bar bleeds past the page edge, so the row text keeps the edge. */
+.index-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 -0.5rem;
+  z-index: -1;
 }
 .index-row.is-post {
   grid-template-columns: 1fr auto;
@@ -360,14 +423,17 @@ a:hover {
 }
 .index-row:hover,
 .index-row:has(a:focus-visible) {
-  background: var(--color-ink);
   color: var(--color-paper);
+}
+.index-row:hover::before,
+.index-row:has(a:focus-visible)::before {
+  background: var(--color-ink);
 }
 /* The ring moves from the link to the whole row it stands for. */
 .index-row a:focus-visible {
   outline: none;
 }
-.index-row:has(a:focus-visible) {
+.index-row:has(a:focus-visible)::before {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
 }
@@ -423,7 +489,9 @@ a:hover {
   padding: 0;
   font: inherit;
   line-height: 1.75rem;
-  resize: vertical;
+  resize: none;
+  field-sizing: content;
+  min-height: calc(6 * 1.75rem);
   /* Ruled lines: one ink line under every line of text. */
   background: repeating-linear-gradient(
     to bottom,
@@ -446,8 +514,9 @@ a:hover {
   color: var(--color-ink);
 }
 .button:disabled {
-  opacity: 0.5;
-  cursor: default;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  cursor: progress;
 }
 .notice {
   margin-bottom: 1.5rem;
@@ -570,6 +639,9 @@ a:hover {
   }
   ::view-transition-group(root) {
     animation-duration: 150ms;
+  }
+  .work-field .dot {
+    view-transition-name: work-dot;
   }
 }
 

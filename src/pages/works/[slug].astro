@@ -49,7 +49,7 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
         </figure>
       ) : (
         <div class="field work-field">
-          <StatusDot status={data.status} transition={project.id} />
+          <StatusDot status={data.status} />
         </div>
       )
     }
@@ -67,7 +67,7 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
 
     <div class="signature-block">
       <p class="signature">
-        {data.cover && <StatusDot status={data.status} transition={project.id} class="signature-dot" />}
+        {data.cover && <StatusDot status={data.status} class="signature-dot" />}
         {data.title}
       </p>
       <p class="fine">
@@ -92,32 +92,34 @@ const columns = copy.length < 420 && !hasBody ? 'columns columns-short copy' : '
             </>
           )
         }
+        {' · '}
+        <a href="/#contact">Send a note</a>
       </p>
     </div>
   </article>
 
   <nav
-    class="pager fine mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2"
+    class="pager fine mt-6"
     aria-label="More works"
   >
     <a
       href={`/works/${prev.project.id}/`}
+      class="pager-prev"
       rel="prev"
       aria-label={`Previous work: ${prev.project.data.title}`}
     >
-      <span aria-hidden="true">←</span>
       <StatusDot status={prev.project.data.status} />
       <span class="label">Nº {workNumber(prev.index)} {prev.project.data.title}</span>
     </a>
-    <a href="/works/"><span class="label">All works</span></a>
+    <a href="/works/" class="pager-all"><span class="label">All works</span></a>
     <a
       href={`/works/${next.project.id}/`}
+      class="pager-next"
       rel="next"
       aria-label={`Next work: ${next.project.data.title}`}
     >
       <span class="label">Nº {workNumber(next.index)} {next.project.data.title}</span>
       <StatusDot status={next.project.data.status} />
-      <span aria-hidden="true">→</span>
     </a>
   </nav>
 </BaseLayout>

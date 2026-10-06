@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import jostLatin from '@fontsource-variable/jost/files/jost-latin-wght-normal.woff2?url';
+import dotTravel from '../scripts/dot-travel.js?url';
 import {
   SITE_NAME,
   SITE_DESCRIPTION,
@@ -63,6 +64,7 @@ const analyticsEnabled =
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={jostLatin} as="font" type="font/woff2" crossorigin />
+    <script is:inline src={dotTravel}></script>
 
     <meta property="og:type" content={ogType} />
     {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}

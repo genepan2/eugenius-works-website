@@ -7,11 +7,9 @@ interface Props {
   projects: CollectionEntry<'projects'>[];
   /** Heading level for each headline, so the list fits the page outline. */
   level?: 'h2' | 'h3';
-  /** Name the row dots for the view transition. Only one dot per work may carry it on a page. */
-  named?: boolean;
 }
 
-const { projects, level = 'h3', named = false } = Astro.props;
+const { projects, level = 'h3' } = Astro.props;
 const Title = level;
 ---
 
@@ -21,10 +19,10 @@ const Title = level;
       <li class="index-row">
         <span class="num fine">{workNumber(i)}</span>
         <span class="row-dot">
-          <StatusDot status={project.data.status} transition={named ? project.id : undefined} />
+          <StatusDot status={project.data.status} />
         </span>
         <Title class="index-headline">
-          <a href={`/works/${project.id}/`}>{projectHeadline(project)}</a>
+          <a href={`/works/${project.id}/`} data-slug={project.id}>{projectHeadline(project)}</a>
         </Title>
         <p class="meta fine">
           {project.data.title}, {project.data.status}

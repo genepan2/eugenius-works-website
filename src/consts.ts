@@ -44,6 +44,7 @@ export const FOOTER_SITE_LINKS = [
   { label: 'Works', href: '/works/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'RSS', href: '/rss.xml' },
+  { label: 'Send a note', href: '/#contact' },
 ];
 
 export const FOOTER_LEGAL_LINKS = [
