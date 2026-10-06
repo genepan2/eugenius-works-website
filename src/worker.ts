@@ -15,6 +15,9 @@ interface Env {
 }
 
 const MAX_MESSAGE_LENGTH = 5000;
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_BODY_BYTES = 20000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 
@@ -22,20 +25,33 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 // start and is not shared between isolates or regions, so it slows a naive
 // flood rather than stopping a determined one. Upgrade path if abuse becomes
 // real: a KV namespace, or a Durable Object for a strict global counter.
+// Only a submission that passed validation and is about to be sent counts, so
+// typos and bot traps never lock a visitor out.
 const hits = new Map<string, number[]>();
 
-function rateLimited(ip: string): boolean {
+function recentHits(ip: string): number[] {
   const now = Date.now();
   const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > RATE_LIMIT;
+  if (recent.length === 0) hits.delete(ip);
+  else hits.set(ip, recent);
+  return recent;
 }
 
-function json(body: unknown, status: number): Response {
+const rateLimited = (ip: string): boolean => recentHits(ip).length >= RATE_LIMIT;
+
+function countHit(ip: string): void {
+  hits.set(ip, [...recentHits(ip), Date.now()]);
+}
+
+function json(body: unknown, status: number, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      'x-content-type-options': 'nosniff',
+      'cache-control': 'no-store',
+      ...extra,
+    },
   });
 }
 
@@ -66,10 +82,24 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return fail('Method not allowed.', 405);
   }
 
-  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
-  if (rateLimited(ip)) {
-    return fail('Too many messages from this address. Please try again later.', 429);
+  // Block cross-site posts. A form-encoded POST is a "simple request", so any
+  // site could otherwise trigger an email. Origin wins; Sec-Fetch-Site is the
+  // fallback; with neither header (curl, old browsers) the request is allowed.
+  const origin = request.headers.get('origin');
+  if (origin !== null) {
+    if (origin !== new URL(request.url).origin) return fail('Forbidden.', 403);
+  } else {
+    const site = request.headers.get('sec-fetch-site');
+    if (site !== null && site !== 'same-origin' && site !== 'none') {
+      return fail('Forbidden.', 403);
+    }
   }
+
+  if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) {
+    return fail('The submission is too large.', 413);
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown';
 
   let fields: Record<string, string>;
   try {
@@ -84,12 +114,17 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return json({ ok: true }, 200);
   }
 
-  const name = (fields.name ?? '').trim();
+  // Collapse every whitespace run, CR and LF included, so the name cannot
+  // inject a header line into the subject.
+  const name = (fields.name ?? '').replace(/\s+/g, ' ').trim();
   const email = (fields.email ?? '').trim();
   const message = (fields.message ?? '').trim();
 
   if (!name) return fail('Please enter your name.', 400);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (name.length > MAX_NAME_LENGTH) {
+    return fail(`Please keep the name under ${MAX_NAME_LENGTH} characters.`, 400);
+  }
+  if (email.length > MAX_EMAIL_LENGTH || !/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(email)) {
     return fail('Please enter a valid email address.', 400);
   }
   if (!message) return fail('Please enter a message.', 400);
@@ -103,6 +138,15 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   if (!env.RESEND_API_KEY || !env.CONTACT_FROM || !env.CONTACT_TO) {
     return fail('The contact form is not configured yet. Please send an email instead.', 503);
   }
+
+  if (rateLimited(ip)) {
+    return json(
+      { ok: false, error: 'Too many messages from this address. Please try again later.' },
+      429,
+      { 'retry-after': String(RATE_WINDOW_MS / 1000) },
+    );
+  }
+  countHit(ip);
 
   let response: Response;
   try {
@@ -120,11 +164,13 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
         text: `Name: ${name}\nEmail: ${email}\n\n${message}\n`,
       }),
     });
-  } catch {
+  } catch (error) {
+    console.error('contact: resend request failed', error instanceof Error ? error.name : 'unknown');
     return fail('The message could not be sent. Please try again later.', 502);
   }
 
   if (!response.ok) {
+    console.error('contact: resend returned', response.status);
     // Resend's own error body may name the key or the account. Do not pass it on.
     return fail('The message could not be sent. Please try again later.', 502);
   }
@@ -141,10 +187,15 @@ export default {
 
       // Without JavaScript the browser posts the form itself and would land on
       // a bare JSON page. Send it back to the homepage instead, where the
-      // #contact-sent or #contact-failed notice shows through :target.
+      // #contact-sent, #contact-failed (bad input) or #contact-busy (anything
+      // else) notice shows through :target.
       const isJson = (request.headers.get('content-type') ?? '').includes('application/json');
       if (request.method === 'POST' && !isJson) {
-        const fragment = response.ok ? '/#contact-sent' : '/#contact-failed';
+        const fragment = response.ok
+          ? '/#contact-sent'
+          : response.status === 400
+            ? '/#contact-failed'
+            : '/#contact-busy';
         return Response.redirect(new URL(fragment, request.url).href, 303);
       }
       return response;

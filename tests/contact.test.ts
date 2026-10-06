@@ -22,9 +22,12 @@ const post = (body: unknown, ip = '1.1.1.1', path = '/api/contact') =>
 const valid = { name: 'Ada', email: 'ada@example.com', message: 'Hello.' };
 
 let sent = 0;
-globalThis.fetch = (async () => {
+let resendStatus = 200;
+let lastBody: any;
+globalThis.fetch = (async (_url: unknown, init?: RequestInit) => {
   sent++;
-  return new Response('{}', { status: 200 });
+  lastBody = JSON.parse(String(init?.body));
+  return new Response('{}', { status: resendStatus });
 }) as typeof fetch;
 
 const run = async (req: Request, env = ENV) => {
@@ -92,5 +95,60 @@ const failRedirect = await worker.fetch(
 );
 assert.equal(failRedirect.status, 303);
 assert.equal(failRedirect.headers.get('location'), 'https://x/#contact-failed');
+
+// Origin: a foreign origin is 403 and sends nothing; the same origin passes.
+const withHeaders = (headers: Record<string, string>, ip: string, body: unknown = valid) =>
+  new Request('https://x/api/contact', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'CF-Connecting-IP': ip, ...headers },
+    body: JSON.stringify(body),
+  });
+const originBefore = sent;
+assert.equal((await run(withHeaders({ origin: 'https://evil.example' }, '10.0.0.1'))).status, 403);
+assert.equal(
+  (await run(withHeaders({ 'sec-fetch-site': 'cross-site' }, '10.0.0.1'))).status,
+  403,
+);
+assert.equal(sent, originBefore, 'a cross-site post must send nothing');
+assert.equal((await run(withHeaders({ origin: 'https://x' }, '10.0.0.2'))).status, 200);
+assert.equal((await run(withHeaders({ 'sec-fetch-site': 'same-origin' }, '10.0.0.3'))).status, 200);
+
+// Body size cap.
+assert.equal(
+  (await run(withHeaders({ 'content-length': '20001' }, '10.0.0.4'))).status,
+  413,
+);
+
+// A name with CR/LF reaches Resend as one line.
+assert.equal((await run(post({ ...valid, name: 'A\r\nBcc: x@y.z' }, '10.0.0.5'))).status, 200);
+assert.ok(!/[\r\n]/.test(lastBody.subject), 'subject must be a single line');
+
+// Over-long name and bad email characters are 400.
+assert.equal((await run(post({ ...valid, name: 'a'.repeat(101) }, '10.0.0.6'))).status, 400);
+assert.equal((await run(post({ ...valid, email: 'a,b@c.de' }, '10.0.0.6'))).status, 400);
+assert.equal((await run(post({ ...valid, email: 'a<b>@c.de' }, '10.0.0.6'))).status, 400);
+
+// Invalid submissions do not count toward the rate limit.
+for (let i = 0; i < 5; i++) await run(post({ ...valid, name: '' }, '10.0.0.7'));
+assert.equal((await run(post(valid, '10.0.0.7'))).status, 200);
+
+// The 429 carries retry-after.
+for (let i = 0; i < 5; i++) await run(post(valid, '10.0.0.8'));
+const limited = await worker.fetch(post(valid, '10.0.0.8'), ENV as any, {} as any);
+assert.equal(limited.status, 429);
+assert.equal(limited.headers.get('retry-after'), '600');
+
+// A form-encoded 429 redirects to the busy notice.
+const busy429 = await worker.fetch(formPost(valid, '10.0.0.8'), ENV as any, {} as any);
+assert.equal(busy429.status, 303);
+assert.equal(busy429.headers.get('location'), 'https://x/#contact-busy');
+
+// A Resend 500 is a 502, and a form-encoded post redirects to the busy notice.
+resendStatus = 500;
+assert.equal((await run(post(valid, '10.0.0.9'))).status, 502);
+const busy502 = await worker.fetch(formPost(valid, '10.0.0.10'), ENV as any, {} as any);
+assert.equal(busy502.status, 303);
+assert.equal(busy502.headers.get('location'), 'https://x/#contact-busy');
+resendStatus = 200;
 
 console.log('contact worker: all checks passed');
