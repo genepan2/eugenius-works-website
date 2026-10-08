@@ -120,6 +120,27 @@ node tests/contact.test.ts
 The test runs the Worker with a stubbed `fetch`. It sends no real request. It needs a Node
 version that runs TypeScript files directly.
 
+### End-to-end test
+
+```
+npm run test:e2e
+```
+
+This test is not part of `npm test`. It sends a real email through the live site.
+
+- It opens `/contact/` in your installed Google Chrome and submits the form.
+- The name field holds a unique token, so the subject identifies the run.
+- It then asks the Resend API for that email and waits for the `delivered` event.
+
+The Worker allows 5 sends per 10 minutes per IP address. Do not run the test in a loop.
+
+The receipt check needs a Resend API key with full access. A send-only key cannot read
+emails. Set `RESEND_API_KEY` in the environment, or put it in `.dev.vars`. Without a key,
+the form part runs and the test prints `RECEIPT CHECK SKIPPED`. Set `E2E_REQUIRE_RECEIPT=1`
+to make a skipped receipt check a failure.
+
+Set `E2E_BASE_URL` to test a different host. The default is `https://eugenius-works.com`.
+
 ## Before deploying
 
 Set `CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts` to the real Cloudflare Web Analytics
