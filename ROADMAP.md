@@ -1,21 +1,21 @@
 # Roadmap: eugenius-works-website
 
-_updated 2026-10-06 by Claude_
+_updated 2026-10-08 by Claude_
 
-The live site at https://eugenius-works.com still shows the design from 2026-10-01. A
-full redesign and a technical hardening pass are committed on `main` but NOT pushed. The
-owner looks at them first.
+The plain "Two words" redesign and the technical hardening are live at
+https://eugenius-works.com since 2026-10-08.
 
 ## active
 
-### review and deploy the redesign — decided
-next: look at the local build (`npm run build && npx wrangler dev`), then `git push`
-last: 2026-10-06
-The plain "Two words" design is built and committed. Pushing `main` deploys it. After the
-deploy, check on the real domain: the security headers, `/projects/extraseat` →
-`/works/extraseat/`, and the contact form with a real message.
-→ DESIGN.md
-→ PRODUCT.md
+### contact form receipt check — open
+next: create a full-access Resend API key, put it in `.dev.vars` as `RESEND_API_KEY`, run
+`npm run test:e2e`
+last: 2026-10-08
+The end-to-end test sends the live form in a browser and passed on 2026-10-08. Its second
+half asks Resend whether the email was delivered; that half is skipped without a key that
+can read emails. Also look in the `hey@` mailbox for the subject
+`Contact form: E2E 1791437125705-6agfje`.
+→ tests/contact.e2e.ts
 
 ### cloudflare dashboard settings — open
 next: turn on SSL/TLS → Edge Certificates → "Always Use HTTPS"; decide about `www`
@@ -60,6 +60,14 @@ The design is black and white so that color images can carry the color. No image
 yet. A `cover` field is ready on projects and posts.
 
 ## done
+
+### blog reading time and share links — 2026-10-08
+A post shows "N min read" on its date line and a plain "Share: X, LinkedIn, Email" line
+below the text. No script, no icon.
+
+### redesign deployed — 2026-10-08
+Pushed on the owner's word. Checked on the real domain: the security headers, and
+`/projects/extraseat` → `/works/extraseat/`.
 
 ### plain "Two words" redesign — 2026-10-06
 One typeface (Jost, self-hosted), black and white only. The landing page holds two
