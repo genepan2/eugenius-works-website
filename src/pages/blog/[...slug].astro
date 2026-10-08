@@ -5,6 +5,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedPosts } from '../../content';
 import { postLd } from '../../jsonld';
+import { readingTime } from '../../reading-time';
 
 // Drafts are excluded here too, so they get no page in the build output.
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -15,6 +16,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
+const minutes = readingTime(post.body ?? '');
 ---
 
 <BaseLayout
@@ -30,6 +32,7 @@ const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post
       <p class="fine">
         <time datetime={post.data.date.toISOString()}>{date}</time>
         {post.data.tags.length > 0 && <span>, {post.data.tags.join(', ')}</span>}
+        <span>, {minutes} min read</span>
       </p>
     </header>
 

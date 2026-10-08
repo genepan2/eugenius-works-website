@@ -7,6 +7,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readingTime } from '../src/reading-time.ts';
+
+assert.equal(readingTime(''), 1);
+assert.equal(readingTime(' \n '), 1);
+assert.equal(readingTime('word '.repeat(230)), 1);
+assert.equal(readingTime('word '.repeat(231)), 2);
 
 const DIST = resolve(dirname(fileURLToPath(import.meta.url)), '../dist');
 if (!existsSync(DIST)) {
