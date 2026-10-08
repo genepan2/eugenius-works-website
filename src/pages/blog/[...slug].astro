@@ -17,6 +17,9 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
 const minutes = readingTime(post.body ?? '');
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const url = encodeURIComponent(canonical);
+const text = encodeURIComponent(post.data.title);
 ---
 
 <BaseLayout
@@ -24,7 +27,7 @@ const minutes = readingTime(post.body ?? '');
   description={post.data.description}
   ogType="article"
   publishedTime={post.data.date}
-  jsonLd={postLd(post.data.title, post.data.date, new URL(Astro.url.pathname, Astro.site).href)}
+  jsonLd={postLd(post.data.title, post.data.date, canonical)}
 >
   <article>
     <header class="page-head">
@@ -53,6 +56,13 @@ const minutes = readingTime(post.body ?? '');
       <Content />
     </div>
   </article>
+
+  <p class="fine mt-12">
+    {'Share: '}
+    <a href={`https://x.com/intent/post?url=${url}&text=${text}`} rel="noopener noreferrer">X</a>{', '}
+    <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${url}`} rel="noopener noreferrer">LinkedIn</a>{', '}
+    <a href={`mailto:?subject=${text}&body=${url}`}>Email</a>
+  </p>
 
   <p class="fine mt-12">
     <a href="/blog/" class="inline-flex min-h-9 items-center">All posts</a>
