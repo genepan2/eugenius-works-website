@@ -29,5 +29,5 @@ npm-debug.log*
 .impeccable/build/
 
 # other agents' worktrees
-.claude/
+.claude/worktrees/
 .impeccable/questions/
