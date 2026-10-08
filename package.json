@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && wrangler deploy",
-    "test": "node tests/contact.test.ts && node tests/site.test.ts"
+    "test": "node tests/contact.test.ts && node tests/site.test.ts",
+    "test:e2e": "node tests/contact.e2e.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -23,6 +24,7 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "playwright-core": "1.64.0",
     "wrangler": "4.147.0"
   }
 }
