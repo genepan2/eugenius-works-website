@@ -422,6 +422,7 @@ main > .sr-only + section .word {
   .contact-form,
   .colophon ul,
   .pager,
+  .share,
   .skip-link {
     display: none;
   }
