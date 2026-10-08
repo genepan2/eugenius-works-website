@@ -6,7 +6,7 @@ export const AUTHOR = 'Eugen Panov';
 export const ENTITY = 'Eugenius Works OÜ';
 
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/eugenpanov';
-export const X_URL = 'https://x.com/eugenpanov';
+export const X_URL = 'https://x.com/eugeniusiam';
 
 // TODO: the owner must replace this with the real Cloudflare Web Analytics site
 // token from the Cloudflare dashboard. While it is left as the placeholder below,
