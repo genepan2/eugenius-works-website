@@ -240,7 +240,7 @@ A real table with visually hidden column heads ("Work", "Description").
 - **Hover:** only the name is a link. It inverts and gets an underline. The row itself has no hover state.
 
 ### Post List
-A list in the same ruled form: a hairline above and between the items, none under the last item, 1.25rem padding. Each item is the post title (600, body size, underlined link) and the date in fine print. On a post page the date and the tags stand in one line with commas between them. An empty blog shows the line "No posts yet." and the footer shows no blog link.
+A list in the same ruled form: a hairline above and between the items, none under the last item, 1.25rem padding. Each item is the post title (600, body size, underlined link) and the date in fine print. On a post page the date, the tags and the reading time ("4 min read") stand in one line with commas between them. After the post text stands one line of fine print with the share links (X, LinkedIn, Email), with commas between them. The links are plain links without a script. An empty blog shows the line "No posts yet." and the footer shows no blog link.
 
 ### Work Page
 The display word is the title of the work in the long display role, with the status word in fine print 0.5rem below it. Then the description and the optional body in the reading column. Then one line of fine print with the links (Website, Repository, Send a note), with commas between them. The pager closes the page.
