@@ -114,11 +114,17 @@ script.
 ## Tests
 
 ```
-node tests/contact.test.ts
+npm run build && npm test
 ```
 
-The test runs the Worker with a stubbed `fetch`. It sends no real request. It needs a Node
-version that runs TypeScript files directly.
+`npm test` runs the Worker tests, checks the built site in `dist/`, and checks that
+`AGENTS.md` names only commands and files that exist. The Worker tests use a stubbed
+`fetch` and send no real request. They need a Node version that runs TypeScript files
+directly.
+
+The contact API is described in `docs/openapi.json`, and `tests/openapi.test.ts` checks
+the Worker against it. `docs/api.md` is generated from the spec: after changing the spec,
+run `npm run docs`. `npm test` fails while the two differ.
 
 ### End-to-end test
 

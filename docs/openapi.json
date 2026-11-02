@@ -1,0 +1,120 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Contact API",
+    "version": "1.0.0",
+    "description": "The Cloudflare Worker in `src/worker.ts` runs only for `/api/*` requests. Every other path is a static file from `dist/`. Any `/api/` path other than `/api/contact` answers 404 with an `Error` body."
+  },
+  "servers": [
+    { "url": "https://eugenius-works.com", "description": "production" },
+    { "url": "http://localhost:8787", "description": "`npm run build`, then `npx wrangler dev` with `.dev.vars`" }
+  ],
+  "paths": {
+    "/api/contact": {
+      "description": "Every method other than POST answers 405 with an `Error` body.",
+      "post": {
+        "operationId": "sendContactMessage",
+        "summary": "Send a contact form message by email",
+        "description": "Forwards the message through Resend to `CONTACT_TO`, with the sender's address as reply-to. The checks run in this order: origin, body size, body parsing, honeypot, fields, configuration, rate limit, delivery. A JSON request gets a JSON answer. Any other content type is the form post a browser sends without JavaScript, and it gets a 303 redirect to a notice on `/contact/` instead.",
+        "requestBody": {
+          "required": true,
+          "description": "At most 20000 bytes by `Content-Length`. A post from another site is refused: the `Origin` header must match the request's origin, or without `Origin`, `Sec-Fetch-Site` must be `same-origin` or `none`.",
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ContactMessage" } },
+            "application/x-www-form-urlencoded": { "schema": { "$ref": "#/components/schemas/ContactMessage" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sent. A filled honeypot gets the same answer and sends nothing.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Success" } } }
+          },
+          "303": {
+            "description": "Form posts only. Redirects to the notice for the result: `#contact-sent` on success, `#contact-failed` for invalid input, `#contact-busy` for every other failure.",
+            "headers": {
+              "Location": {
+                "description": "The notice on `/contact/` of the request's origin.",
+                "schema": { "type": "string", "pattern": "^https?://[^/]+/contact/#contact-(sent|failed|busy)$" }
+              }
+            }
+          },
+          "400": {
+            "description": "A field is missing or breaks a rule, or the body cannot be read.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          },
+          "403": {
+            "description": "The post came from another site.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          },
+          "413": {
+            "description": "`Content-Length` is over 20000 bytes.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          },
+          "429": {
+            "description": "More than 5 valid messages from one IP address in 10 minutes. Invalid submissions do not count. The limit lives in Worker memory, so it resets on a cold start.",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait.",
+                "schema": { "type": "string", "pattern": "^[0-9]+$" }
+              }
+            },
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          },
+          "502": {
+            "description": "Resend could not be reached or refused the message. Resend's own error is never passed on.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          },
+          "503": {
+            "description": "`RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ContactMessage": {
+        "type": "object",
+        "required": ["name", "email", "message"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Every run of whitespace, line breaks included, becomes one space before the check, so the name cannot add a line to the email subject."
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "pattern": "^[^\\s@,<>]+@[^\\s@,<>]+\\.[^\\s@,<>]+$",
+            "description": "The reply-to address of the email."
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "description": "Plain text."
+          },
+          "company": {
+            "type": "string",
+            "description": "Honeypot, hidden from people. Any value other than whitespace makes the Worker answer 200 and send nothing."
+          }
+        }
+      },
+      "Success": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": { "ok": { "const": true } }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["ok", "error"],
+        "properties": {
+          "ok": { "const": false },
+          "error": { "type": "string", "description": "One sentence to show to the visitor." }
+        }
+      }
+    }
+  }
+}

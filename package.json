@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && wrangler deploy",
-    "test": "node tests/contact.test.ts && node tests/site.test.ts",
+    "test": "node tests/contact.test.ts && node tests/openapi.test.ts && node scripts/gen-api-docs.ts --check && node tests/agents-md.test.ts && node tests/site.test.ts",
+    "docs": "node scripts/gen-api-docs.ts",
     "test:e2e": "node tests/contact.e2e.ts"
   },
   "dependencies": {
