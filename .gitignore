@@ -17,11 +17,21 @@ node_modules/
 .env.local
 .env.*.local
 
-# macOS
+# editors and OS files
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+
+# coverage
+coverage/
 
 # logs
 npm-debug.log*
+*.log
 
 # wrangler local state
 .wrangler/
