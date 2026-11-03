@@ -1,0 +1,37 @@
+# Labels for issues and pull requests. .github/workflows/labels.yml applies this file.
+- name: bug
+  color: d73a4a
+  description: Something does not work
+- name: enhancement
+  color: a2eeef
+  description: A new feature or an improvement
+- name: content
+  color: 5319e7
+  description: Text, projects or blog posts
+- name: design
+  color: 000000
+  description: Visual change; needs the owner's approval of a rendered image
+- name: contact-form
+  color: fbca04
+  description: The /api/contact Worker or the form
+- name: documentation
+  color: 0075ca
+  description: Docs, AGENTS.md or skills
+- name: dependencies
+  color: 0366d6
+  description: Dependency updates
+- name: security
+  color: b60205
+  description: Security problem or hardening
+- name: triage
+  color: ededed
+  description: New; not yet sorted
+- name: accessibility
+  color: f143ab
+  description: Barrier affecting people with disabilities
+- name: duplicate
+  color: cfd3d7
+  description: Already reported
+- name: wontfix
+  color: ffffff
+  description: Will not be done

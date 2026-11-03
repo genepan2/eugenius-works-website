@@ -1,0 +1,32 @@
+name: Labels
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/labels.yml, .github/workflows/labels.yml]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create or update each label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import re, subprocess
+          text = open('.github/labels.yml').read()
+          for block in re.split(r'\n(?=- name:)', text):
+              fields = dict(re.findall(r'(name|color|description): (.*)', block))
+              if 'name' not in fields:
+                  continue
+              subprocess.run(['gh', 'label', 'create', fields['name'], '--force',
+                              '--color', fields['color'], '--description', fields.get('description', '')],
+                             check=True)
+          PY
