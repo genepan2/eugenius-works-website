@@ -21,7 +21,8 @@
     "format:check": "prettier --check .",
     "knip": "knip",
     "duplicates": "jscpd",
-    "size:files": "node scripts/check-file-size.ts"
+    "size:files": "node scripts/check-file-size.ts",
+    "size:bundle": "node scripts/check-bundle-size.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
