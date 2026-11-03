@@ -22,6 +22,7 @@ Cloudflare; only `/api/*` runs code (`src/worker.ts`).
 | `resend.request_failed`  | warn  | One attempt failed: network error or the 8 second timeout      |
 | `resend.failed`          | error | Resend refused the message, also on the retry; has `status`    |
 | `resend.circuit_opened`  | error | 5 failed messages in a row; Resend is not called for 60 s      |
+| `contact.disabled`       | warn  | The form is paused by `FLAG_CONTACT_FORM=off`                  |
 | `contact.not_configured` | error | A setting is missing; the form answers 503                     |
 
 Logs never hold what a visitor typed, their address or their IP (`src/log.ts`). To read
@@ -30,11 +31,42 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
 ## Alerts
 
 - **Health check:** the GitHub Actions workflow `.github/workflows/health.yml` calls
-  `/api/health` every 30 minutes. When it fails, GitHub emails the repository owner.
+  `/api/health` and the home page every 30 minutes. A failure opens an issue labelled
+  `incident`, or comments on the open one; the next healthy run closes it. GitHub also
+  emails the owner about the failed run.
 - **Error logs:** a Workers Observability alert in the Cloudflare dashboard
   (Workers & Pages → `eugenius-works-website` → Observability → Alerts) when `error`
   lines exceed 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in
   the dashboard and is still open on `ROADMAP.md`.
+
+## Metrics
+
+Each `/api/` request writes one data point to the Analytics Engine dataset
+`eugenius_works_api` (`src/metrics.ts`): `index1` is the path, `blob1` the method,
+`blob2` the status, `blob3` the outcome, `double1` the milliseconds, `double2` 1 for a
+5xx. Query it in the dashboard (Workers & Pages → Analytics Engine → SQL), for example
+after a deploy:
+
+```sql
+SELECT blob3 AS outcome, count() AS requests, avg(double1) AS avg_ms
+FROM eugenius_works_api
+WHERE timestamp > NOW() - INTERVAL '1' HOUR
+GROUP BY outcome
+```
+
+Workers & Pages → `eugenius-works-website` → Metrics shows requests, errors and CPU
+time per deployment without a query.
+
+## Feature flags
+
+`src/flags.ts` lists the flags. Each is a Worker variable, `on` or `off`, and takes
+effect on the next request after it is saved in the dashboard (Settings → Variables and
+Secrets) or deployed through `vars` in `wrangler.jsonc`.
+
+- `FLAG_CONTACT_FORM=off` pauses the contact form: it answers 503 and shows the busy
+  notice, and `/api/health` reports 503. Use it when the form is abused or Resend
+  misbehaves.
+- `FLAG_METRICS=off` stops the data points.
 
 ## The contact form fails
 
@@ -48,7 +80,8 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
    - `429`: Resend's own limit. Wait; the breaker already holds off.
    - `5xx` or `resend.request_failed`: Resend is down. Check https://resend-status.com.
      The form answers "busy" and recovers on its own.
-3. Many `contact.rate_limited` lines from one burst mean a bot. The limit is per isolate
+3. Many `contact.rate_limited` lines from one burst mean a bot. Pause the form with
+   `FLAG_CONTACT_FORM=off` while you act. The limit is per isolate
    (see the comment in `src/worker.ts`). If it persists, add a Cloudflare WAF rate
    limiting rule on `/api/contact`.
 

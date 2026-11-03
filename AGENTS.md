@@ -23,7 +23,7 @@ The content security policy in `public/_headers` allows only same-origin scripts
 
 ## Contact API
 
-`docs/openapi.json` is the contract of `src/worker.ts`, and `tests/unit/openapi.test.ts` drives the Worker against it. A change to the Worker's behavior updates the spec, then `npm run docs`. Log through `src/log.ts`, never `console` directly: it drops what a visitor typed. The skill `contact-api-change` has the steps.
+`docs/openapi.json` is the contract of `src/worker.ts`, and `tests/unit/openapi.test.ts` drives the Worker against it. A change to the Worker's behavior updates the spec, then `npm run docs`. Log through `src/log.ts`, never `console` directly: it drops what a visitor typed. Put a risky Worker change behind a flag in `src/flags.ts`, default off until the owner turns it on. The skill `contact-api-change` has the steps.
 
 ## Records
 
