@@ -55,6 +55,6 @@
     "secretlint": "13.1.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
-    "wrangler": "4.147.0"
+    "wrangler": "4.157.0"
   }
 }
