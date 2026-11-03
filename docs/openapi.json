@@ -3,10 +3,13 @@
   "info": {
     "title": "Contact API",
     "version": "1.0.0",
-    "description": "The Cloudflare Worker in `src/worker.ts` runs only for `/api/*` requests. Every other path is a static file from `dist/`. Any `/api/` path other than `/api/contact` answers 404 with an `Error` body."
+    "description": "The Cloudflare Worker in `src/worker.ts` runs only for `/api/*` requests. Every other path is a static file from `dist/`. Any other `/api/` path answers 404 with an `Error` body. Every `/api/` answer carries an `X-Request-Id` header: Cloudflare's ray ID, or a random UUID without one. The Worker's log lines carry the same ID."
   },
   "servers": [
-    { "url": "https://eugenius-works.com", "description": "production" },
+    {
+      "url": "https://eugenius-works.com",
+      "description": "production"
+    },
     {
       "url": "http://localhost:8787",
       "description": "`npm run build`, then `npx wrangler dev` with `.dev.vars`"
@@ -23,9 +26,15 @@
           "required": true,
           "description": "At most 20000 bytes by `Content-Length`. A post from another site is refused: the `Origin` header must match the request's origin, or without `Origin`, `Sec-Fetch-Site` must be `same-origin` or `none`.",
           "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/ContactMessage" } },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactMessage"
+              }
+            },
             "application/x-www-form-urlencoded": {
-              "schema": { "$ref": "#/components/schemas/ContactMessage" }
+              "schema": {
+                "$ref": "#/components/schemas/ContactMessage"
+              }
             }
           }
         },
@@ -33,7 +42,11 @@
           "200": {
             "description": "Sent. A filled honeypot gets the same answer and sends nothing.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Success" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Success"
+                }
+              }
             }
           },
           "303": {
@@ -51,19 +64,31 @@
           "400": {
             "description": "A field is missing or breaks a rule, or the body cannot be read.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           },
           "403": {
             "description": "The post came from another site.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           },
           "413": {
             "description": "`Content-Length` is over 20000 bytes.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           },
           "429": {
@@ -71,23 +96,68 @@
             "headers": {
               "Retry-After": {
                 "description": "Seconds to wait.",
-                "schema": { "type": "string", "pattern": "^[0-9]+$" }
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
               }
             },
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           },
           "502": {
-            "description": "Resend could not be reached or refused the message. Resend's own error is never passed on.",
+            "description": "Resend could not be reached, timed out after 8 seconds, or refused the message, also on one retry. After 5 failed messages in a row the Worker stops calling Resend for 60 seconds and answers 502 at once. Resend's own error is never passed on.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           },
           "503": {
             "description": "`RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which.",
             "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "description": "Every method other than GET and HEAD answers 405 with an `Error` body.",
+      "get": {
+        "operationId": "checkHealth",
+        "summary": "Check whether the contact form can send",
+        "description": "For uptime monitors. Sends nothing and does not call Resend. It reports whether the three settings are present, without naming a missing one.",
+        "responses": {
+          "200": {
+            "description": "The form is configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A setting is missing, so the form would answer 503.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
             }
           }
         }
@@ -127,14 +197,33 @@
       "Success": {
         "type": "object",
         "required": ["ok"],
-        "properties": { "ok": { "const": true } }
+        "properties": {
+          "ok": {
+            "const": true
+          }
+        }
       },
       "Error": {
         "type": "object",
         "required": ["ok", "error"],
         "properties": {
-          "ok": { "const": false },
-          "error": { "type": "string", "description": "One sentence to show to the visitor." }
+          "ok": {
+            "const": false
+          },
+          "error": {
+            "type": "string",
+            "description": "One sentence to show to the visitor."
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "`true` when the form can send."
+          }
         }
       }
     }

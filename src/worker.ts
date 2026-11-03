@@ -6,6 +6,8 @@
  * email through the Resend REST API. The Astro output stays static and needs
  * no adapter.
  */
+import { log } from './log.ts';
+import { sendEmail } from './resend.ts';
 
 interface Env {
   RESEND_API_KEY?: string;
@@ -105,7 +107,9 @@ function validate(fields: Record<string, string>): ContactMessage | string {
   return { name, email, message };
 }
 
-async function handleContact(request: Request, env: Env): Promise<Response> {
+const configured = (env: Env) => Boolean(env.RESEND_API_KEY && env.CONTACT_FROM && env.CONTACT_TO);
+
+async function handleContact(request: Request, env: Env, requestId: string): Promise<Response> {
   if (request.method !== 'POST') {
     return fail('Method not allowed.', 405);
   }
@@ -149,11 +153,13 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   // The key is missing until the owner sets it in the Worker's dashboard under
   // Settings > Variables and Secrets. Say the form is unconfigured without
   // revealing which binding is absent.
-  if (!env.RESEND_API_KEY || !env.CONTACT_FROM || !env.CONTACT_TO) {
+  if (!configured(env)) {
+    log('error', 'contact.not_configured', { requestId });
     return fail('The contact form is not configured yet. Please send an email instead.', 503);
   }
 
   if (rateLimited(ip)) {
+    log('warn', 'contact.rate_limited', { requestId });
     return json(
       { ok: false, error: 'Too many messages from this address. Please try again later.' },
       429,
@@ -162,65 +168,79 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   }
   countHit(ip);
 
-  let response: Response;
-  try {
-    response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${env.RESEND_API_KEY}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: env.CONTACT_FROM,
-        to: [env.CONTACT_TO],
-        reply_to: email,
-        subject: `Contact form: ${name}`,
-        text: `Name: ${name}\nEmail: ${email}\n\n${message}\n`,
-      }),
-    });
-  } catch (error) {
-    console.error(
-      'contact: resend request failed',
-      error instanceof Error ? error.name : 'unknown',
-    );
-    return fail('The message could not be sent. Please try again later.', 502);
-  }
-
-  if (!response.ok) {
-    console.error('contact: resend returned', response.status);
-    // Resend's own error body may name the key or the account. Do not pass it on.
-    return fail('The message could not be sent. Please try again later.', 502);
-  }
-
+  const sent = await sendEmail(
+    env.RESEND_API_KEY!,
+    {
+      from: env.CONTACT_FROM!,
+      to: env.CONTACT_TO!,
+      replyTo: email,
+      subject: `Contact form: ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}\n`,
+    },
+    requestId,
+  );
+  // Resend's own error body may name the key or the account. It is never passed on.
+  if (!sent) return fail('The message could not be sent. Please try again later.', 502);
+  log('info', 'contact.sent', { requestId });
   return json({ ok: true }, 200);
+}
+
+async function handleApi(request: Request, env: Env, requestId: string): Promise<Response> {
+  const { pathname } = new URL(request.url);
+
+  // For uptime checks: answers without sending anything, and says whether the
+  // form could send, not which setting is missing.
+  if (pathname === '/api/health') {
+    if (request.method !== 'GET' && request.method !== 'HEAD')
+      return fail('Method not allowed.', 405);
+    const ready = configured(env);
+    return json({ ok: ready }, ready ? 200 : 503);
+  }
+
+  if (pathname === '/api/contact') {
+    const response = await handleContact(request, env, requestId);
+
+    // Without JavaScript the browser posts the form itself and would land on
+    // a bare JSON page. Send it back to the contact page instead, where the
+    // #contact-sent, #contact-failed (bad input) or #contact-busy (anything
+    // else) notice shows through :target.
+    const isJson = (request.headers.get('content-type') ?? '').includes('application/json');
+    if (request.method === 'POST' && !isJson) {
+      const fragment = response.ok
+        ? '/contact/#contact-sent'
+        : response.status === 400
+          ? '/contact/#contact-failed'
+          : '/contact/#contact-busy';
+      return Response.redirect(new URL(fragment, request.url).href, 303);
+    }
+    return response;
+  }
+
+  // Any other /api/ path answers as JSON. Falling through would serve the
+  // HTML 404 page to something that asked for an API.
+  return fail('Not found.', 404);
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
 
-    if (pathname === '/api/contact') {
-      const response = await handleContact(request, env);
-
-      // Without JavaScript the browser posts the form itself and would land on
-      // a bare JSON page. Send it back to the contact page instead, where the
-      // #contact-sent, #contact-failed (bad input) or #contact-busy (anything
-      // else) notice shows through :target.
-      const isJson = (request.headers.get('content-type') ?? '').includes('application/json');
-      if (request.method === 'POST' && !isJson) {
-        const fragment = response.ok
-          ? '/contact/#contact-sent'
-          : response.status === 400
-            ? '/contact/#contact-failed'
-            : '/contact/#contact-busy';
-        return Response.redirect(new URL(fragment, request.url).href, 303);
-      }
-      return response;
+    if (pathname.startsWith('/api/')) {
+      // Cloudflare's ray ID ties this log line to the request in the dashboard.
+      const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
+      const started = Date.now();
+      const response = await handleApi(request, env, requestId);
+      log(response.status >= 500 ? 'error' : 'info', 'api.request', {
+        requestId,
+        method: request.method,
+        path: pathname,
+        status: response.status,
+        ms: Date.now() - started,
+      });
+      const headers = new Headers(response.headers);
+      headers.set('x-request-id', requestId);
+      return new Response(response.body, { status: response.status, headers });
     }
-
-    // Any other /api/ path answers as JSON. Falling through would serve the
-    // HTML 404 page to something that asked for an API.
-    if (pathname.startsWith('/api/')) return fail('Not found.', 404);
 
     // Safety net only: run_worker_first is scoped to "/api/*", so normal page
     // and asset requests are served from the asset store without ever

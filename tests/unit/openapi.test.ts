@@ -34,6 +34,8 @@ function mismatch(schema: Schema, value: unknown): string {
   if (s.const !== undefined && value !== s.const) {
     return `expected ${JSON.stringify(s.const)}, got ${JSON.stringify(value)}`;
   }
+  if (s.type === 'boolean' && typeof value !== 'boolean')
+    return `expected a boolean, got ${typeof value}`;
   if (s.type === 'string' && typeof value !== 'string')
     return `expected a string, got ${typeof value}`;
   if (s.type === 'object') {
@@ -215,4 +217,32 @@ test('other methods get 405 and other /api/ paths get 404, as the spec says', as
 // Runs last: tests in one file run in order.
 test('no documented status is stale', () => {
   assert.deepEqual([...seen].sort(), Object.keys(op.responses).sort());
+});
+
+test('the health check answers as the spec says', async () => {
+  const health = spec.paths['/api/health'].get;
+  for (const [env, status] of [
+    [ENV, '200'],
+    [{ ASSETS }, '503'],
+  ] as const) {
+    const res = await worker.fetch(new Request('https://x/api/health'), env as any);
+    assert.equal(String(res.status), status);
+    const why = mismatch(
+      health.responses[status].content['application/json'].schema,
+      await res.json(),
+    );
+    assert.equal(why, '');
+  }
+  const post = await worker.fetch(
+    new Request('https://x/api/health', { method: 'POST' }),
+    ENV as any,
+  );
+  assert.equal(post.status, 405);
+  assert.match(spec.paths['/api/health'].description, /\b405\b/);
+});
+
+test('every API answer carries the documented X-Request-Id header', async () => {
+  const res = await worker.fetch(new Request('https://x/api/health'), ENV as any);
+  assert.ok(res.headers.get('x-request-id'));
+  assert.match(spec.info.description, /X-Request-Id/);
 });

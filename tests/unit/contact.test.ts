@@ -99,6 +99,35 @@ test('invalid submissions do not count toward the rate limit', async () => {
   assert.equal((await run(post(valid, '10.0.0.7'))).status, 200);
 });
 
+test('every API answer carries the request ID, taken from cf-ray when present', async () => {
+  const res = await send(post(valid, '11.0.0.1', { 'cf-ray': 'abc123-FRA' }));
+  assert.equal(res.headers.get('x-request-id'), 'abc123-FRA');
+  const other = await send(new Request('https://x/api/nope'));
+  assert.match(other.headers.get('x-request-id') ?? '', /^[0-9a-f-]{36}$/);
+});
+
+test('the health check says whether the form can send, and sends nothing', async () => {
+  const before = sent;
+  const ready = await run(new Request('https://x/api/health'));
+  assert.deepEqual([ready.status, ready.body], [200, { ok: true }]);
+  const notReady = await run(new Request('https://x/api/health'), { ASSETS });
+  assert.deepEqual([notReady.status, notReady.body], [503, { ok: false }]);
+  assert.equal((await send(new Request('https://x/api/health', { method: 'POST' }))).status, 405);
+  assert.equal(sent, before);
+});
+
+test('no log line carries what the visitor typed', async (t) => {
+  const lines: string[] = [];
+  for (const level of ['log', 'warn', 'error'] as const) {
+    t.mock.method(console, level, (line: string) => lines.push(line));
+  }
+  await send(post({ ...valid, name: 'Secret Name' }, '11.0.0.2'));
+  assert.ok(lines.length > 0);
+  for (const line of lines) {
+    assert.doesNotMatch(line, /Secret Name|ada@example\.com|Hello\.|11\.0\.0\.2/);
+  }
+});
+
 test('a page request reaches the asset store', async () => {
   const page = await send(new Request('https://x/'));
   assert.equal(await page.text(), 'ASSET_SENTINEL');

@@ -76,16 +76,17 @@ function render(): string {
         '',
       );
       if (item.description) lines.push(item.description, '');
-      const types = Object.entries(op.requestBody.content) as [string, { schema: Schema }][];
-      lines.push(
-        '**Request body:** ' +
-          types.map(([type, c]) => `\`${type}\` (${refName(c.schema)})`).join(' or ') +
-          '. ' +
-          op.requestBody.description,
-        '',
-        '| Status | Body | Meaning |',
-        '|---|---|---|',
-      );
+      if (op.requestBody) {
+        const types = Object.entries(op.requestBody.content) as [string, { schema: Schema }][];
+        lines.push(
+          '**Request body:** ' +
+            types.map(([type, c]) => `\`${type}\` (${refName(c.schema)})`).join(' or ') +
+            '. ' +
+            op.requestBody.description,
+          '',
+        );
+      }
+      lines.push('| Status | Body | Meaning |', '|---|---|---|');
       for (const [status, res] of Object.entries(op.responses) as [string, any][]) {
         const body = res.content ? refName(res.content['application/json'].schema) : '';
         const headers = Object.entries(res.headers ?? {}).map(
