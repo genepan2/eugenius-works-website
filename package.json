@@ -22,7 +22,8 @@
     "knip": "knip",
     "duplicates": "jscpd",
     "size:files": "node scripts/check-file-size.ts",
-    "size:bundle": "node scripts/check-bundle-size.ts"
+    "size:bundle": "node scripts/check-bundle-size.ts",
+    "todos": "node scripts/check-todos.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
