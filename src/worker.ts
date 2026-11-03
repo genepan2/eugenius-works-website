@@ -77,6 +77,34 @@ async function readFields(request: Request): Promise<Record<string, string>> {
   return fields;
 }
 
+interface ContactMessage {
+  name: string;
+  email: string;
+  message: string;
+}
+
+/** The cleaned message, or the sentence that tells the visitor what to fix. */
+function validate(fields: Record<string, string>): ContactMessage | string {
+  // Collapse every whitespace run, CR and LF included, so the name cannot
+  // inject a header line into the subject.
+  const name = (fields.name ?? '').replace(/\s+/g, ' ').trim();
+  const email = (fields.email ?? '').trim();
+  const message = (fields.message ?? '').trim();
+
+  if (!name) return 'Please enter your name.';
+  if (name.length > MAX_NAME_LENGTH) {
+    return `Please keep the name under ${MAX_NAME_LENGTH} characters.`;
+  }
+  if (email.length > MAX_EMAIL_LENGTH || !/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(email)) {
+    return 'Please enter a valid email address.';
+  }
+  if (!message) return 'Please enter a message.';
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return `Please keep the message under ${MAX_MESSAGE_LENGTH} characters.`;
+  }
+  return { name, email, message };
+}
+
 async function handleContact(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'POST') {
     return fail('Method not allowed.', 405);
@@ -114,23 +142,9 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return json({ ok: true }, 200);
   }
 
-  // Collapse every whitespace run, CR and LF included, so the name cannot
-  // inject a header line into the subject.
-  const name = (fields.name ?? '').replace(/\s+/g, ' ').trim();
-  const email = (fields.email ?? '').trim();
-  const message = (fields.message ?? '').trim();
-
-  if (!name) return fail('Please enter your name.', 400);
-  if (name.length > MAX_NAME_LENGTH) {
-    return fail(`Please keep the name under ${MAX_NAME_LENGTH} characters.`, 400);
-  }
-  if (email.length > MAX_EMAIL_LENGTH || !/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(email)) {
-    return fail('Please enter a valid email address.', 400);
-  }
-  if (!message) return fail('Please enter a message.', 400);
-  if (message.length > MAX_MESSAGE_LENGTH) {
-    return fail(`Please keep the message under ${MAX_MESSAGE_LENGTH} characters.`, 400);
-  }
+  const input = validate(fields);
+  if (typeof input === 'string') return fail(input, 400);
+  const { name, email, message } = input;
 
   // The key is missing until the owner sets it in the Worker's dashboard under
   // Settings > Variables and Secrets. Say the form is unconfigured without

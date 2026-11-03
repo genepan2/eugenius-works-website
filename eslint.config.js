@@ -12,6 +12,10 @@ export default tseslint.config(
   {
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
     rules: {
+      // Keep functions small enough to read in one go; the Worker's handler is the ceiling.
+      complexity: ['error', 25],
+      'max-depth': ['error', 4],
+      'max-lines': ['error', { max: 400, skipBlankLines: true, skipComments: true }],
       // Tests and Worker bindings stub foreign types; `any` there is deliberate and local.
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
