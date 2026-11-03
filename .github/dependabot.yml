@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # A new version waits a week, so a hijacked release is usually pulled before
+    # it reaches this site. Security updates are not delayed.
+    cooldown:
+      default-days: 7
+    groups:
+      dev-tools:
+        dependency-type: development
+        update-types: [minor, patch]
+      astro:
+        patterns: ['astro', '@astrojs/*', 'tailwindcss', '@tailwindcss/*']
+        update-types: [minor, patch]
+    labels: [dependencies]
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    labels: [dependencies]
