@@ -24,7 +24,8 @@
     "size:files": "node scripts/check-file-size.ts",
     "size:bundle": "node scripts/check-bundle-size.ts",
     "todos": "node scripts/check-todos.ts",
-    "secrets": "secretlint \"**/*\""
+    "secrets": "secretlint \"**/*\"",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

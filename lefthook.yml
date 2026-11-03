@@ -1,0 +1,15 @@
+# Git hooks, installed by `npm install` through the `prepare` script.
+# Fast checks on staged files only; the full gate is `npm test` and CI.
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      glob: '*.{js,mjs,ts,astro,css,json,jsonc,yml,yaml,html}'
+      run: npx prettier --check --ignore-unknown {staged_files}
+    - name: lint
+      glob: '*.{js,mjs,ts,astro}'
+      run: npx eslint --max-warnings=0 --no-warn-ignored {staged_files}
+    - name: large files
+      run: node scripts/check-file-size.ts {staged_files}
+    - name: secrets
+      run: npx secretlint {staged_files}
