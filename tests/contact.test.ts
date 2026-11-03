@@ -31,7 +31,7 @@ globalThis.fetch = (async (_url: unknown, init?: RequestInit) => {
 }) as typeof fetch;
 
 const run = async (req: Request, env = ENV) => {
-  const res = await worker.fetch(req, env as any, {} as any);
+  const res = await worker.fetch(req, env as any);
   return { status: res.status, body: await res.json() as any };
 };
 
@@ -69,7 +69,7 @@ assert.equal((await run(post(valid, '6.6.6.6'))).status, 429);
 assert.equal((await run(post(valid, '7.7.7.7'))).status, 200);
 
 // Routing: a page request reaches the asset handler.
-const page = await worker.fetch(new Request('https://x/'), ENV as any, {} as any);
+const page = await worker.fetch(new Request('https://x/'), ENV as any);
 assert.equal(await page.text(), 'ASSET_SENTINEL', 'non-API requests must reach ASSETS');
 
 // Routing: an unknown /api/ path is a JSON 404, not the HTML 404 page.
@@ -85,13 +85,12 @@ const formPost = (fields: Record<string, string>, ip: string) =>
     headers: { 'content-type': 'application/x-www-form-urlencoded', 'CF-Connecting-IP': ip },
     body: new URLSearchParams(fields),
   });
-const sentRedirect = await worker.fetch(formPost(valid, '9.9.9.9'), ENV as any, {} as any);
+const sentRedirect = await worker.fetch(formPost(valid, '9.9.9.9'), ENV as any);
 assert.equal(sentRedirect.status, 303);
 assert.equal(sentRedirect.headers.get('location'), 'https://x/contact/#contact-sent');
 const failRedirect = await worker.fetch(
   formPost({ ...valid, email: 'nope' }, '9.9.9.10'),
   ENV as any,
-  {} as any,
 );
 assert.equal(failRedirect.status, 303);
 assert.equal(failRedirect.headers.get('location'), 'https://x/contact/#contact-failed');
@@ -134,19 +133,19 @@ assert.equal((await run(post(valid, '10.0.0.7'))).status, 200);
 
 // The 429 carries retry-after.
 for (let i = 0; i < 5; i++) await run(post(valid, '10.0.0.8'));
-const limited = await worker.fetch(post(valid, '10.0.0.8'), ENV as any, {} as any);
+const limited = await worker.fetch(post(valid, '10.0.0.8'), ENV as any);
 assert.equal(limited.status, 429);
 assert.equal(limited.headers.get('retry-after'), '600');
 
 // A form-encoded 429 redirects to the busy notice.
-const busy429 = await worker.fetch(formPost(valid, '10.0.0.8'), ENV as any, {} as any);
+const busy429 = await worker.fetch(formPost(valid, '10.0.0.8'), ENV as any);
 assert.equal(busy429.status, 303);
 assert.equal(busy429.headers.get('location'), 'https://x/contact/#contact-busy');
 
 // A Resend 500 is a 502, and a form-encoded post redirects to the busy notice.
 resendStatus = 500;
 assert.equal((await run(post(valid, '10.0.0.9'))).status, 502);
-const busy502 = await worker.fetch(formPost(valid, '10.0.0.10'), ENV as any, {} as any);
+const busy502 = await worker.fetch(formPost(valid, '10.0.0.10'), ENV as any);
 assert.equal(busy502.status, 303);
 assert.equal(busy502.headers.get('location'), 'https://x/contact/#contact-busy');
 resendStatus = 200;

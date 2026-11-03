@@ -73,7 +73,7 @@ async function call(
     headers: { 'content-type': 'application/json', 'CF-Connecting-IP': ip, ...headers },
     body: raw ?? JSON.stringify(body),
   });
-  const res = await worker.fetch(request, env as any, {} as any);
+  const res = await worker.fetch(request, env as any);
   const status = String(res.status);
   const documented = op.responses[status];
   assert.ok(documented, `status ${status} is not in docs/openapi.json`);
@@ -92,7 +92,7 @@ async function formPost(body: Record<string, string>, env: object = ENV): Promis
     headers: { 'content-type': 'application/x-www-form-urlencoded', 'CF-Connecting-IP': nextIp() },
     body: new URLSearchParams(body),
   });
-  const res = await worker.fetch(request, env as any, {} as any);
+  const res = await worker.fetch(request, env as any);
   assert.equal(res.status, 303);
   seen.add('303');
   const location = res.headers.get('location') ?? '';
@@ -148,11 +148,11 @@ assert.match(await formPost({ ...valid, email: 'nope' }), /#contact-failed$/);
 assert.match(await formPost(valid, { ASSETS }), /#contact-busy$/);
 
 // Other methods and other /api/ paths, which the spec states in prose.
-const get = await worker.fetch(new Request('https://x/api/contact'), ENV as any, {} as any);
+const get = await worker.fetch(new Request('https://x/api/contact'), ENV as any);
 assert.equal(get.status, 405);
 assert.equal(mismatch(spec.components.schemas.Error, await get.json()), '');
 assert.match(pathItem.description, /\b405\b/, 'the spec must say that other methods get 405');
-const unknown = await worker.fetch(new Request('https://x/api/nope', { method: 'POST' }), ENV as any, {} as any);
+const unknown = await worker.fetch(new Request('https://x/api/nope', { method: 'POST' }), ENV as any);
 assert.equal(unknown.status, 404);
 assert.equal(mismatch(spec.components.schemas.Error, await unknown.json()), '');
 assert.match(spec.info.description, /\b404\b/, 'the spec must say that other /api/ paths get 404');

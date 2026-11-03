@@ -1,5 +1,5 @@
 ---
-import type { GetStaticPaths } from 'astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -8,7 +8,7 @@ import { getSortedProjects, metaDescription } from '../../content';
 
 // Every work gets its own page. The markdown body is optional: it continues
 // the description when it holds more than comments and whitespace.
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths = (async () => {
   const projects = await getSortedProjects();
   return projects.map((project, i) => ({
     params: { slug: project.id },
@@ -18,9 +18,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
       next: projects[(i + 1) % projects.length],
     },
   }));
-};
+}) satisfies GetStaticPaths;
 
-const { project, prev, next } = Astro.props;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { project, prev, next } = Astro.props as Props;
 const { data } = project;
 const { Content } = await render(project);
 const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().length > 0;

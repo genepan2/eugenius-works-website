@@ -15,7 +15,8 @@
     "test": "node tests/contact.test.ts && node tests/openapi.test.ts && node scripts/gen-api-docs.ts --check && node tests/agents-md.test.ts && node tests/site.test.ts",
     "docs": "node scripts/gen-api-docs.ts",
     "test:e2e": "node tests/contact.e2e.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "astro check"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

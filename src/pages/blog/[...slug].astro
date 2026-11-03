@@ -1,5 +1,5 @@
 ---
-import type { GetStaticPaths } from 'astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -8,12 +8,14 @@ import { postLd } from '../../jsonld';
 import { readingTime } from '../../reading-time';
 
 // Drafts are excluded here too, so they get no page in the build output.
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths = (async () => {
   const posts = await getPublishedPosts();
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
-};
+}) satisfies GetStaticPaths;
 
-const { post } = Astro.props;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { post } = Astro.props as Props;
 const { Content } = await render(post);
 const date = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(post.data.date);
 const minutes = readingTime(post.body ?? '');
