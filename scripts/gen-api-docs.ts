@@ -4,7 +4,7 @@
  * Run: npm run docs          (rewrite docs/api.md)
  *      npm run docs -- --check   (exit 1 when docs/api.md is out of date)
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const specUrl = new URL('../docs/openapi.json', import.meta.url);
 const outUrl = new URL('../docs/api.md', import.meta.url);
@@ -23,7 +23,6 @@ type Schema = {
 
 const spec = JSON.parse(readFileSync(specUrl, 'utf8'));
 const refName = (s: Schema) => s.$ref?.split('/').pop();
-const resolve = (s: Schema): Schema => (s.$ref ? spec.components.schemas[refName(s)!] : s);
 const cell = (s: string) => s.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
 
 function rules(s: Schema): string {
@@ -87,11 +86,7 @@ function render(): string {
 
 const next = render();
 if (process.argv.includes('--check')) {
-  let current = '';
-  try {
-    current = readFileSync(outUrl, 'utf8');
-  } catch {}
-  if (current !== next) {
+  if (!existsSync(outUrl) || readFileSync(outUrl, 'utf8') !== next) {
     console.error('docs/api.md is out of date with docs/openapi.json. Run `npm run docs`.');
     process.exit(1);
   }

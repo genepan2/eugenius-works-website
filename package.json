@@ -14,7 +14,8 @@
     "deploy": "npm run build && wrangler deploy",
     "test": "node tests/contact.test.ts && node tests/openapi.test.ts && node scripts/gen-api-docs.ts --check && node tests/agents-md.test.ts && node tests/site.test.ts",
     "docs": "node scripts/gen-api-docs.ts",
-    "test:e2e": "node tests/contact.e2e.ts"
+    "test:e2e": "node tests/contact.e2e.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -25,7 +26,19 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@eslint/js": "10.0.1",
+    "eslint": "10.14.0",
+    "eslint-plugin-astro": "3.2.1",
+    "globals": "17.14.0",
+    "jscpd": "5.4.2",
+    "knip": "6.44.1",
+    "lefthook": "2.2.2",
     "playwright-core": "1.64.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.2",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
     "wrangler": "4.147.0"
   }
 }

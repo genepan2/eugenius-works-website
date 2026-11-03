@@ -99,7 +99,6 @@ for (const file of files.filter((f) => /\.(html|css|js|xml|svg|txt)$/.test(f))) 
 // and URLs, which are not colors, so the HTML is not scanned for hex.
 const NEUTRAL_HEX = new Set(['#000', '#fff', '#000000', '#ffffff', '#0000', '#00000000']);
 const NAMED = /\b(gr[ae]y|silver|red|blue|green|yellow|orange|purple|pink|brown|navy|teal)\b/i;
-const ZERO_OR_FULL = '(?:0|100|255|1)(?:%|deg)?';
 
 function colorProblems(raw: string): string[] {
   const bad: string[] = [];
