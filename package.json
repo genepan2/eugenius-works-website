@@ -19,7 +19,8 @@
     "typecheck": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "knip": "knip"
+    "knip": "knip",
+    "duplicates": "jscpd"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
