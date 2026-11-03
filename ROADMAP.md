@@ -17,6 +17,14 @@ can read emails. Also look in the `hey@` mailbox for the subject
 `Contact form: E2E 1791437125705-6agfje`.
 → tests/contact.e2e.ts
 
+### error alert in Cloudflare — open
+next: in the dashboard, Workers & Pages → eugenius-works-website → Observability → Alerts,
+alert when `error` log lines exceed 3 in 10 minutes, to `hey@`
+last: 2026-11-03
+The Worker now writes JSON log lines with a level (`src/log.ts`). The health check runs
+from GitHub Actions; the error alert needs the dashboard.
+→ docs/runbook.md
+
 ### cloudflare dashboard settings — open
 next: turn on SSL/TLS → Edge Certificates → "Always Use HTTPS"; decide about `www`
 last: 2026-10-06
