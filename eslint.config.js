@@ -21,4 +21,19 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/naming-convention': [
+        'error',
+        { selector: 'default', format: ['camelCase'], leadingUnderscore: 'allow' },
+        { selector: 'variable', format: ['camelCase', 'UPPER_CASE', 'PascalCase'] },
+        { selector: 'function', format: ['camelCase', 'PascalCase'] },
+        { selector: 'typeLike', format: ['PascalCase'] },
+        // Header names, env bindings and JSON keys come from outside and keep their spelling.
+        { selector: ['objectLiteralProperty', 'typeProperty', 'objectLiteralMethod'], format: null },
+        { selector: 'import', format: null },
+      ],
+    },
+  },
 );
