@@ -1,0 +1,35 @@
+name: Bug
+description: Something on the site or in the contact form does not work.
+labels: [bug, triage]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Page
+      description: The URL where it happens.
+      placeholder: https://eugenius-works.com/contact/
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: What you did, one step per line.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual
+      description: What should happen, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: request-id
+    attributes:
+      label: Request ID
+      description: For a contact form error, the `x-request-id` response header, if you have it.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device

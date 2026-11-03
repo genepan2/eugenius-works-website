@@ -1,0 +1,22 @@
+name: Change
+description: A new page, a content change or an improvement.
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: The change, as the visitor would see it.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: How to check it is finished. A visual change needs the owner's approval of a rendered image first (DESIGN.md).
