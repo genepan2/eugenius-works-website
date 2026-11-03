@@ -121,7 +121,7 @@
             }
           },
           "503": {
-            "description": "`RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which.",
+            "description": "The form is paused (`FLAG_CONTACT_FORM=off`), or `RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which setting is missing.",
             "content": {
               "application/json": {
                 "schema": {
@@ -151,7 +151,7 @@
             }
           },
           "503": {
-            "description": "A setting is missing, so the form would answer 503.",
+            "description": "A setting is missing or the form is paused, so the form would answer 503.",
             "content": {
               "application/json": {
                 "schema": {

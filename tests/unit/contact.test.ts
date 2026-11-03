@@ -200,3 +200,28 @@ test('Resend out of reach gets 502', async (t) => {
   assert.equal(res.status, 502);
   assert.equal(res.body.ok, false);
 });
+
+test('the contact form flag off pauses the form and the health check', async () => {
+  const off = { ...ENV, FLAG_CONTACT_FORM: 'off' };
+  const before = sent;
+  const res = await run(post(valid, '12.0.0.1'), off);
+  assert.equal(res.status, 503);
+  assert.equal(sent, before, 'a paused form sends nothing');
+  assert.equal((await send(new Request('https://x/api/health'), off)).status, 503);
+});
+
+test('each API request writes one data point, unless metrics are off', async () => {
+  const points: any[] = [];
+  const METRICS = { writeDataPoint: (p: unknown) => points.push(p) };
+  await send(post(valid, '12.0.0.2'), { ...ENV, METRICS });
+  await send(new Request('https://x/api/scan-me'), { ...ENV, METRICS });
+  assert.deepEqual(
+    points.map((p) => [p.indexes[0], p.blobs[2]]),
+    [
+      ['/api/contact', 'sent'],
+      ['/api/*', 'other'],
+    ],
+  );
+  await send(new Request('https://x/api/health'), { ...ENV, METRICS, FLAG_METRICS: 'off' });
+  assert.equal(points.length, 2);
+});

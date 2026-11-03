@@ -6,13 +6,18 @@
  * email through the Resend REST API. The Astro output stays static and needs
  * no adapter.
  */
+import { enabled } from './flags.ts';
 import { log } from './log.ts';
+import { type AnalyticsEngine, contactOutcome, recordRequest } from './metrics.ts';
 import { sendEmail } from './resend.ts';
 
 interface Env {
   RESEND_API_KEY?: string;
   CONTACT_FROM?: string;
   CONTACT_TO?: string;
+  FLAG_CONTACT_FORM?: string;
+  FLAG_METRICS?: string;
+  METRICS?: AnalyticsEngine;
   ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
@@ -153,6 +158,11 @@ async function handleContact(request: Request, env: Env, requestId: string): Pro
   // The key is missing until the owner sets it in the Worker's dashboard under
   // Settings > Variables and Secrets. Say the form is unconfigured without
   // revealing which binding is absent.
+  if (!enabled('contactForm', env)) {
+    log('warn', 'contact.disabled', { requestId });
+    return fail('The contact form is paused. Please send an email instead.', 503);
+  }
+
   if (!configured(env)) {
     log('error', 'contact.not_configured', { requestId });
     return fail('The contact form is not configured yet. Please send an email instead.', 503);
@@ -193,7 +203,7 @@ async function handleApi(request: Request, env: Env, requestId: string): Promise
   if (pathname === '/api/health') {
     if (request.method !== 'GET' && request.method !== 'HEAD')
       return fail('Method not allowed.', 405);
-    const ready = configured(env);
+    const ready = configured(env) && enabled('contactForm', env);
     return json({ ok: ready }, ready ? 200 : 503);
   }
 
@@ -230,13 +240,25 @@ export default {
       const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
       const started = Date.now();
       const response = await handleApi(request, env, requestId);
+      const ms = Date.now() - started;
       log(response.status >= 500 ? 'error' : 'info', 'api.request', {
         requestId,
         method: request.method,
         path: pathname,
         status: response.status,
-        ms: Date.now() - started,
+        ms,
       });
+      if (enabled('metrics', env)) {
+        const known = pathname === '/api/contact' || pathname === '/api/health';
+        recordRequest(env.METRICS, {
+          // Unknown paths share one index, so a scanner cannot fill the dataset with keys.
+          path: known ? pathname : '/api/*',
+          method: request.method,
+          status: response.status,
+          outcome: pathname === '/api/contact' ? contactOutcome(response.status) : 'other',
+          ms,
+        });
+      }
       const headers = new Headers(response.headers);
       headers.set('x-request-id', requestId);
       return new Response(response.body, { status: response.status, headers });

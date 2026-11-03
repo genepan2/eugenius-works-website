@@ -28,7 +28,7 @@ Every method other than POST answers 405 with an `Error` body.
 | 413 | Error | `Content-Length` is over 20000 bytes. |
 | 429 | Error | More than 5 valid messages from one IP address in 10 minutes. Invalid submissions do not count. The limit lives in Worker memory, so it resets on a cold start. Header `Retry-After`: Seconds to wait. |
 | 502 | Error | Resend could not be reached, timed out after 8 seconds, or refused the message, also on one retry. After 5 failed messages in a row the Worker stops calling Resend for 60 seconds and answers 502 at once. Resend's own error is never passed on. |
-| 503 | Error | `RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which. |
+| 503 | Error | The form is paused (`FLAG_CONTACT_FORM=off`), or `RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which setting is missing. |
 
 ## GET /api/health
 
@@ -41,7 +41,7 @@ Every method other than GET and HEAD answers 405 with an `Error` body.
 | Status | Body | Meaning |
 |---|---|---|
 | 200 | Health | The form is configured. |
-| 503 | Health | A setting is missing, so the form would answer 503. |
+| 503 | Health | A setting is missing or the form is paused, so the form would answer 503. |
 
 ## Schemas
 

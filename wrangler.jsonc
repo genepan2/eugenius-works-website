@@ -19,5 +19,9 @@
     "CONTACT_FROM": "Eugenius Works <contact@eugenius-works.com>",
     "CONTACT_TO": "hey@eugenius-works.com",
   },
+  // Feature flags, "on" or "off". src/flags.ts holds the defaults.
+  // FLAG_CONTACT_FORM: "off" pauses the contact form. FLAG_METRICS: "off" stops data points.
+  // One data point per /api/ request; see src/metrics.ts and docs/runbook.md.
+  "analytics_engine_datasets": [{ "binding": "METRICS", "dataset": "eugenius_works_api" }],
   "observability": { "enabled": true },
 }
