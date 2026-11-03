@@ -117,12 +117,18 @@ script.
 npm run build && npm test
 ```
 
-`npm test` runs the Worker tests, checks the built site in `dist/`, and checks that
-`AGENTS.md` names only commands and files that exist. The Worker tests use a stubbed
-`fetch` and send no real request. They need a Node version that runs TypeScript files
-directly.
+The tests use Node's built-in test runner and need a Node version that runs TypeScript
+files directly.
 
-The contact API is described in `docs/openapi.json`, and `tests/openapi.test.ts` checks
+- `npm run test:unit` runs `tests/unit/`: the Worker with a stubbed `fetch` (it sends no
+  real request), the helpers in `src/`, and a check that `AGENTS.md` names only commands
+  and files that exist. It fails when line coverage of `src/` drops under 95%, branch
+  coverage under 85%, or function coverage under 95%.
+- `npm run test:site` runs `tests/site/` against the built site in `dist/`.
+- `npm test` runs both. Each run writes a JUnit report with the time of every test to
+  `test-results/`.
+
+The contact API is described in `docs/openapi.json`, and `tests/unit/openapi.test.ts` checks
 the Worker against it. `docs/api.md` is generated from the spec: after changing the spec,
 run `npm run docs`. `npm test` fails while the two differ.
 

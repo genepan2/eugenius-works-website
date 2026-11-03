@@ -29,7 +29,7 @@ const token = `E2E ${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 /** The key from the environment, else from .dev.vars. Never printed. */
 function resendKey(): string | undefined {
   if (process.env.RESEND_API_KEY) return process.env.RESEND_API_KEY;
-  const file = new URL('../.dev.vars', import.meta.url);
+  const file = new URL('../../.dev.vars', import.meta.url);
   if (!existsSync(file)) return undefined;
   const match = readFileSync(file, 'utf8').match(/^\s*RESEND_API_KEY\s*=\s*(.*?)\s*$/m);
   return match?.[1].replace(/^(["'])(.*)\1$/, '$2') || undefined;

@@ -1,12 +1,13 @@
 /**
  * Checks that docs/openapi.json describes what the Worker does.
- * Run: node tests/openapi.test.ts
+ * Run: npm test
  * Drives the Worker with a stubbed fetch, like contact.test.ts, and compares
  * every status, body, header and field rule it sees with the spec.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import worker from '../src/worker.ts';
+import { test } from 'node:test';
+import worker from '../../src/worker.ts';
 
 type Schema = {
   type?: string;
@@ -19,17 +20,13 @@ type Schema = {
   $ref?: string;
 };
 
-const spec = JSON.parse(readFileSync(new URL('../docs/openapi.json', import.meta.url), 'utf8'));
+const spec = JSON.parse(readFileSync(new URL('../../docs/openapi.json', import.meta.url), 'utf8'));
 const pathItem = spec.paths['/api/contact'];
 const op = pathItem.post;
 const resolve = (s: Schema): Schema =>
   s.$ref ? spec.components.schemas[s.$ref.split('/').pop()!] : s;
 const message = resolve(op.requestBody.content['application/json'].schema);
 const fields = message.properties!;
-assert.ok(
-  op.requestBody.content['application/x-www-form-urlencoded'],
-  'the spec must list the form post',
-);
 
 /** The part of JSON Schema the spec uses. Returns why the value does not fit, or ''. */
 function mismatch(schema: Schema, value: unknown): string {
@@ -117,98 +114,105 @@ async function formPost(body: Record<string, string>, env: object = ENV): Promis
   return location;
 }
 
-// Each documented outcome.
-assert.equal(await call(valid), 200);
-assert.equal(await call({ ...valid, company: 'AcmeBot' }), 200);
-assert.equal(await call(valid, { headers: { origin: 'https://evil.example' } }), 403);
-assert.equal(await call(valid, { headers: { 'sec-fetch-site': 'cross-site' } }), 403);
-assert.equal(await call(valid, { headers: { 'content-length': '20001' } }), 413);
-assert.equal(await call(null, { raw: '{not json' }), 400);
-assert.equal(await call(valid, { env: { ASSETS } }), 503);
-const ip = nextIp();
-for (let i = 0; i < 5; i++) assert.equal(await call(valid, { ip }), 200);
-assert.equal(await call(valid, { ip }), 429);
-resendStatus = 500;
-assert.equal(await call(valid), 502);
-resendStatus = 200;
+test('the spec lists the form post as a request body', () => {
+  assert.ok(op.requestBody.content['application/x-www-form-urlencoded']);
+});
 
-// Required fields.
-for (const key of message.required!) {
-  const rest: Record<string, string> = { ...valid };
-  delete rest[key];
-  assert.equal(await call(rest), 400, `a message without "${key}" must be refused`);
-}
+test('each documented outcome is produced, with a body that fits the spec', async () => {
+  assert.equal(await call(valid), 200);
+  assert.equal(await call({ ...valid, company: 'AcmeBot' }), 200);
+  assert.equal(await call(valid, { headers: { origin: 'https://evil.example' } }), 403);
+  assert.equal(await call(valid, { headers: { 'sec-fetch-site': 'cross-site' } }), 403);
+  assert.equal(await call(valid, { headers: { 'content-length': '20001' } }), 413);
+  assert.equal(await call(null, { raw: '{not json' }), 400);
+  assert.equal(await call(valid, { env: { ASSETS } }), 503);
+  const ip = nextIp();
+  for (let i = 0; i < 5; i++) assert.equal(await call(valid, { ip }), 200);
+  assert.equal(await call(valid, { ip }), 429);
+});
 
-// Length rules hold exactly at the documented edges.
-const fill = (key: string, length: number) =>
-  key === 'email'
-    ? `${'a'.repeat(length - '@example.com'.length)}@example.com`
-    : 'a'.repeat(length);
-for (const [key, field] of Object.entries(fields)) {
-  if (field.maxLength !== undefined) {
-    assert.equal(
-      await call({ ...valid, [key]: fill(key, field.maxLength) }),
-      200,
-      `${key} at maxLength`,
-    );
-    assert.equal(
-      await call({ ...valid, [key]: fill(key, field.maxLength + 1) }),
-      400,
-      `${key} over maxLength`,
-    );
+test('a Resend failure is the documented 502', async (t) => {
+  resendStatus = 500;
+  t.after(() => {
+    resendStatus = 200;
+  });
+  assert.equal(await call(valid), 502);
+});
+
+test('every required field is enforced', async () => {
+  for (const key of message.required!) {
+    const rest: Record<string, string> = { ...valid };
+    delete rest[key];
+    assert.equal(await call(rest), 400, `a message without "${key}" must be refused`);
   }
-  if (field.minLength) {
-    assert.equal(
-      await call({ ...valid, [key]: fill(key, field.minLength - 1) }),
-      400,
-      `${key} under minLength`,
-    );
-  }
-}
+});
 
-// The spec's email pattern and the Worker agree.
-const emailPattern = new RegExp(fields.email.pattern!);
-for (const email of [
-  'ada@example.com',
-  'a.b+c@d.co',
-  'nope',
-  'a@b',
-  'a,b@c.de',
-  'a<b>@c.de',
-  'a b@c.de',
-  'a@b@c.de',
-]) {
-  const expected = emailPattern.test(email) ? 200 : 400;
-  assert.equal(
-    await call({ ...valid, email }),
-    expected,
-    `the spec and the Worker disagree on "${email}"`,
+test('length rules hold exactly at the documented edges', async () => {
+  const fill = (key: string, length: number) =>
+    key === 'email'
+      ? `${'a'.repeat(length - '@example.com'.length)}@example.com`
+      : 'a'.repeat(length);
+  for (const [key, field] of Object.entries(fields)) {
+    if (field.maxLength !== undefined) {
+      assert.equal(
+        await call({ ...valid, [key]: fill(key, field.maxLength) }),
+        200,
+        `${key} at max`,
+      );
+      assert.equal(
+        await call({ ...valid, [key]: fill(key, field.maxLength + 1) }),
+        400,
+        `${key} over max`,
+      );
+    }
+    if (field.minLength) {
+      assert.equal(
+        await call({ ...valid, [key]: fill(key, field.minLength - 1) }),
+        400,
+        `${key} under min`,
+      );
+    }
+  }
+});
+
+test('the spec email pattern and the Worker agree', async () => {
+  const emailPattern = new RegExp(fields.email.pattern!);
+  for (const email of [
+    'ada@example.com',
+    'a.b+c@d.co',
+    'nope',
+    'a@b',
+    'a,b@c.de',
+    'a<b>@c.de',
+    'a b@c.de',
+    'a@b@c.de',
+  ]) {
+    const expected = emailPattern.test(email) ? 200 : 400;
+    assert.equal(await call({ ...valid, email }), expected, `disagreement on "${email}"`);
+  }
+});
+
+test('a form post redirects to each documented notice', async () => {
+  assert.match(await formPost(valid), /#contact-sent$/);
+  assert.match(await formPost({ ...valid, email: 'nope' }), /#contact-failed$/);
+  assert.match(await formPost(valid, { ASSETS }), /#contact-busy$/);
+});
+
+test('other methods get 405 and other /api/ paths get 404, as the spec says', async () => {
+  const get = await worker.fetch(new Request('https://x/api/contact'), ENV as any);
+  assert.equal(get.status, 405);
+  assert.equal(mismatch(spec.components.schemas.Error, await get.json()), '');
+  assert.match(pathItem.description, /\b405\b/);
+  const unknown = await worker.fetch(
+    new Request('https://x/api/nope', { method: 'POST' }),
+    ENV as any,
   );
-}
+  assert.equal(unknown.status, 404);
+  assert.equal(mismatch(spec.components.schemas.Error, await unknown.json()), '');
+  assert.match(spec.info.description, /\b404\b/);
+});
 
-// The form post redirects to each documented notice.
-assert.match(await formPost(valid), /#contact-sent$/);
-assert.match(await formPost({ ...valid, email: 'nope' }), /#contact-failed$/);
-assert.match(await formPost(valid, { ASSETS }), /#contact-busy$/);
-
-// Other methods and other /api/ paths, which the spec states in prose.
-const get = await worker.fetch(new Request('https://x/api/contact'), ENV as any);
-assert.equal(get.status, 405);
-assert.equal(mismatch(spec.components.schemas.Error, await get.json()), '');
-assert.match(pathItem.description, /\b405\b/, 'the spec must say that other methods get 405');
-const unknown = await worker.fetch(
-  new Request('https://x/api/nope', { method: 'POST' }),
-  ENV as any,
-);
-assert.equal(unknown.status, 404);
-assert.equal(mismatch(spec.components.schemas.Error, await unknown.json()), '');
-assert.match(spec.info.description, /\b404\b/, 'the spec must say that other /api/ paths get 404');
-
-// No documented status is stale.
-assert.deepEqual(
-  [...seen].sort(),
-  Object.keys(op.responses).sort(),
-  'a documented status was never produced',
-);
-
-console.log(`openapi: the spec matches the Worker (${seen.size} statuses)`);
+// Runs last: tests in one file run in order.
+test('no documented status is stale', () => {
+  assert.deepEqual([...seen].sort(), Object.keys(op.responses).sort());
+});

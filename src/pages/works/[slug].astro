@@ -4,7 +4,8 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { workLd } from '../../jsonld';
-import { getSortedProjects, metaDescription } from '../../content';
+import { getSortedProjects } from '../../content';
+import { metaDescription } from '../../meta-description';
 
 // Every work gets its own page. The markdown body is optional: it continues
 // the description when it holds more than comments and whitespace.
