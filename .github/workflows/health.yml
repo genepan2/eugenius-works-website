@@ -1,0 +1,19 @@
+name: Health
+
+# A failed run makes GitHub email the repository owner.
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: The contact form can send
+        run: curl --fail --silent --show-error --retry 3 --retry-delay 10 --max-time 20 https://eugenius-works.com/api/health
+      - name: The home page loads
+        run: curl --fail --silent --show-error --retry 3 --retry-delay 10 --max-time 20 -o /dev/null https://eugenius-works.com/
