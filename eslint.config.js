@@ -18,7 +18,10 @@ export default tseslint.config(
       'max-lines': ['error', { max: 400, skipBlankLines: true, skipComments: true }],
       // Tests and Worker bindings stub foreign types; `any` there is deliberate and local.
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   {
@@ -31,7 +34,10 @@ export default tseslint.config(
         { selector: 'function', format: ['camelCase', 'PascalCase'] },
         { selector: 'typeLike', format: ['PascalCase'] },
         // Header names, env bindings and JSON keys come from outside and keep their spelling.
-        { selector: ['objectLiteralProperty', 'typeProperty', 'objectLiteralMethod'], format: null },
+        {
+          selector: ['objectLiteralProperty', 'typeProperty', 'objectLiteralMethod'],
+          format: null,
+        },
         { selector: 'import', format: null },
       ],
     },

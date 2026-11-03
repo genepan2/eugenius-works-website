@@ -8,12 +8,13 @@ const hasPosts = (await getPublishedPosts()).length > 0;
 <BaseLayout title="Not found" description="This page does not exist." noindex>
   <h1 class="word">Not found</h1>
   <p class="reading">
-    This page does not exist. Try the <a href="/works/">works</a>{
-      hasPosts && (
-        <>
-          {' '}or the <a href="/blog/">blog</a>
-        </>
-      )
-    }.
+    This page does not exist. Try the <a href="/works/">works</a>
+    {hasPosts && (
+      <>
+        {' '}
+        or the <a href="/blog/">blog</a>
+      </>
+    )}
+    .
   </p>
 </BaseLayout>

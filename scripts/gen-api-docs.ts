@@ -40,7 +40,9 @@ function fieldTable(name: string): string[] {
   const lines = [`### ${name}`, '', '| Field | Required | Rules | Meaning |', '|---|---|---|---|'];
   for (const [key, field] of Object.entries(s.properties ?? {})) {
     const required = s.required?.includes(key) ? 'yes' : 'no';
-    lines.push(`| \`${key}\` | ${required} | ${cell(rules(field))} | ${cell(field.description ?? '')} |`);
+    lines.push(
+      `| \`${key}\` | ${required} | ${cell(rules(field))} | ${cell(field.description ?? '')} |`,
+    );
   }
   return [...lines, ''];
 }
@@ -55,25 +57,40 @@ function render(): string {
     '',
     'Servers:',
     '',
-    ...spec.servers.map((s: { url: string; description: string }) => `- \`${s.url}\`: ${s.description}`),
+    ...spec.servers.map(
+      (s: { url: string; description: string }) => `- \`${s.url}\`: ${s.description}`,
+    ),
     '',
   ];
   for (const [path, item] of Object.entries(spec.paths) as [string, any][]) {
-    for (const [method, op] of Object.entries(item).filter(([k]) => k !== 'description') as [string, any][]) {
-      lines.push(`## ${method.toUpperCase()} ${path}`, '', op.summary + '.', '', op.description, '');
+    for (const [method, op] of Object.entries(item).filter(([k]) => k !== 'description') as [
+      string,
+      any,
+    ][]) {
+      lines.push(
+        `## ${method.toUpperCase()} ${path}`,
+        '',
+        op.summary + '.',
+        '',
+        op.description,
+        '',
+      );
       if (item.description) lines.push(item.description, '');
       const types = Object.entries(op.requestBody.content) as [string, { schema: Schema }][];
       lines.push(
         '**Request body:** ' +
           types.map(([type, c]) => `\`${type}\` (${refName(c.schema)})`).join(' or ') +
-          '. ' + op.requestBody.description,
+          '. ' +
+          op.requestBody.description,
         '',
         '| Status | Body | Meaning |',
         '|---|---|---|',
       );
       for (const [status, res] of Object.entries(op.responses) as [string, any][]) {
         const body = res.content ? refName(res.content['application/json'].schema) : '';
-        const headers = Object.entries(res.headers ?? {}).map(([h, d]: [string, any]) => ` Header \`${h}\`: ${d.description}`);
+        const headers = Object.entries(res.headers ?? {}).map(
+          ([h, d]: [string, any]) => ` Header \`${h}\`: ${d.description}`,
+        );
         lines.push(`| ${status} | ${body ?? ''} | ${cell(res.description + headers.join(''))} |`);
       }
       lines.push('');

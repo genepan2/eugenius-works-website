@@ -10,16 +10,14 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' });
 ---
 
 <ul class="ledger">
-  {
-    posts.map((post) => (
-      <li>
-        <h2 class="font-semibold">
-          <a href={`/blog/${post.id}/`}>{post.data.title}</a>
-        </h2>
-        <p class="fine">
-          <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
-        </p>
-      </li>
-    ))
-  }
+  {posts.map((post) => (
+    <li>
+      <h2 class="font-semibold">
+        <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+      </h2>
+      <p class="fine">
+        <time datetime={post.data.date.toISOString()}>{dateFormat.format(post.data.date)}</time>
+      </p>
+    </li>
+  ))}
 </ul>

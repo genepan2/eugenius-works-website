@@ -17,127 +17,119 @@ const LAST_UPDATED = '2026-09-22';
   </header>
 
   <div class="reading copy">
+    <p class="mt-10">
+      This policy describes what this website actually does with personal data. It is short because
+      the site does very little: it serves static pages, counts page views without cookies, and
+      forwards contact form messages by email.
+    </p>
 
-  <p class="mt-10">
-    This policy describes what this website actually does with personal data. It is short
-    because the site does very little: it serves static pages, counts page views without
-    cookies, and forwards contact form messages by email.
-  </p>
+    <section>
+      <h2 class="subhead">1. Controller</h2>
+      <p>
+        {COMPANY.legalName}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city},{' '}
+        {COMPANY.country}. Registry code {COMPANY.regNo}. Managing director {COMPANY.director}.
+      </p>
+      <p>
+        For data protection questions, including any request listed in section 7, write to{' '}
+        <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">1. Controller</h2>
-    <p>
-      {COMPANY.legalName}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {
-        COMPANY.country
-      }. Registry code {COMPANY.regNo}. Managing director {COMPANY.director}.
-    </p>
-    <p>
-      For data protection questions, including any request listed in section 7, write to <a
-        href={`mailto:${COMPANY.email}`}
-       >{COMPANY.email}</a
-      >.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">2. Hosting</h2>
+      <p>
+        The site is hosted on Cloudflare Workers with static assets. To deliver pages and to protect
+        the site against attacks, Cloudflare processes your IP address and request metadata such as
+        the time of the request, the page requested, the referrer, and your browser's user agent.
+      </p>
+      <p>
+        Legal basis: legitimate interest in operating a secure and available website, Art. 6(1)(f)
+        GDPR. Cloudflare acts as a processor on behalf of the controller.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">2. Hosting</h2>
-    <p>
-      The site is hosted on Cloudflare Workers with static assets. To deliver pages and to protect the site
-      against attacks, Cloudflare processes your IP address and request metadata such as the
-      time of the request, the page requested, the referrer, and your browser's user agent.
-    </p>
-    <p>
-      Legal basis: legitimate interest in operating a secure and available website,
-      Art. 6(1)(f) GDPR. Cloudflare acts as a processor on behalf of the controller.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">3. Analytics</h2>
+      <p>
+        The site uses Cloudflare Web Analytics. It is cookieless: it sets no cookies, does not
+        fingerprint your device or browser, and does not track you across other sites. It collects
+        only aggregated page-view data, such as how often a page was viewed and the broad referrer
+        category.
+      </p>
+      <p>
+        Legal basis: legitimate interest in understanding which pages are read, Art. 6(1)(f) GDPR.
+      </p>
+      <p>
+        This is why the site shows no cookie banner. A consent banner is required for storing or
+        reading information on your device that is not strictly necessary. Nothing here stores or
+        reads anything, so there is nothing to consent to.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">3. Analytics</h2>
-    <p>
-      The site uses Cloudflare Web Analytics. It is cookieless: it sets no cookies, does not
-      fingerprint your device or browser, and does not track you across other sites. It
-      collects only aggregated page-view data, such as how often a page was viewed and the
-      broad referrer category.
-    </p>
-    <p>
-      Legal basis: legitimate interest in understanding which pages are read,
-      Art. 6(1)(f) GDPR.
-    </p>
-    <p>
-      This is why the site shows no cookie banner. A consent banner is required for storing
-      or reading information on your device that is not strictly necessary. Nothing here
-      stores or reads anything, so there is nothing to consent to.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">4. Cookies and local storage</h2>
+      <p>
+        This site sets no cookies and uses no local storage, session storage, or comparable
+        technology.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">4. Cookies and local storage</h2>
-    <p>
-      This site sets no cookies and uses no local storage, session storage, or comparable
-      technology.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">5. Contact form</h2>
+      <p>
+        The contact form on the homepage collects your name, your email address, and your message.
+        These are used to read and answer your enquiry, and for nothing else.
+      </p>
+      <p>
+        Legal basis: Art. 6(1)(b) GDPR where the enquiry concerns a contract or steps taken before
+        entering one, and otherwise legitimate interest in answering messages sent to the company,
+        Art. 6(1)(f) GDPR.
+      </p>
+      <p>
+        Submissions are delivered by email through Resend (Resend, Inc., United States), which acts
+        as a processor. The transfer to the United States relies on the EU-US Data Privacy Framework
+        and on standard contractual clauses.
+      </p>
+      <p>
+        The form contains a hidden spam-prevention field, a honeypot. It is invisible to people and
+        to screen readers, so it collects nothing from real visitors; only automated submissions
+        fill it in, and those are discarded.
+      </p>
+      <p>
+        Retention: enquiries are kept only as long as needed to handle them and any follow-up, then
+        deleted.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">5. Contact form</h2>
-    <p>
-      The contact form on the homepage collects your name, your email address, and your
-      message. These are used to read and answer your enquiry, and for nothing else.
-    </p>
-    <p>
-      Legal basis: Art. 6(1)(b) GDPR where the enquiry concerns a contract or steps taken
-      before entering one, and otherwise legitimate interest in answering messages sent to
-      the company, Art. 6(1)(f) GDPR.
-    </p>
-    <p>
-      Submissions are delivered by email through Resend (Resend, Inc., United States), which
-      acts as a processor. The transfer to the United States relies on the EU-US Data
-      Privacy Framework and on standard contractual clauses.
-    </p>
-    <p>
-      The form contains a hidden spam-prevention field, a honeypot. It is invisible to
-      people and to screen readers, so it collects nothing from real visitors; only
-      automated submissions fill it in, and those are discarded.
-    </p>
-    <p>
-      Retention: enquiries are kept only as long as needed to handle them and any follow-up,
-      then deleted.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">6. RSS feed</h2>
+      <p>
+        The feed at <a href="/rss.xml">/rss.xml</a> is a static file. Requesting it collects nothing
+        beyond the hosting data described in section 2.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">6. RSS feed</h2>
-    <p>
-      The feed at <a href="/rss.xml">/rss.xml</a> is a
-      static file. Requesting it collects nothing beyond the hosting data described in
-      section 2.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">7. Your rights</h2>
+      <p>
+        You have the right to access your personal data, to have it corrected or erased, to restrict
+        its processing, to receive it in a portable form, and to object to processing based on
+        legitimate interest.
+      </p>
+      <p>
+        You also have the right to lodge a complaint with a supervisory authority. The competent
+        authority here is the Estonian Data Protection Inspectorate (Andmekaitse Inspektsioon),{' '}
+        <a href="https://www.aki.ee/en">https://www.aki.ee/en</a>.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">7. Your rights</h2>
-    <p>
-      You have the right to access your personal data, to have it corrected or erased, to
-      restrict its processing, to receive it in a portable form, and to object to processing
-      based on legitimate interest.
-    </p>
-    <p>
-      You also have the right to lodge a complaint with a supervisory authority. The
-      competent authority here is the Estonian Data Protection Inspectorate (Andmekaitse
-      Inspektsioon), <a href="https://www.aki.ee/en"
-        >https://www.aki.ee/en</a
-      >.
-    </p>
-  </section>
-
-  <section>
-    <h2 class="subhead">8. What this site does not do</h2>
-    <p>
-      There is no profiling and no automated decision-making. Personal data is not sold, and
-      it is not shared with advertising networks. The site carries no advertising, no social
-      media embeds, and no third-party trackers beyond the hosting and analytics described
-      above.
-    </p>
-  </section>  </div>
+    <section>
+      <h2 class="subhead">8. What this site does not do</h2>
+      <p>
+        There is no profiling and no automated decision-making. Personal data is not sold, and it is
+        not shared with advertising networks. The site carries no advertising, no social media
+        embeds, and no third-party trackers beyond the hosting and analytics described above.
+      </p>
+    </section>
+  </div>
 </BaseLayout>

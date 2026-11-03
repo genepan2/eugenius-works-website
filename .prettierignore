@@ -1,0 +1,12 @@
+dist/
+.astro/
+.wrangler/
+coverage/
+.claude-flow/
+.claude/
+.impeccable/
+package-lock.json
+docs/api.md
+public/
+src/content/
+*.md

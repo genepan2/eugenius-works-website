@@ -7,7 +7,10 @@
   },
   "servers": [
     { "url": "https://eugenius-works.com", "description": "production" },
-    { "url": "http://localhost:8787", "description": "`npm run build`, then `npx wrangler dev` with `.dev.vars`" }
+    {
+      "url": "http://localhost:8787",
+      "description": "`npm run build`, then `npx wrangler dev` with `.dev.vars`"
+    }
   ],
   "paths": {
     "/api/contact": {
@@ -21,34 +24,47 @@
           "description": "At most 20000 bytes by `Content-Length`. A post from another site is refused: the `Origin` header must match the request's origin, or without `Origin`, `Sec-Fetch-Site` must be `same-origin` or `none`.",
           "content": {
             "application/json": { "schema": { "$ref": "#/components/schemas/ContactMessage" } },
-            "application/x-www-form-urlencoded": { "schema": { "$ref": "#/components/schemas/ContactMessage" } }
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/ContactMessage" }
+            }
           }
         },
         "responses": {
           "200": {
             "description": "Sent. A filled honeypot gets the same answer and sends nothing.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Success" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Success" } }
+            }
           },
           "303": {
             "description": "Form posts only. Redirects to the notice for the result: `#contact-sent` on success, `#contact-failed` for invalid input, `#contact-busy` for every other failure.",
             "headers": {
               "Location": {
                 "description": "The notice on `/contact/` of the request's origin.",
-                "schema": { "type": "string", "pattern": "^https?://[^/]+/contact/#contact-(sent|failed|busy)$" }
+                "schema": {
+                  "type": "string",
+                  "pattern": "^https?://[^/]+/contact/#contact-(sent|failed|busy)$"
+                }
               }
             }
           },
           "400": {
             "description": "A field is missing or breaks a rule, or the body cannot be read.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           },
           "403": {
             "description": "The post came from another site.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           },
           "413": {
             "description": "`Content-Length` is over 20000 bytes.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           },
           "429": {
             "description": "More than 5 valid messages from one IP address in 10 minutes. Invalid submissions do not count. The limit lives in Worker memory, so it resets on a cold start.",
@@ -58,15 +74,21 @@
                 "schema": { "type": "string", "pattern": "^[0-9]+$" }
               }
             },
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           },
           "502": {
             "description": "Resend could not be reached or refused the message. Resend's own error is never passed on.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           },
           "503": {
             "description": "`RESEND_API_KEY`, `CONTACT_FROM` or `CONTACT_TO` is not set. The message does not say which.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
           }
         }
       }

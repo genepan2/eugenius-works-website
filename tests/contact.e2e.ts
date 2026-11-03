@@ -42,7 +42,9 @@ async function submitForm(): Promise<void> {
     await page.goto(`${BASE}/contact/`);
     await page.locator('#name').fill(token);
     await page.locator('#email').fill('e2e@eugenius-works.com');
-    await page.locator('#message').fill(`Automatic end-to-end test of the contact form. Token: ${token}`);
+    await page
+      .locator('#message')
+      .fill(`Automatic end-to-end test of the contact form. Token: ${token}`);
     // The honeypot field `company` stays empty.
     await page.locator('#contact-submit').click();
 
@@ -54,7 +56,10 @@ async function submitForm(): Promise<void> {
       assert.fail(`the form shows an error: ${(await error.innerText()).trim()}`);
     }
     assert.ok(await sent.isVisible(), '#contact-sent must be visible');
-    assert.ok(await page.locator('#contact-form').isHidden(), 'the form must be hidden after a send');
+    assert.ok(
+      await page.locator('#contact-form').isHidden(),
+      'the form must be hidden after a send',
+    );
   } finally {
     await browser.close();
   }
@@ -126,7 +131,9 @@ if (key) {
   await checkReceipt(key);
   console.log('contact e2e: all checks passed');
 } else {
-  console.log('contact e2e: RECEIPT CHECK SKIPPED. No RESEND_API_KEY in the environment or in .dev.vars.');
+  console.log(
+    'contact e2e: RECEIPT CHECK SKIPPED. No RESEND_API_KEY in the environment or in .dev.vars.',
+  );
   if (process.env.E2E_REQUIRE_RECEIPT === '1') {
     console.error('contact e2e: FAILED, because E2E_REQUIRE_RECEIPT=1 requires the receipt check.');
     process.exitCode = 1;

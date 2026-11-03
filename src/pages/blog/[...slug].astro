@@ -41,18 +41,16 @@ const text = encodeURIComponent(post.data.title);
       </p>
     </header>
 
-    {
-      post.data.cover && (
-        <Image
-          src={post.data.cover}
-          alt=""
-          class="cover mt-8 max-w-[36rem]"
-          widths={[640, 1280, 1920]}
-          sizes="(min-width: 40rem) 576px, 100vw"
-          loading="eager"
-        />
-      )
-    }
+    {post.data.cover && (
+      <Image
+        src={post.data.cover}
+        alt=""
+        class="cover mt-8 max-w-[36rem]"
+        widths={[640, 1280, 1920]}
+        sizes="(min-width: 40rem) 576px, 100vw"
+        loading="eager"
+      />
+    )}
 
     <div class="reading prose copy mt-10">
       <Content />
@@ -61,12 +59,23 @@ const text = encodeURIComponent(post.data.title);
 
   <p class="share fine mt-12">
     {'Share: '}
-    <a href={`https://x.com/intent/post?url=${url}&text=${text}`} rel="noopener noreferrer">X</a>{', '}
-    <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${url}`} rel="noopener noreferrer">LinkedIn</a>{', '}
+    <a href={`https://x.com/intent/post?url=${url}&text=${text}`} rel="noopener noreferrer">
+      X
+    </a>
+    {', '}
+    <a
+      href={`https://www.linkedin.com/sharing/share-offsite/?url=${url}`}
+      rel="noopener noreferrer"
+    >
+      LinkedIn
+    </a>
+    {', '}
     <a href={`mailto:?subject=${text}&body=${url}`}>Email</a>
   </p>
 
   <p class="fine mt-12">
-    <a href="/blog/" class="inline-flex min-h-9 items-center">All posts</a>
+    <a href="/blog/" class="inline-flex min-h-9 items-center">
+      All posts
+    </a>
   </p>
 </BaseLayout>

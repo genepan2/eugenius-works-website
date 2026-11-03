@@ -108,7 +108,9 @@ function colorProblems(raw: string): string[] {
   for (const [hex] of text.matchAll(/#[0-9a-fA-F]{3,8}(?![\w-])/g)) {
     if (!NEUTRAL_HEX.has(hex.toLowerCase())) bad.push(hex);
   }
-  for (const [call, fn, args] of text.matchAll(/\b(rgba?|hsla?|oklch|oklab|lab|lch|color)\(([^)]*)\)/g)) {
+  for (const [call, fn, args] of text.matchAll(
+    /\b(rgba?|hsla?|oklch|oklab|lab|lch|color)\(([^)]*)\)/g,
+  )) {
     const ok =
       (/^rgba?$/.test(fn) && /^\s*(0[\s,]+0[\s,]+0|255[\s,]+255[\s,]+255)\b/.test(args)) ||
       (/^hsla?$/.test(fn) && /^\s*[\d.]+(deg)?[\s,]+[\d.]+%[\s,]+(0|100)%/.test(args)) ||
@@ -116,8 +118,14 @@ function colorProblems(raw: string): string[] {
         new RegExp(`^\\s*(?:0|1|100)(?:%)?[\\s,]+0[\\s,]+(?:0|none)`).test(args));
     if (!ok) bad.push(call);
   }
-  for (const [call, args] of [...text.matchAll(/\bcolor-mix\(([^)]*)\)/g)].map((m): [string, string] => [m[0], m[1]])) {
-    const words = args.replace(/\bin\s+[\w-]+/, '').replace(/[\d.]+%/g, '').split(/[\s,]+/).filter(Boolean);
+  for (const [call, args] of [...text.matchAll(/\bcolor-mix\(([^)]*)\)/g)].map(
+    (m): [string, string] => [m[0], m[1]],
+  )) {
+    const words = args
+      .replace(/\bin\s+[\w-]+/, '')
+      .replace(/[\d.]+%/g, '')
+      .split(/[\s,]+/)
+      .filter(Boolean);
     const neutral = ['currentcolor', 'transparent', 'black', 'white'];
     if (!words.every((w) => neutral.includes(w.toLowerCase()))) bad.push(call);
   }
@@ -136,20 +144,33 @@ function colorProblems(raw: string): string[] {
 for (const file of files) {
   const name = relative(DIST, file);
   if (/\.(css|svg)$/.test(file)) {
-    assert.deepEqual(colorProblems(readFileSync(file, 'utf8')), [], `${name}: a color other than black or white`);
+    assert.deepEqual(
+      colorProblems(readFileSync(file, 'utf8')),
+      [],
+      `${name}: a color other than black or white`,
+    );
   }
   if (file.endsWith('.html')) {
     const html = readFileSync(file, 'utf8');
     const theme = html.match(/<meta name="theme-color" content="([^"]*)"/)?.[1];
-    assert.ok(theme === undefined || NEUTRAL_HEX.has(theme.toLowerCase()), `${name}: theme-color ${theme}`);
+    assert.ok(
+      theme === undefined || NEUTRAL_HEX.has(theme.toLowerCase()),
+      `${name}: theme-color ${theme}`,
+    );
     // No inline styling of any kind: every rule lives in a stylesheet the CSP allows.
     assert.ok(!/\sstyle="/.test(html), `${name}: has a style attribute`);
     assert.ok(!/<style[\s>]/.test(html), `${name}: has a <style> element`);
   }
   // The owner banned dots and circles: no rounded corners, no circles.
   if (file.endsWith('.css')) {
-    const radii = [...readFileSync(file, 'utf8').matchAll(/border-radius:\s*([^;}]+)/g)].map((m) => m[1].trim());
-    assert.deepEqual(radii.filter((r) => !/^0(px)?$/.test(r)), [], `${name}: non-zero border-radius`);
+    const radii = [...readFileSync(file, 'utf8').matchAll(/border-radius:\s*([^;}]+)/g)].map((m) =>
+      m[1].trim(),
+    );
+    assert.deepEqual(
+      radii.filter((r) => !/^0(px)?$/.test(r)),
+      [],
+      `${name}: non-zero border-radius`,
+    );
   }
   if (/\.(html|svg)$/.test(file)) {
     assert.ok(!/<circle[\s>]/.test(readFileSync(file, 'utf8')), `${name}: has a <circle>`);

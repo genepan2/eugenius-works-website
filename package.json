@@ -16,7 +16,9 @@
     "docs": "node scripts/gen-api-docs.ts",
     "test:e2e": "node tests/contact.e2e.ts",
     "lint": "eslint .",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

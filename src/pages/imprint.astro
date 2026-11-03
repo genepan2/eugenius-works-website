@@ -10,78 +10,78 @@ import { COMPANY } from '../consts';
   <h1 class="word">Imprint</h1>
 
   <div class="reading copy">
+    <section>
+      <h2 class="subhead">Provider identification</h2>
+      <p>
+        This disclosure is made under the Estonian Information Society Services Act (infoühiskonna
+        teenuse seadus) and the EU e-Commerce Directive 2000/31/EC.
+      </p>
 
-  <section>
-    <h2 class="subhead">Provider identification</h2>
-    <p>
-      This disclosure is made under the Estonian Information Society Services Act
-      (infoühiskonna teenuse seadus) and the EU e-Commerce Directive 2000/31/EC.
-    </p>
-
-    <dl>
-      <div>
-        <dt class="fine">Legal name</dt>
-        <dd>{COMPANY.legalName}</dd>
-      </div>
-      <div>
-        <dt class="fine">Address</dt>
-        <dd>
-          {COMPANY.street}<br />
-          {COMPANY.postalCode}{' '}{COMPANY.city}<br />
-          {COMPANY.country}
-        </dd>
-      </div>
-      <div>
-        <dt class="fine">Registry code</dt>
-        <dd>{COMPANY.regNo}</dd>
-      </div>
-      <!-- TODO: add VAT number here if the company is VAT-registered -->
-      {/*
+      <dl>
+        <div>
+          <dt class="fine">Legal name</dt>
+          <dd>{COMPANY.legalName}</dd>
+        </div>
+        <div>
+          <dt class="fine">Address</dt>
+          <dd>
+            {COMPANY.street}
+            <br />
+            {COMPANY.postalCode}
+            {' '}
+            {COMPANY.city}
+            <br />
+            {COMPANY.country}
+          </dd>
+        </div>
+        <div>
+          <dt class="fine">Registry code</dt>
+          <dd>{COMPANY.regNo}</dd>
+        </div>
+        <!-- TODO: add VAT number here if the company is VAT-registered -->
+        {/*
         No phone number. The Estonian Information Society Services Act and the
         EU e-Commerce Directive require contact details allowing rapid and
         direct communication — the email address satisfies that.
       */}
-      <div>
-        <dt class="fine">Email</dt>
-        <dd>
-          <a href={`mailto:${COMPANY.email}`}>
-            {COMPANY.email}
-          </a>
-        </dd>
-      </div>
-      <div>
-        <dt class="fine">Managing director</dt>
-        <dd>{COMPANY.director}</dd>
-      </div>
-    </dl>
-  </section>
+        <div>
+          <dt class="fine">Email</dt>
+          <dd>
+            <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="fine">Managing director</dt>
+          <dd>{COMPANY.director}</dd>
+        </div>
+      </dl>
+    </section>
 
-  <section>
-    <h2 class="subhead">Responsible for content</h2>
-    <p>
-      {COMPANY.director}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {
-        COMPANY.country
-      }.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">Responsible for content</h2>
+      <p>
+        {COMPANY.director}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, {COMPANY.country}
+        .
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">Online dispute resolution</h2>
-    <p>
-      The EU online dispute resolution platform is available at <a
-        href="https://ec.europa.eu/consumers/odr"
-       >https://ec.europa.eu/consumers/odr</a
-      >. {COMPANY.legalName} is not obliged and not willing to participate in dispute settlement
-      proceedings before a consumer arbitration board.
-    </p>
-  </section>
+    <section>
+      <h2 class="subhead">Online dispute resolution</h2>
+      <p>
+        The EU online dispute resolution platform is available at{' '}
+        <a href="https://ec.europa.eu/consumers/odr">https://ec.europa.eu/consumers/odr</a>.{' '}
+        {COMPANY.legalName} is not obliged and not willing to participate in dispute settlement
+        proceedings before a consumer arbitration board.
+      </p>
+    </section>
 
-  <section>
-    <h2 class="subhead">Liability for links</h2>
-    <p>
-      This site links to external websites whose content is outside the operator's control.
-      No responsibility is taken for the content of those sites. Responsibility for them
-      rests with their respective operators.
-    </p>
-  </section>  </div>
+    <section>
+      <h2 class="subhead">Liability for links</h2>
+      <p>
+        This site links to external websites whose content is outside the operator's control. No
+        responsibility is taken for the content of those sites. Responsibility for them rests with
+        their respective operators.
+      </p>
+    </section>
+  </div>
 </BaseLayout>

@@ -31,7 +31,12 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
 <BaseLayout
   title={data.title}
   description={metaDescription(data.description)}
-  jsonLd={workLd(data.title, data.description, new URL(Astro.url.pathname, Astro.site).href, data.url)}
+  jsonLd={workLd(
+    data.title,
+    data.description,
+    new URL(Astro.url.pathname, Astro.site).href,
+    data.url,
+  )}
 >
   <article>
     <header class="page-head">
@@ -40,38 +45,42 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
     </header>
 
     <div class="reading copy mt-8">
-      {
-        data.cover && (
-          <Image src={data.cover} alt={data.title} class="cover mb-6" widths={[640, 1280, 1920]}
-          sizes="(min-width: 40rem) 576px, 100vw" loading="eager" />
-        )
-      }
+      {data.cover && (
+        <Image
+          src={data.cover}
+          alt={data.title}
+          class="cover mb-6"
+          widths={[640, 1280, 1920]}
+          sizes="(min-width: 40rem) 576px, 100vw"
+          loading="eager"
+        />
+      )}
       <p>{data.description}</p>
-      {hasBody && <div class="prose"><Content /></div>}
+      {hasBody && (
+        <div class="prose">
+          <Content />
+        </div>
+      )}
     </div>
 
     <div class="work-meta fine">
       <p>
-        {
-          data.url && (
-            <>
-              <a href={data.url} rel="noopener" aria-label={`${data.title} website`}>
-                Website
-              </a>
-              {', '}
-            </>
-          )
-        }
-        {
-          data.repo && (
-            <>
-              <a href={data.repo} rel="noopener" aria-label={`${data.title} repository`}>
-                Repository
-              </a>
-              {', '}
-            </>
-          )
-        }
+        {data.url && (
+          <>
+            <a href={data.url} rel="noopener" aria-label={`${data.title} website`}>
+              Website
+            </a>
+            {', '}
+          </>
+        )}
+        {data.repo && (
+          <>
+            <a href={data.repo} rel="noopener" aria-label={`${data.title} repository`}>
+              Repository
+            </a>
+            {', '}
+          </>
+        )}
         <a href={`/contact/?re=${encodeURIComponent(data.title)}`}>Send a note</a>
       </p>
     </div>
@@ -81,7 +90,9 @@ const hasBody = (project.body ?? '').replace(/<!--[\s\S]*?-->/g, '').trim().leng
     <a href={`/works/${prev.id}/`} class="pager-prev" rel="prev">
       Previous: {prev.data.title}
     </a>
-    <a href="/works/" class="pager-all">All works</a>
+    <a href="/works/" class="pager-all">
+      All works
+    </a>
     <a href={`/works/${next.id}/`} class="pager-next" rel="next">
       Next: {next.data.title}
     </a>

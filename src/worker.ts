@@ -179,7 +179,10 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
       }),
     });
   } catch (error) {
-    console.error('contact: resend request failed', error instanceof Error ? error.name : 'unknown');
+    console.error(
+      'contact: resend request failed',
+      error instanceof Error ? error.name : 'unknown',
+    );
     return fail('The message could not be sent. Please try again later.', 502);
   }
 

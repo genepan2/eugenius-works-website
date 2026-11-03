@@ -32,7 +32,7 @@ globalThis.fetch = (async (_url: unknown, init?: RequestInit) => {
 
 const run = async (req: Request, env = ENV) => {
   const res = await worker.fetch(req, env as any);
-  return { status: res.status, body: await res.json() as any };
+  return { status: res.status, body: (await res.json()) as any };
 };
 
 // Non-POST is rejected.
@@ -104,19 +104,13 @@ const withHeaders = (headers: Record<string, string>, ip: string, body: unknown 
   });
 const originBefore = sent;
 assert.equal((await run(withHeaders({ origin: 'https://evil.example' }, '10.0.0.1'))).status, 403);
-assert.equal(
-  (await run(withHeaders({ 'sec-fetch-site': 'cross-site' }, '10.0.0.1'))).status,
-  403,
-);
+assert.equal((await run(withHeaders({ 'sec-fetch-site': 'cross-site' }, '10.0.0.1'))).status, 403);
 assert.equal(sent, originBefore, 'a cross-site post must send nothing');
 assert.equal((await run(withHeaders({ origin: 'https://x' }, '10.0.0.2'))).status, 200);
 assert.equal((await run(withHeaders({ 'sec-fetch-site': 'same-origin' }, '10.0.0.3'))).status, 200);
 
 // Body size cap.
-assert.equal(
-  (await run(withHeaders({ 'content-length': '20001' }, '10.0.0.4'))).status,
-  413,
-);
+assert.equal((await run(withHeaders({ 'content-length': '20001' }, '10.0.0.4'))).status, 413);
 
 // A name with CR/LF reaches Resend as one line.
 assert.equal((await run(post({ ...valid, name: 'A\r\nBcc: x@y.z' }, '10.0.0.5'))).status, 200);

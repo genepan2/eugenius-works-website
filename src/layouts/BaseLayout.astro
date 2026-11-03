@@ -35,7 +35,8 @@ const {
 } = Astro.props;
 const hasPosts = (await getPublishedPosts()).length > 0;
 const imageUrl = new URL(image, Astro.site).href;
-const imageAlt = 'Eugenius Works. I studied communication design because I was fascinated by good ideas in advertising.';
+const imageAlt =
+  'Eugenius Works. I studied communication design because I was fascinated by good ideas in advertising.';
 const pageTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
@@ -56,13 +57,17 @@ const analyticsEnabled =
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {noindex && <meta name="robots" content="noindex" />}
-    {hasPosts && <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="/rss.xml" />}
+    {hasPosts && (
+      <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="/rss.xml" />
+    )}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" href={jostLatin} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content={ogType} />
-    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    {publishedTime && (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    )}
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
@@ -77,22 +82,20 @@ const analyticsEnabled =
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
 
-    {
-      jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    }
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-    {
-      analyticsEnabled && (
-        <script
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={`{"token": "${CLOUDFLARE_ANALYTICS_TOKEN}"}`}
-        />
-      )
-    }
+    {analyticsEnabled && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${CLOUDFLARE_ANALYTICS_TOKEN}"}`}
+      />
+    )}
   </head>
   <body class="bg-paper text-ink font-sans antialiased">
-    <a href="#content" class="skip-link fine">Skip to content</a>
+    <a href="#content" class="skip-link fine">
+      Skip to content
+    </a>
     <div class="page flex min-h-screen flex-col">
       <header class="running-head">
         {/*
@@ -100,7 +103,9 @@ const analyticsEnabled =
           them reading as "Eugenius Works" rather than as a menu.
         */}
         <nav class="wordmark" aria-label="Primary">
-          {NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
+          {NAV_LINKS.map((link) => (
+            <a href={link.href}>{link.label}</a>
+          ))}
         </nav>
       </header>
 
@@ -111,28 +116,26 @@ const analyticsEnabled =
       <footer class="colophon fine">
         <nav aria-label="Footer">
           <ul>
-            {
-              FOOTER_SITE_LINKS.filter(
-                // Without a published post the blog is empty: no link to it.
-                (link) => hasPosts || link.href !== '/blog/',
-              ).map((link) => (
-                <li>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))
-            }
+            {FOOTER_SITE_LINKS.filter(
+              // Without a published post the blog is empty: no link to it.
+              (link) => hasPosts || link.href !== '/blog/',
+            ).map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
           </ul>
           <ul>
-            {
-              FOOTER_LEGAL_LINKS.map((link) => (
-                <li>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))
-            }
+            {FOOTER_LEGAL_LINKS.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
           </ul>
         </nav>
-        <p class="mt-3">© {new Date().getFullYear()} {ENTITY}</p>
+        <p class="mt-3">
+          © {new Date().getFullYear()} {ENTITY}
+        </p>
       </footer>
     </div>
   </body>
