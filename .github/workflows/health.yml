@@ -1,12 +1,14 @@
 name: Health
 
-# A failed run makes GitHub email the repository owner.
+# Every 30 minutes. A failure opens an issue labelled "incident" (or comments on
+# the open one), and the next passing run closes it.
 on:
   schedule:
     - cron: '17,47 * * * *'
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  issues: write
 
 jobs:
   health:
@@ -14,6 +16,31 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: The contact form can send
+        id: api
+        continue-on-error: true
         run: curl --fail --silent --show-error --retry 3 --retry-delay 10 --max-time 20 https://eugenius-works.com/api/health
       - name: The home page loads
+        id: home
+        continue-on-error: true
         run: curl --fail --silent --show-error --retry 3 --retry-delay 10 --max-time 20 -o /dev/null https://eugenius-works.com/
+      - name: Open, update or close the incident issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          API: ${{ steps.api.outcome }}
+          HOME_PAGE: ${{ steps.home.outcome }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --label incident --state open --json number --jq '.[0].number // empty')
+          if [ "$API" = success ] && [ "$HOME_PAGE" = success ]; then
+            [ -n "$open" ] && gh issue close "$open" --comment "Healthy again: $RUN"
+            exit 0
+          fi
+          body="Health check failed. /api/health: $API, home page: $HOME_PAGE. Run: $RUN. See docs/runbook.md."
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body "$body"
+          else
+            gh label create incident --color b60205 --description "The live site failed its health check" --force
+            gh issue create --title "Health check failed" --label incident --body "$body"
+          fi
+          exit 1

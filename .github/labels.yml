@@ -23,6 +23,9 @@
 - name: security
   color: b60205
   description: Security problem or hardening
+- name: incident
+  color: b60205
+  description: The live site failed its health check
 - name: triage
   color: ededed
   description: New; not yet sorted
