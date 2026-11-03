@@ -1,7 +1,7 @@
 import { AUTHOR, COMPANY, LINKEDIN_URL, SITE_NAME, SITE_URL, X_URL } from './consts';
 
 const CONTEXT = 'https://schema.org';
-export const PERSON_ID = `${SITE_URL}/#person`;
+const PERSON_ID = `${SITE_URL}/#person`;
 
 /** The owner, with the company he works through. Referenced by `@id` from other pages. */
 export const person = {

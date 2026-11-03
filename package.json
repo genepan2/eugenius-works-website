@@ -18,7 +18,8 @@
     "lint": "eslint .",
     "typecheck": "astro check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "knip": "knip"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["scripts/*.ts", "tests/*.ts"],
+  "project": ["src/**/*.{ts,astro}", "scripts/**/*.ts", "tests/**/*.ts"],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "tailwindcss"]
+}
