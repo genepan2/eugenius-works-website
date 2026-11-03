@@ -29,7 +29,7 @@
     "size:bundle": "node scripts/check-bundle-size.ts",
     "todos": "node scripts/check-todos.ts",
     "secrets": "secretlint \"**/*\"",
-    "prepare": "lefthook install"
+    "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && lefthook install || true"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
