@@ -1,0 +1,26 @@
+name: DAST
+
+# A passive OWASP ZAP scan of the live site: headers, cookies, mixed content,
+# information leaks. Passive means it only reads pages; it sends no attack and
+# no contact form.
+on:
+  schedule:
+    - cron: '41 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
+        with:
+          target: https://eugenius-works.com
+          rules_file_name: .zap/rules.tsv
+          issue_title: 'DAST: ZAP baseline findings'
+          allow_issue_writing: true
