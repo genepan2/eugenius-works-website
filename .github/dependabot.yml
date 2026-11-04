@@ -18,10 +18,16 @@ updates:
         update-types: [minor, patch]
     labels: [dependencies]
     open-pull-requests-limit: 5
+    target-branch: develop
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    # init and analyze of codeql-action must move together; one pull request for all actions.
+    groups:
+      actions:
+        patterns: ['*']
     cooldown:
       default-days: 7
     labels: [dependencies]
+    target-branch: develop

@@ -2,6 +2,9 @@ name: Health
 
 # Every 30 minutes. A failure opens an issue labelled "incident" (or comments on
 # the open one), and the next passing run closes it.
+# Off until the repository variable HEALTH_CHECK is "on" (Settings → Secrets and
+# variables → Actions → Variables): the live site has /api/health only after the
+# first deploy of the current Worker.
 on:
   schedule:
     - cron: '17,47 * * * *'
@@ -12,6 +15,7 @@ permissions:
 
 jobs:
   health:
+    if: vars.HEALTH_CHECK == 'on'
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:

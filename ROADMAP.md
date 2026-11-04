@@ -17,6 +17,15 @@ can read emails. Also look in the `hey@` mailbox for the subject
 `Contact form: E2E 1791437125705-6agfje`.
 → tests/contact.e2e.ts
 
+### deploy from CI — open
+next: add the repository secrets `CLOUDFLARE_API_TOKEN` (template "Edit Cloudflare Workers")
+and `CLOUDFLARE_ACCOUNT_ID`, merge develop into main, then set the repository variable `HEALTH_CHECK`
+to `on`
+last: 2026-11-03
+The live site still runs the Worker from before /api/health existed, so the health check
+is off until the first CI deploy.
+→ .github/workflows/ci.yml
+
 ### error alert in Cloudflare — open
 next: in the dashboard, Workers & Pages → eugenius-works-website → Observability → Alerts,
 alert when `error` log lines exceed 3 in 10 minutes, to `hey@`
