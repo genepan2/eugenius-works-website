@@ -9,7 +9,8 @@ Eugenius Works, a personal site: static Astro 7 with Tailwind v4, served by a Cl
 - One test file per module: `tests/unit/<module>.test.ts`. Name each `test()` after the behavior it shows, as a sentence. A test that needs `dist/` goes in `tests/site/`.
 - `npm run docs` regenerates `docs/api.md` from `docs/openapi.json`. `npm test` fails while the two differ.
 - `npm run test:e2e` sends a real email through the live site and counts against its rate limit of 5 per 10 minutes. Run it only when the owner asks.
-- `npm run deploy` publishes to production. Run it only on the owner's word. A push to `main` deploys too, through `.github/workflows/ci.yml`, once the Cloudflare secrets are set; so push only on the owner's word.
+- `npm run deploy` publishes to production. Run it only on the owner's word.
+- Work lands on `develop`. `main` is production: it changes only through a pull request from `develop`, and each merge deploys through `.github/workflows/ci.yml` once the Cloudflare secrets are set. Push and open pull requests only on the owner's word.
 - CI runs the same checks as the commands above. The pre-commit hook (`lefthook.yml`) checks staged files only.
 - `docs/runbook.md` covers the logs, the health check at `/api/health`, and rollback.
 

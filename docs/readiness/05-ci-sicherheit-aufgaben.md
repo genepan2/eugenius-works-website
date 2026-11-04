@@ -20,9 +20,9 @@ CI hebt die Testberichte und den Build auf.
 
 ## Automatischer Deploy
 
-**Was:** Nach erfolgreichen Prüfungen deployt ein Push auf `main` mit wrangler und prüft danach `/api/health`. Das gilt aber erst, wenn du die Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` im Repo setzt. Bis dahin überspringt der Job den Deploy und sagt das in der Zusammenfassung.
+**Was:** Nach erfolgreichen Prüfungen deployt jeder Merge nach `main` mit wrangler und prüft danach `/api/health`. Das gilt aber erst, wenn du die Secrets `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` im Repo setzt. Bis dahin überspringt der Job den Deploy und sagt das in der Zusammenfassung.
 
-**Warum:** Ein Deploy aus CI ist immer derselbe Ablauf aus einem sauberen Checkout, egal wer ihn auslöst. Er passiert nur, wenn alle Tests grün sind, und er prüft danach selbst, ob die Seite lebt. `AGENTS.md` sagt deshalb jetzt: Push auf `main` nur auf deine Anweisung.
+**Warum:** Ein Deploy aus CI ist immer derselbe Ablauf aus einem sauberen Checkout, egal wer ihn auslöst. Er passiert nur, wenn alle Tests grün sind, und er prüft danach selbst, ob die Seite lebt. `AGENTS.md` sagt deshalb: Gearbeitet wird auf `develop`, `main` ändert sich nur per Pull Request von `develop`, und gepusht wird nur auf deine Anweisung.
 
 ## Release Notes (`.github/workflows/release.yml`)
 
@@ -71,9 +71,19 @@ CI hebt die Testberichte und den Build auf.
 
 **Warum:** Ein Agent, der ein Issue anlegt oder bearbeitet, weiß dadurch, welche Angaben gebraucht werden und wie er es einordnet.
 
+## Stand nach dem ersten Push (2026-11-04)
+
+Erledigt:
+- Gepusht. Der erste CI-Lauf auf `main` war grün. Der Deploy-Job hat sich übersprungen, weil die Cloudflare-Secrets fehlen.
+- **Zwei Branches:** Gearbeitet wird auf `develop`. `main` ist die Produktion und ändert sich nur per Pull Request von `develop`. CI und CodeQL laufen auf beiden Branches, der Deploy nur auf `main`.
+- **Branch-Schutz:** Auf `main` und `develop` muss die Prüfung „Lint, type-check and test“ grün sein. Force-Push und Löschen sind gesperrt, die Historie bleibt linear. Auf `main` geht es nur per Pull Request, auch für dich als Admin.
+- **Dependabot:** Alerts und automatische Security-Updates sind an. Die Pull Requests zielen auf `develop`.
+- **release-please** darf jetzt Pull Requests anlegen. Beim ersten Lauf fehlte GitHub Actions dafür die Erlaubnis. Der Release-PR sammelt die Commits auf `main`.
+- Updates der Actions kommen jetzt in einem gemeinsamen Pull Request. `init` und `analyze` von CodeQL müssen zusammen wechseln, getrennt bricht der CodeQL-Lauf.
+- Der Health-Check alle 30 Minuten bleibt aus, bis die Repo-Variable `HEALTH_CHECK` auf `on` steht. Auf der Live-Seite läuft noch der alte Worker ohne `/api/health`, der Check würde also sofort ein Incident-Issue öffnen.
+
 ## Was du noch tun musst
 
-1. **Pushen**, damit CI überhaupt läuft. Mein letzter Versuch wurde unterbrochen, die Commits sind nur lokal.
-2. **Branch-Schutz für `main`** aktivieren: CI muss grün sein, bevor gemergt wird. Ich kann das per `gh` setzen, sobald CI einmal gelaufen ist (der Name der Prüfung muss dann existieren).
-3. **Cloudflare-Secrets** `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` setzen, wenn CI deployen soll.
-4. **Dependabot Security Updates** einschalten. Das ist eine Einstellung im Repo, die Datei reicht dafür nicht.
+1. **Cloudflare-Secrets** `CLOUDFLARE_API_TOKEN` (Vorlage „Edit Cloudflare Workers“) und `CLOUDFLARE_ACCOUNT_ID` im Repo setzen. Ab dann deployt jeder Merge nach `main`.
+2. Nach dem ersten Deploy die Repo-Variable **`HEALTH_CHECK=on`** setzen (Settings → Secrets and variables → Actions → Variables).
+3. Die **Fehler-Benachrichtigung in Cloudflare** einrichten (siehe `ROADMAP.md`).

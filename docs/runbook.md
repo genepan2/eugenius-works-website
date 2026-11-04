@@ -31,7 +31,8 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
 ## Alerts
 
 - **Health check:** the GitHub Actions workflow `.github/workflows/health.yml` calls
-  `/api/health` and the home page every 30 minutes. A failure opens an issue labelled
+  `/api/health` and the home page every 30 minutes, once the repository variable
+  `HEALTH_CHECK` is `on`. A failure opens an issue labelled
   `incident`, or comments on the open one; the next healthy run closes it. GitHub also
   emails the owner about the failed run.
 - **Error logs:** a Workers Observability alert in the Cloudflare dashboard
@@ -90,8 +91,9 @@ Secrets) or deployed through `vars` in `wrangler.jsonc`.
 1. Roll back: Workers & Pages → `eugenius-works-website` → Deployments → the previous
    deployment → Rollback. Or `npx wrangler rollback` from a machine logged in with
    `npx wrangler login`. This takes seconds and needs no build.
-2. Revert the commit on `main` (`git revert <sha>`) and push, so the next deploy does
-   not bring the fault back.
+2. Revert the commit (`git revert <sha>`) on a branch from `main` and merge it into
+   `main` by pull request, so the next deploy does not bring the fault back. Then merge
+   `main` into `develop`.
 3. Add a test that would have caught it.
 
 ## The site is down
