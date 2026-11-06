@@ -85,13 +85,25 @@ jobs:
       - if: steps.gate.outputs.ready == 'true'
         run: npm ci && npm run build
       - if: steps.gate.outputs.ready == 'true'
+        id: deploy
         run: npx wrangler deploy --message "${{ github.sha }}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Check the live health
+        id: health
         if: steps.gate.outputs.ready == 'true'
         run: |
           sleep 10
           curl --fail --silent --show-error --retry 3 --retry-delay 5 https://eugenius-works.com/api/health
           echo "Deployed ${{ github.sha }} to https://eugenius-works.com" >> "$GITHUB_STEP_SUMMARY"
+      # Only after a deploy that went out and then failed its health check: without a
+      # version ID, wrangler returns the Worker to the version that ran before this one.
+      - name: Roll back when the live health fails
+        if: failure() && steps.deploy.outcome == 'success' && steps.health.outcome == 'failure'
+        run: |
+          npx wrangler rollback --yes --message "Health check failed after ${{ github.sha }}"
+          echo "### Rolled back: /api/health failed after deploying ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

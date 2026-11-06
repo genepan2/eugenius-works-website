@@ -88,6 +88,10 @@ Secrets) or deployed through `vars` in `wrangler.jsonc`.
 
 ## A deploy broke the site
 
+CI rolls back by itself when `/api/health` fails right after a deploy: the run turns
+red and its summary says "Rolled back". The steps below are for a fault the health
+check does not see, and for step 2 after an automatic rollback.
+
 1. Roll back: Workers & Pages → `eugenius-works-website` → Deployments → the previous
    deployment → Rollback. Or `npx wrangler rollback` from a machine logged in with
    `npx wrangler login`. This takes seconds and needs no build.
