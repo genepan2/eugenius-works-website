@@ -1,0 +1,58 @@
+name: Flaky tests
+
+# Every night the full test suite runs three times on the same commit. A test that
+# passes in one run and fails in another is flaky: it opens an issue labelled
+# "flaky" (or comments on the open one), and a clean night closes it.
+on:
+  schedule:
+    - cron: '41 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  repeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: develop
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run the tests three times
+        run: |
+          for run in 1 2 3; do
+            npm test > /dev/null 2>&1 || true
+            mkdir -p "runs/$run" && cp test-results/*.xml "runs/$run/"
+          done
+      - name: Compare the runs
+        id: compare
+        continue-on-error: true
+        run: node scripts/test-report.ts --flaky runs/1 runs/2 runs/3
+      - name: Open, update or close the flaky issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          OUTCOME: ${{ steps.compare.outcome }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --label flaky --state open --json number --jq '.[0].number // empty')
+          if [ "$OUTCOME" = success ]; then
+            [ -n "$open" ] && gh issue close "$open" --comment "No flaky test tonight: $RUN"
+            exit 0
+          fi
+          body="A test gave different results across three runs of the same commit. The run summary names it: $RUN"
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body "$body"
+          else
+            gh label create flaky --color fbca04 --description "A test passes and fails on the same code" --force
+            gh issue create --title "Flaky test" --label flaky --body "$body"
+          fi
+          exit 1

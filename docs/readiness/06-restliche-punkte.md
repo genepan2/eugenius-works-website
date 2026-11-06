@@ -29,3 +29,9 @@ _2026-11-06_
 **Warum:** Ist das Formular langsam, ist die erste Frage: liegt es am Worker oder an Resend? Bisher gab es nur die Gesamtzeit. Echtes Profiling (CPU-Profile) gibt es auf Cloudflare Workers nur lokal mit `wrangler dev`. Für einen Worker, der fast nur auf Resend wartet, sagt die Aufteilung mehr.
 
 **Hinweis:** Auf Workers bleibt die Uhr während reiner Rechenarbeit stehen und läuft nur über Netzwerkzugriffe weiter. Die Zahlen zeigen also Wartezeit, nicht CPU-Zeit. Die CPU-Zeit steht im Cloudflare-Dashboard unter Metrics.
+
+## Unzuverlässige Tests (`.github/workflows/flaky.yml`)
+
+**Was:** Jede Nacht um 02:41 UTC baut ein Lauf `develop` und lässt alle Tests dreimal hintereinander auf demselben Stand laufen. Danach vergleicht `scripts/test-report.ts --flaky` die drei JUnit-Berichte. Hat ein Test einmal bestanden und ein anderes Mal nicht, legt der Lauf ein Issue mit dem Label `flaky` an, oder er kommentiert das offene. Die nächste saubere Nacht schließt es.
+
+**Warum:** Ein Test, der mal grün und mal rot ist, kostet Vertrauen. Ein Agent kann dann nicht mehr unterscheiden, ob er etwas kaputt gemacht hat oder ob der Test nur wackelt. Geprüft: Mit einem künstlich veränderten Bericht meldet das Skript den betroffenen Test und endet mit einem Fehler. Bei drei echten Läufen meldet es nichts.

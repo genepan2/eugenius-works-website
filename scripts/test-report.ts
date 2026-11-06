@@ -1,7 +1,8 @@
 /**
  * Reads the JUnit reports in test-results/ and reports how long the tests took.
  * Run: node scripts/test-report.ts            (after npm test)
- *      node scripts/test-report.ts --flaky <dir> <dir> ...   (one dir per test run)
+ *      node scripts/test-report.ts --flaky <dir> <dir> ...   (one dir per test run;
+ *      .github/workflows/flaky.yml does this every night)
  * In CI it writes to the job summary, so every run shows the total, the slowest
  * tests and any test over the budget. With --flaky it compares the runs and fails
  * when one test passed in one run and failed in another.
