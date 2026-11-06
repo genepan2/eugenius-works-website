@@ -24,14 +24,6 @@ last: 2026-11-06
 Until then the daily error report skips itself.
 → .github/workflows/errors.yml
 
-### error alert in Cloudflare — open
-next: in the dashboard, Workers & Pages → eugenius-works-website → Observability → Alerts,
-alert when `error` log lines exceed 3 in 10 minutes, to `hey@`
-last: 2026-11-03
-The Worker now writes JSON log lines with a level (`src/log.ts`). The health check runs
-from GitHub Actions; the error alert needs the dashboard.
-→ docs/runbook.md
-
 ### cloudflare dashboard settings — open
 next: turn on SSL/TLS → Edge Certificates → "Always Use HTTPS"; decide about `www`
 last: 2026-10-06
@@ -68,6 +60,10 @@ The design is black and white so that color images can carry the color. No image
 yet. A `cover` field is ready on projects and posts.
 
 ## done
+
+### error alert in Cloudflare — 2026-11-06
+A Cloudflare monitor (Alerts → Monitors, Threshold) counts rows of `eugenius_works_api`
+with `double2 = 1` every 15 minutes over the last 15 minutes and mails `hey@` at 4 or more.
 
 ### cloudflare web analytics — 2026-11-06
 The site token is in `src/consts.ts`; every production page loads the Cloudflare beacon,
