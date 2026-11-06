@@ -40,9 +40,9 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
   labelled `errors` with a table by path, status and outcome; a clean day closes it. It
   needs the repository secret `CLOUDFLARE_ANALYTICS_TOKEN` (Account Analytics: Read).
   Locally: `node scripts/error-report.ts` with that token and `CLOUDFLARE_ACCOUNT_ID`.
-- **Error logs:** a Workers Observability alert in the Cloudflare dashboard
-  (Workers & Pages → `eugenius-works-website` → Observability → Alerts) when `error`
-  lines exceed 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in
+- **Error alert:** a Cloudflare monitor (Alerts → Monitors, Threshold) on the dataset
+  `eugenius_works_api` with the filter `double2 = 1` (a 5xx answer), firing when the
+  count exceeds 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in
   the dashboard and is still open on `ROADMAP.md`.
 
 ## Metrics

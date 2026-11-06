@@ -25,9 +25,9 @@ Until then the daily error report skips itself.
 → .github/workflows/errors.yml
 
 ### error alert in Cloudflare — open
-next: in the dashboard, Workers & Pages → eugenius-works-website → Observability → Alerts,
-alert when `error` log lines exceed 3 in 10 minutes, to `hey@`
-last: 2026-11-03
+next: in the dashboard, Alerts → Monitors → Create a Monitor → Threshold, dataset
+`eugenius_works_api`, filter `double2 = 1`, COUNT above 3 in 10 minutes, to `hey@`
+last: 2026-11-06
 The Worker now writes JSON log lines with a level (`src/log.ts`). The health check runs
 from GitHub Actions; the error alert needs the dashboard.
 → docs/runbook.md
