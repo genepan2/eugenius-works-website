@@ -114,7 +114,17 @@ function validate(fields: Record<string, string>): ContactMessage | string {
 
 const configured = (env: Env) => Boolean(env.RESEND_API_KEY && env.CONTACT_FROM && env.CONTACT_TO);
 
-async function handleContact(request: Request, env: Env, requestId: string): Promise<Response> {
+/** Milliseconds per part of a request, sent back as Server-Timing and kept in the metrics. */
+interface Timing {
+  resend?: number;
+}
+
+async function handleContact(
+  request: Request,
+  env: Env,
+  requestId: string,
+  timing: Timing,
+): Promise<Response> {
   if (request.method !== 'POST') {
     return fail('Method not allowed.', 405);
   }
@@ -178,6 +188,8 @@ async function handleContact(request: Request, env: Env, requestId: string): Pro
   }
   countHit(ip);
 
+  // Workers advance the clock only across I/O, so this measures the wait for Resend.
+  const resendStarted = Date.now();
   const sent = await sendEmail(
     env.RESEND_API_KEY!,
     {
@@ -189,13 +201,24 @@ async function handleContact(request: Request, env: Env, requestId: string): Pro
     },
     requestId,
   );
+  timing.resend = Date.now() - resendStarted;
   // Resend's own error body may name the key or the account. It is never passed on.
   if (!sent) return fail('The message could not be sent. Please try again later.', 502);
   log('info', 'contact.sent', { requestId });
   return json({ ok: true }, 200);
 }
 
-async function handleApi(request: Request, env: Env, requestId: string): Promise<Response> {
+const serverTiming = (ms: number, timing: Timing) =>
+  [`worker;dur=${ms}`, timing.resend === undefined ? '' : `resend;dur=${timing.resend}`]
+    .filter(Boolean)
+    .join(', ');
+
+async function handleApi(
+  request: Request,
+  env: Env,
+  requestId: string,
+  timing: Timing,
+): Promise<Response> {
   const { pathname } = new URL(request.url);
 
   // For uptime checks: answers without sending anything, and says whether the
@@ -208,7 +231,7 @@ async function handleApi(request: Request, env: Env, requestId: string): Promise
   }
 
   if (pathname === '/api/contact') {
-    const response = await handleContact(request, env, requestId);
+    const response = await handleContact(request, env, requestId, timing);
 
     // Without JavaScript the browser posts the form itself and would land on
     // a bare JSON page. Send it back to the contact page instead, where the
@@ -239,7 +262,8 @@ export default {
       // Cloudflare's ray ID ties this log line to the request in the dashboard.
       const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
       const started = Date.now();
-      const response = await handleApi(request, env, requestId);
+      const timing: Timing = {};
+      const response = await handleApi(request, env, requestId, timing);
       const ms = Date.now() - started;
       log(response.status >= 500 ? 'error' : 'info', 'api.request', {
         requestId,
@@ -247,6 +271,7 @@ export default {
         path: pathname,
         status: response.status,
         ms,
+        resendMs: timing.resend,
       });
       if (enabled('metrics', env)) {
         const known = pathname === '/api/contact' || pathname === '/api/health';
@@ -257,10 +282,12 @@ export default {
           status: response.status,
           outcome: pathname === '/api/contact' ? contactOutcome(response.status) : 'other',
           ms,
+          resendMs: timing.resend,
         });
       }
       const headers = new Headers(response.headers);
       headers.set('x-request-id', requestId);
+      headers.set('server-timing', serverTiming(ms, timing));
       return new Response(response.body, { status: response.status, headers });
     }
 

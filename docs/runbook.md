@@ -16,7 +16,7 @@ Cloudflare; only `/api/*` runs code (`src/worker.ts`).
 
 | `event`                  | Level | Meaning                                                        |
 | ------------------------ | ----- | -------------------------------------------------------------- |
-| `api.request`            | info  | One line per `/api/` request: method, path, status, `ms`       |
+| `api.request`            | info  | One line per `/api/` request: method, path, status, `ms`, `resendMs` |
 | `contact.sent`           | info  | Resend accepted a message                                      |
 | `contact.rate_limited`   | warn  | One IP sent more than 5 messages in 10 minutes                 |
 | `resend.request_failed`  | warn  | One attempt failed: network error or the 8 second timeout      |
@@ -35,6 +35,11 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
   `HEALTH_CHECK` is `on`. A failure opens an issue labelled
   `incident`, or comments on the open one; the next healthy run closes it. GitHub also
   emails the owner about the failed run.
+- **Daily error report:** `.github/workflows/errors.yml` counts the `/api/` requests that
+  ended in a 5xx over the last 24 hours (from the metrics below) and opens an issue
+  labelled `errors` with a table by path, status and outcome; a clean day closes it. It
+  needs the repository secret `CLOUDFLARE_ANALYTICS_TOKEN` (Account Analytics: Read).
+  Locally: `node scripts/error-report.ts` with that token and `CLOUDFLARE_ACCOUNT_ID`.
 - **Error logs:** a Workers Observability alert in the Cloudflare dashboard
   (Workers & Pages → `eugenius-works-website` → Observability → Alerts) when `error`
   lines exceed 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in
@@ -45,7 +50,9 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
 Each `/api/` request writes one data point to the Analytics Engine dataset
 `eugenius_works_api` (`src/metrics.ts`): `index1` is the path, `blob1` the method,
 `blob2` the status, `blob3` the outcome, `double1` the milliseconds, `double2` 1 for a
-5xx. Query it in the dashboard (Workers & Pages → Analytics Engine → SQL), for example
+5xx, `double3` the milliseconds spent waiting for Resend (0 when no email was sent).
+The same two times come back on every `/api/` answer as a `Server-Timing` header, and
+the browser's developer tools show them under Network → Timing. Query it in the dashboard (Workers & Pages → Analytics Engine → SQL), for example
 after a deploy:
 
 ```sql
@@ -53,6 +60,15 @@ SELECT blob3 AS outcome, count() AS requests, avg(double1) AS avg_ms
 FROM eugenius_works_api
 WHERE timestamp > NOW() - INTERVAL '1' HOUR
 GROUP BY outcome
+```
+
+To see whether a slow form is Resend or the Worker:
+
+```sql
+SELECT quantileExactWeighted(0.95)(double1, _sample_interval) AS p95_total_ms,
+       quantileExactWeighted(0.95)(double3, _sample_interval) AS p95_resend_ms
+FROM eugenius_works_api
+WHERE index1 = '/api/contact' AND timestamp > NOW() - INTERVAL '1' DAY
 ```
 
 Workers & Pages → `eugenius-works-website` → Metrics shows requests, errors and CPU
@@ -87,6 +103,11 @@ Secrets) or deployed through `vars` in `wrangler.jsonc`.
    limiting rule on `/api/contact`.
 
 ## A deploy broke the site
+
+CI rolls out gradually: the new version gets 0 % and a smoke test through a version
+override, then 10 % for a minute, then 100 %. When any check fails it puts the old
+version back to 100 %: the run turns red and its summary says "Rolled back". The steps below are for a fault the health
+check does not see, and for step 2 after an automatic rollback.
 
 1. Roll back: Workers & Pages → `eugenius-works-website` → Deployments → the previous
    deployment → Rollback. Or `npx wrangler rollback` from a machine logged in with

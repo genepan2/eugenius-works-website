@@ -241,8 +241,10 @@ test('the health check answers as the spec says', async () => {
   assert.match(spec.paths['/api/health'].description, /\b405\b/);
 });
 
-test('every API answer carries the documented X-Request-Id header', async () => {
+test('every API answer carries the documented X-Request-Id and Server-Timing headers', async () => {
   const res = await worker.fetch(new Request('https://x/api/health'), ENV as any);
   assert.ok(res.headers.get('x-request-id'));
   assert.match(spec.info.description, /X-Request-Id/);
+  assert.ok(res.headers.get('server-timing'));
+  assert.match(spec.info.description, /Server-Timing/);
 });

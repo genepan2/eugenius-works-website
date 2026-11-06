@@ -5,7 +5,7 @@
  * the next request after the variable is saved.
  */
 
-const FLAGS = {
+export const FLAGS = {
   /** Off: /api/contact answers 503 and the form shows its "busy" notice. A kill switch. */
   contactForm: { env: 'FLAG_CONTACT_FORM', default: true },
   /** Off: the Worker writes no data points to Analytics Engine. */

@@ -1,6 +1,6 @@
 # Roadmap: eugenius-works-website
 
-_updated 2026-10-08 by Claude_
+_updated 2026-11-06 by Droid_
 
 The plain "Two words" redesign and the technical hardening are live at
 https://eugenius-works.com since 2026-10-08.
@@ -17,14 +17,12 @@ can read emails. Also look in the `hey@` mailbox for the subject
 `Contact form: E2E 1791437125705-6agfje`.
 → tests/contact.e2e.ts
 
-### deploy from CI — open
-next: add the repository secrets `CLOUDFLARE_API_TOKEN` (template "Edit Cloudflare Workers")
-and `CLOUDFLARE_ACCOUNT_ID`, merge develop into main, then set the repository variable `HEALTH_CHECK`
-to `on`
-last: 2026-11-03
-The live site still runs the Worker from before /api/health existed, so the health check
-is off until the first CI deploy.
-→ .github/workflows/ci.yml
+### error report token — open
+next: create a Cloudflare API token with only Account → Account Analytics → Read and save
+it as the repository secret `CLOUDFLARE_ANALYTICS_TOKEN`, then run the "Errors" workflow once
+last: 2026-11-06
+Until then the daily error report skips itself.
+→ .github/workflows/errors.yml
 
 ### error alert in Cloudflare — open
 next: in the dashboard, Workers & Pages → eugenius-works-website → Observability → Alerts,
@@ -57,7 +55,7 @@ ready; the footer shows "Blog" when the first post is published.
 ### cloudflare web analytics token — open
 next: set `CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts`, or soften the analytics section
 of the privacy policy until it is set
-last: 2026-09-22
+last: 2026-11-06
 The token is still a placeholder, so nothing is collected, while `/privacy/` already
 describes Cloudflare Web Analytics as running.
 
@@ -77,6 +75,11 @@ The design is black and white so that color images can carry the color. No image
 yet. A `cover` field is ready on projects and posts.
 
 ## done
+
+### deploy from CI with gradual rollout — 2026-11-06
+A merge into `main` deploys from CI: the new version gets 0 % and a smoke test, then 10 %
+for a minute, then 100 %; a failed check puts the old version back. Nightly flaky-test
+runs, test durations, request timing and the flag check came with it.
 
 ### blog reading time and share links — 2026-10-08
 A post shows "N min read" on its date line and a plain "Share: X, LinkedIn, Email" line

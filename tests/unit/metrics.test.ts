@@ -6,10 +6,17 @@ test('a request becomes one data point with path, status, outcome and time', () 
   const points: unknown[] = [];
   recordRequest(
     { writeDataPoint: (p) => points.push(p) },
-    { path: '/api/contact', method: 'POST', status: 502, outcome: 'resend_failed', ms: 12 },
+    {
+      path: '/api/contact',
+      method: 'POST',
+      status: 502,
+      outcome: 'resend_failed',
+      ms: 12,
+      resendMs: 9,
+    },
   );
   assert.deepEqual(points, [
-    { indexes: ['/api/contact'], blobs: ['POST', '502', 'resend_failed'], doubles: [12, 1] },
+    { indexes: ['/api/contact'], blobs: ['POST', '502', 'resend_failed'], doubles: [12, 1, 9] },
   ]);
 });
 
