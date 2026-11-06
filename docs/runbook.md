@@ -104,8 +104,9 @@ Secrets) or deployed through `vars` in `wrangler.jsonc`.
 
 ## A deploy broke the site
 
-CI rolls back by itself when `/api/health` fails right after a deploy: the run turns
-red and its summary says "Rolled back". The steps below are for a fault the health
+CI rolls out gradually: the new version gets 0 % and a smoke test through a version
+override, then 10 % for a minute, then 100 %. When any check fails it puts the old
+version back to 100 %: the run turns red and its summary says "Rolled back". The steps below are for a fault the health
 check does not see, and for step 2 after an automatic rollback.
 
 1. Roll back: Workers & Pages → `eugenius-works-website` → Deployments → the previous

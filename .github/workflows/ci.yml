@@ -87,12 +87,56 @@ jobs:
           fi
       - if: steps.gate.outputs.ready == 'true'
         run: npm ci && npm run build
-      - if: steps.gate.outputs.ready == 'true'
-        id: deploy
-        run: npx wrangler deploy --message "${{ github.sha }}"
+      # Gradual rollout: upload the new version without traffic, smoke-test it through a
+      # version override, give it 10 % of traffic for a minute, then all of it. Any failed
+      # check puts the old version back to 100 %.
+      - name: Upload the new version without traffic
+        id: upload
+        if: steps.gate.outputs.ready == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler.ndjson
+        run: |
+          old=$(npx wrangler deployments status --json | jq -r '.versions | max_by(.percentage) | .version_id')
+          npx wrangler versions upload --message "${{ github.sha }}"
+          new=$(jq -r 'select(.type == "version-upload") | .version_id' "$WRANGLER_OUTPUT_FILE_PATH")
+          [ -n "$old" ] && [ -n "$new" ] && [ "$old" != null ] && [ "$new" != null ]
+          echo "old=$old" >> "$GITHUB_OUTPUT"
+          echo "new=$new" >> "$GITHUB_OUTPUT"
+          npx wrangler versions deploy "$new@0" "$old@100" --yes --message "${{ github.sha }} at 0 %"
+      - name: Smoke-test the new version
+        id: smoke
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          OVERRIDE: 'Cloudflare-Workers-Version-Overrides: eugenius-works-website="${{ steps.upload.outputs.new }}"'
+        run: |
+          sleep 10
+          for path in /api/health / /contact/; do
+            curl --fail --silent --show-error --output /dev/null --retry 3 --retry-delay 5 \
+              -H "$OVERRIDE" "https://eugenius-works.com$path"
+          done
+      - name: Send 10 % of traffic to the new version for a minute
+        id: canary
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEW: ${{ steps.upload.outputs.new }}
+          OLD: ${{ steps.upload.outputs.old }}
+        run: |
+          npx wrangler versions deploy "$NEW@10" "$OLD@90" --yes --message "${{ github.sha }} at 10 %"
+          for i in 1 2 3 4 5 6; do
+            sleep 10
+            curl --fail --silent --show-error --output /dev/null --retry 2 --retry-delay 3 https://eugenius-works.com/api/health
+          done
+      - name: Send all traffic to the new version
+        id: deploy
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler versions deploy "${{ steps.upload.outputs.new }}@100" --yes --message "${{ github.sha }}"
       - name: Check the live health
         id: health
         if: steps.gate.outputs.ready == 'true'
@@ -100,13 +144,11 @@ jobs:
           sleep 10
           curl --fail --silent --show-error --retry 3 --retry-delay 5 https://eugenius-works.com/api/health
           echo "Deployed ${{ github.sha }} to https://eugenius-works.com" >> "$GITHUB_STEP_SUMMARY"
-      # Only after a deploy that went out and then failed its health check: without a
-      # version ID, wrangler returns the Worker to the version that ran before this one.
-      - name: Roll back when the live health fails
-        if: failure() && steps.deploy.outcome == 'success' && steps.health.outcome == 'failure'
-        run: |
-          npx wrangler rollback --yes --message "Health check failed after ${{ github.sha }}"
-          echo "### Rolled back: /api/health failed after deploying ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Put the old version back when a check fails
+        if: failure() && steps.upload.outputs.old != ''
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler versions deploy "${{ steps.upload.outputs.old }}@100" --yes --message "Rolled back from ${{ github.sha }}"
+          echo "### Rolled back: a check failed while rolling out ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"

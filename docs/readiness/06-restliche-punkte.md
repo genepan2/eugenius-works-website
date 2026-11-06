@@ -43,3 +43,18 @@ _2026-11-06_
 **Warum:** Der Health-Check sieht nur, ob die Seite gerade antwortet. Fehler zwischen zwei Checks, zum Beispiel ein Resend-Ausfall von zehn Minuten, sah bisher niemand. Jetzt wird aus jedem Fehler eine Aufgabe, die ein Agent finden und mit dem Runbook bearbeiten kann. Ein Dienst wie Sentry ist dafür nicht nötig. Die Daten liegen schon in den Metriken.
 
 **Bis das Token da ist:** Der Lauf überspringt sich selbst, bis das Repo-Secret `CLOUDFLARE_ANALYTICS_TOKEN` gesetzt ist. Das ist ein Cloudflare-API-Token, das nur „Account Analytics: Read“ darf.
+
+## Schrittweise Auslieferung (`.github/workflows/ci.yml`, Job „Deploy“)
+
+**Was:** Ein Merge nach `main` schaltet die neue Version nicht mehr auf einmal live. Der Lauf macht vier Schritte:
+
+1. Er lädt die neue Version hoch, ohne ihr Verkehr zu geben (0 %).
+2. Er prüft `/api/health`, die Startseite und `/contact/` gezielt auf der neuen Version. Das geht mit dem Header `Cloudflare-Workers-Version-Overrides`.
+3. Die neue Version bekommt 10 % des Verkehrs. Eine Minute lang prüft der Lauf alle zehn Sekunden `/api/health`.
+4. Erst dann bekommt sie 100 %, und der Lauf prüft ein letztes Mal.
+
+Schlägt eine Prüfung fehl, setzt der Lauf die alte Version wieder auf 100 %. Das ersetzt das `wrangler rollback` aus dem ersten Punkt, weil der Lauf jetzt die alte Version kennt und nicht raten muss.
+
+**Warum:** Ein Fehler trifft so zuerst niemanden (0 %) und danach höchstens jeden zehnten Besucher, eine Minute lang. Bei einem kleinen Auftritt ist das mehr Absicherung als echte Messung, kostet aber nur gut eine Minute pro Auslieferung.
+
+**Noch nicht live geprüft:** Der Ablauf läuft erst beim nächsten Merge nach `main` zum ersten Mal echt. Dann im Lauf nachsehen, ob die drei Versionsschritte durchgehen.
