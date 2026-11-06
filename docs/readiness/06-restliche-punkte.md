@@ -9,3 +9,9 @@ _2026-11-06_
 **Warum:** Bisher hat die CI einen kaputten Deploy nur gemeldet. Die Seite blieb kaputt, bis jemand von Hand zurückrollte. Jetzt dauert ein Ausfall nach einem Deploy nur noch Sekunden.
 
 **Grenzen:** Der Rollback greift nur, wenn der Health-Check direkt nach dem Deploy fehlschlägt. Einen Fehler, den `/api/health` nicht sieht, zum Beispiel eine kaputte Unterseite, fängt er nicht ab. Danach muss der fehlerhafte Commit trotzdem per `git revert` raus, sonst bringt ihn der nächste Deploy zurück. `docs/runbook.md` beschreibt beides.
+
+## Ungenutzte Feature-Flags (`tests/unit/flags.test.ts`)
+
+**Was:** Ein Test geht alle Flags in `src/flags.ts` durch. Jedes Flag muss irgendwo in `src/` mit `enabled('…')` abgefragt werden, und seine Variable (zum Beispiel `FLAG_METRICS`) muss in `docs/runbook.md` stehen. Sonst schlägt `npm test` fehl, mit dem Namen des Flags.
+
+**Warum:** Ein Flag, das niemand mehr abfragt, ist ein toter Schalter: Wer ihn im Dashboard umlegt, erwartet eine Wirkung, die es nicht gibt. Ein Flag ohne Eintrag im Runbook findet im Ernstfall niemand. Geprüft: Mit einem erfundenen, ungenutzten Flag schlägt der Test fehl.
