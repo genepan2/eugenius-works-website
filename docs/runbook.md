@@ -42,8 +42,8 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
   Locally: `node scripts/error-report.ts` with that token and `CLOUDFLARE_ACCOUNT_ID`.
 - **Error alert:** a Cloudflare monitor (Alerts → Monitors, Threshold) on the dataset
   `eugenius_works_api` with the filter `double2 = 1` (a 5xx answer), firing when the
-  count exceeds 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in
-  the dashboard and is still open on `ROADMAP.md`.
+  count reaches 4 in 15 minutes (checked every 15 minutes), sent to `hey@eugenius-works.com`. It is set by hand in
+  the dashboard.
 
 ## Metrics
 
