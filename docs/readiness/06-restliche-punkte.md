@@ -58,3 +58,9 @@ Schlägt eine Prüfung fehl, setzt der Lauf die alte Version wieder auf 100 %. D
 **Warum:** Ein Fehler trifft so zuerst niemanden (0 %) und danach höchstens jeden zehnten Besucher, eine Minute lang. Bei einem kleinen Auftritt ist das mehr Absicherung als echte Messung, kostet aber nur gut eine Minute pro Auslieferung.
 
 **Noch nicht live geprüft:** Der Ablauf läuft erst beim nächsten Merge nach `main` zum ersten Mal echt. Dann im Lauf nachsehen, ob die drei Versionsschritte durchgehen.
+
+## Besucherstatistik (Cloudflare Web Analytics)
+
+**Was:** Der Code ist schon fertig. Sobald in `src/consts.ts` ein echtes Token in `CLOUDFLARE_ANALYTICS_TOKEN` steht, bindet jede Seite das Skript von Cloudflare ein. Die Sicherheitsregeln in `public/_headers` erlauben es schon, und die Datenschutzseite beschreibt es schon. Solange der Platzhalter dort steht, wird nichts eingebunden und nichts gezählt.
+
+**Warum noch offen:** Das Token gibt es nur im Cloudflare-Dashboard (Analytics & Logs → Web Analytics → Site hinzufügen → `eugenius-works.com`). Es ist kein Geheimnis, es steht später in jeder Seite. Wenn es da ist, trägt ein Agent es ein, baut die Seite und prüft, dass das Skript in `dist/` auftaucht.
