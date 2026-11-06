@@ -40,8 +40,10 @@ const imageAlt =
 const pageTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
+// Widened to string so the placeholder check still type-checks once a real token is set.
+const analyticsToken: string = CLOUDFLARE_ANALYTICS_TOKEN;
 const analyticsEnabled =
-  import.meta.env.PROD && CLOUDFLARE_ANALYTICS_TOKEN !== 'REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN';
+  import.meta.env.PROD && analyticsToken !== 'REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN';
 ---
 
 <!doctype html>

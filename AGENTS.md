@@ -30,7 +30,7 @@ The content security policy in `public/_headers` allows only same-origin scripts
 
 - `ROADMAP.md` tracks open and done work. Update the entry you worked on, with the date.
 - Seeded content carries `<!-- PLACEHOLDER -->`. Replace it only with text from the owner.
-- `src/consts.ts` holds `CLOUDFLARE_ANALYTICS_TOKEN`, still a placeholder.
+- `src/consts.ts` holds `CLOUDFLARE_ANALYTICS_TOKEN`, the public Web Analytics site token. The repository secret of the same name is a different token: the API token for `.github/workflows/errors.yml`.
 - Commit messages are conventional and plain: `feat: ...`, `fix: ...`, `docs: ...`, `test: ...`.
 
 `tests/unit/agents-md.test.ts` checks that every path and `npm run` command named in this file exists.
