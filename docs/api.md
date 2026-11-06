@@ -2,7 +2,7 @@
 
 # Contact API 1.0.0
 
-The Cloudflare Worker in `src/worker.ts` runs only for `/api/*` requests. Every other path is a static file from `dist/`. Any other `/api/` path answers 404 with an `Error` body. Every `/api/` answer carries an `X-Request-Id` header: Cloudflare's ray ID, or a random UUID without one. The Worker's log lines carry the same ID.
+The Cloudflare Worker in `src/worker.ts` runs only for `/api/*` requests. Every other path is a static file from `dist/`. Any other `/api/` path answers 404 with an `Error` body. Every `/api/` answer carries an `X-Request-Id` header: Cloudflare's ray ID, or a random UUID without one. The Worker's log lines carry the same ID. Every `/api/` answer also carries a `Server-Timing` header: `worker;dur=<ms>`, and `resend;dur=<ms>` when the request sent an email.
 
 Servers:
 

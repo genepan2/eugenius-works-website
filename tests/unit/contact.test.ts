@@ -225,3 +225,14 @@ test('each API request writes one data point, unless metrics are off', async () 
   await send(new Request('https://x/api/health'), { ...ENV, METRICS, FLAG_METRICS: 'off' });
   assert.equal(points.length, 2);
 });
+
+test('an API answer says how long the Worker and Resend took', async () => {
+  const points: any[] = [];
+  const METRICS = { writeDataPoint: (p: unknown) => points.push(p) };
+  const contact = await send(post(valid, '12.0.0.3'), { ...ENV, METRICS });
+  assert.match(contact.headers.get('server-timing') ?? '', /^worker;dur=\d+, resend;dur=\d+$/);
+  assert.equal(points[0].doubles.length, 3, 'the Resend time is the third number');
+
+  const health = await send(new Request('https://x/api/health'));
+  assert.match(health.headers.get('server-timing') ?? '', /^worker;dur=\d+$/);
+});

@@ -16,6 +16,8 @@ export interface RequestMetric {
   /** A short word for what happened: sent, invalid, rate_limited, resend_failed, … */
   outcome: string;
   ms: number;
+  /** Milliseconds spent waiting for Resend, when the request sent an email. */
+  resendMs?: number;
 }
 
 /** Writes the point when the binding exists. Never throws: metrics must not break a request. */
@@ -25,7 +27,7 @@ export function recordRequest(dataset: AnalyticsEngine | undefined, metric: Requ
     dataset.writeDataPoint({
       indexes: [metric.path],
       blobs: [metric.method, String(metric.status), metric.outcome],
-      doubles: [metric.ms, metric.status >= 500 ? 1 : 0],
+      doubles: [metric.ms, metric.status >= 500 ? 1 : 0, metric.resendMs ?? 0],
     });
   } catch {
     // A full or unavailable dataset drops the point; the answer to the visitor matters more.

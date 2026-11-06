@@ -21,3 +21,11 @@ _2026-11-06_
 **Was:** Nach `npm test` liest ein Skript die JUnit-Berichte in `test-results/` und schreibt in die Zusammenfassung jedes CI-Laufs: wie viele Tests, wie lange insgesamt und welche fünf am langsamsten waren. Braucht ein einzelner Test länger als 2 Sekunden, wird der Lauf rot. Lokal: `node scripts/test-report.ts` nach `npm test`.
 
 **Warum:** Langsame Tests schleichen sich ein, einer nach dem anderen, bis die Rückmeldung für einen Agenten Minuten statt Sekunden dauert. So sieht man jede Änderung der Dauer im Lauf, in dem sie passiert. Heute: 59 Tests in etwa 2 Sekunden, der langsamste braucht 0,6 Sekunden (er wartet absichtlich auf eine Wiederholung).
+
+## Dauer jeder Anfrage (`src/worker.ts`, `src/metrics.ts`)
+
+**Was:** Der Worker misst bei jeder `/api/`-Anfrage zwei Zeiten: die ganze Anfrage und, wenn eine E-Mail rausging, die Wartezeit auf Resend. Beide stehen im Log (`ms`, `resendMs`), in den Metriken (`double1`, `double3`) und im Header `Server-Timing` jeder Antwort. Den zeigt der Browser unter Entwicklertools → Network → Timing. `docs/runbook.md` hat eine SQL-Abfrage für die langsamsten 5 % der Anfragen.
+
+**Warum:** Ist das Formular langsam, ist die erste Frage: liegt es am Worker oder an Resend? Bisher gab es nur die Gesamtzeit. Echtes Profiling (CPU-Profile) gibt es auf Cloudflare Workers nur lokal mit `wrangler dev`. Für einen Worker, der fast nur auf Resend wartet, sagt die Aufteilung mehr.
+
+**Hinweis:** Auf Workers bleibt die Uhr während reiner Rechenarbeit stehen und läuft nur über Netzwerkzugriffe weiter. Die Zahlen zeigen also Wartezeit, nicht CPU-Zeit. Die CPU-Zeit steht im Cloudflare-Dashboard unter Metrics.

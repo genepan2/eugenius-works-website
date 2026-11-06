@@ -16,7 +16,7 @@ Cloudflare; only `/api/*` runs code (`src/worker.ts`).
 
 | `event`                  | Level | Meaning                                                        |
 | ------------------------ | ----- | -------------------------------------------------------------- |
-| `api.request`            | info  | One line per `/api/` request: method, path, status, `ms`       |
+| `api.request`            | info  | One line per `/api/` request: method, path, status, `ms`, `resendMs` |
 | `contact.sent`           | info  | Resend accepted a message                                      |
 | `contact.rate_limited`   | warn  | One IP sent more than 5 messages in 10 minutes                 |
 | `resend.request_failed`  | warn  | One attempt failed: network error or the 8 second timeout      |
@@ -45,7 +45,9 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
 Each `/api/` request writes one data point to the Analytics Engine dataset
 `eugenius_works_api` (`src/metrics.ts`): `index1` is the path, `blob1` the method,
 `blob2` the status, `blob3` the outcome, `double1` the milliseconds, `double2` 1 for a
-5xx. Query it in the dashboard (Workers & Pages → Analytics Engine → SQL), for example
+5xx, `double3` the milliseconds spent waiting for Resend (0 when no email was sent).
+The same two times come back on every `/api/` answer as a `Server-Timing` header, and
+the browser's developer tools show them under Network → Timing. Query it in the dashboard (Workers & Pages → Analytics Engine → SQL), for example
 after a deploy:
 
 ```sql
@@ -53,6 +55,15 @@ SELECT blob3 AS outcome, count() AS requests, avg(double1) AS avg_ms
 FROM eugenius_works_api
 WHERE timestamp > NOW() - INTERVAL '1' HOUR
 GROUP BY outcome
+```
+
+To see whether a slow form is Resend or the Worker:
+
+```sql
+SELECT quantileExactWeighted(0.95)(double1, _sample_interval) AS p95_total_ms,
+       quantileExactWeighted(0.95)(double3, _sample_interval) AS p95_resend_ms
+FROM eugenius_works_api
+WHERE index1 = '/api/contact' AND timestamp > NOW() - INTERVAL '1' DAY
 ```
 
 Workers & Pages → `eugenius-works-website` → Metrics shows requests, errors and CPU
