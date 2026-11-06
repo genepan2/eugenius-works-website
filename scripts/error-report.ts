@@ -5,8 +5,6 @@
  * Run: CLOUDFLARE_ACCOUNT_ID=… CLOUDFLARE_ANALYTICS_TOKEN=… node scripts/error-report.ts
  * The token needs Account → Account Analytics → Read, nothing else.
  */
-import { appendFileSync } from 'node:fs';
-
 export const QUERY = `SELECT index1 AS path, blob2 AS status, blob3 AS outcome,
   SUM(_sample_interval) AS requests
 FROM eugenius_works_api
@@ -22,12 +20,22 @@ export interface ErrorRow {
   requests: number | string;
 }
 
+/** A table cell from stored data: no pipe or line break can break the table. */
+function cell(value: unknown): string {
+  return String(value)
+    .replace(/[|\r\n]/g, ' ')
+    .slice(0, 100);
+}
+
 /** Markdown for the issue, and the number of failed requests. */
 export function summarizeErrors(rows: ErrorRow[]): { markdown: string; total: number } {
   const total = rows.reduce((sum, row) => sum + Number(row.requests), 0);
   if (total === 0) return { markdown: '### No 5xx answer from /api/ in the last 24 hours', total };
   const table = rows
-    .map((row) => `| ${row.path} | ${row.status} | ${row.outcome} | ${Number(row.requests)} |`)
+    .map(
+      (row) =>
+        `| ${cell(row.path)} | ${cell(row.status)} | ${cell(row.outcome)} | ${Number(row.requests)} |`,
+    )
     .join('\n');
   const markdown = [
     `### ${total} failed /api/ requests in the last 24 hours`,
@@ -60,8 +68,6 @@ async function main(): Promise<number> {
   const { data } = (await response.json()) as { data: ErrorRow[] };
   const { markdown, total } = summarizeErrors(data);
   console.log(markdown);
-  if (process.env.GITHUB_STEP_SUMMARY)
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
   return total > 0 ? 1 : 0;
 }
 

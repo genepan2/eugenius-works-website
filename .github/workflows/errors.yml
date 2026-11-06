@@ -47,6 +47,7 @@ jobs:
           code=0
           node scripts/error-report.ts > report.md || code=$?
           cat report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
           echo "code=$code" >> "$GITHUB_OUTPUT"
           [ "$code" -le 1 ]
       - name: Open, update or close the errors issue
