@@ -35,3 +35,11 @@ _2026-11-06_
 **Was:** Jede Nacht um 02:41 UTC baut ein Lauf `develop` und lässt alle Tests dreimal hintereinander auf demselben Stand laufen. Danach vergleicht `scripts/test-report.ts --flaky` die drei JUnit-Berichte. Hat ein Test einmal bestanden und ein anderes Mal nicht, legt der Lauf ein Issue mit dem Label `flaky` an, oder er kommentiert das offene. Die nächste saubere Nacht schließt es.
 
 **Warum:** Ein Test, der mal grün und mal rot ist, kostet Vertrauen. Ein Agent kann dann nicht mehr unterscheiden, ob er etwas kaputt gemacht hat oder ob der Test nur wackelt. Geprüft: Mit einem künstlich veränderten Bericht meldet das Skript den betroffenen Test und endet mit einem Fehler. Bei drei echten Läufen meldet es nichts.
+
+## Vom Fehler zum Issue (`.github/workflows/errors.yml`)
+
+**Was:** Einmal am Tag um 06:07 UTC fragt ein Lauf bei Analytics Engine nach, wie viele `/api/`-Anfragen in den letzten 24 Stunden mit einem 5xx-Fehler geendet haben, aufgeteilt nach Pfad, Status und Ursache (`resend_failed`, `unavailable`, …). Gab es welche, legt er ein Issue mit dem Label `errors` und einer Tabelle an, oder er kommentiert das offene. Ein Tag ohne Fehler schließt es. Kann er Cloudflare nicht erreichen, wird nur der Lauf rot, ohne Issue.
+
+**Warum:** Der Health-Check sieht nur, ob die Seite gerade antwortet. Fehler zwischen zwei Checks, zum Beispiel ein Resend-Ausfall von zehn Minuten, sah bisher niemand. Jetzt wird aus jedem Fehler eine Aufgabe, die ein Agent finden und mit dem Runbook bearbeiten kann. Ein Dienst wie Sentry ist dafür nicht nötig. Die Daten liegen schon in den Metriken.
+
+**Bis das Token da ist:** Der Lauf überspringt sich selbst, bis das Repo-Secret `CLOUDFLARE_ANALYTICS_TOKEN` gesetzt ist. Das ist ein Cloudflare-API-Token, das nur „Account Analytics: Read“ darf.

@@ -35,6 +35,11 @@ a message that failed, ask the visitor to write to `hey@eugenius-works.com`.
   `HEALTH_CHECK` is `on`. A failure opens an issue labelled
   `incident`, or comments on the open one; the next healthy run closes it. GitHub also
   emails the owner about the failed run.
+- **Daily error report:** `.github/workflows/errors.yml` counts the `/api/` requests that
+  ended in a 5xx over the last 24 hours (from the metrics below) and opens an issue
+  labelled `errors` with a table by path, status and outcome; a clean day closes it. It
+  needs the repository secret `CLOUDFLARE_ANALYTICS_TOKEN` (Account Analytics: Read).
+  Locally: `node scripts/error-report.ts` with that token and `CLOUDFLARE_ACCOUNT_ID`.
 - **Error logs:** a Workers Observability alert in the Cloudflare dashboard
   (Workers & Pages → `eugenius-works-website` → Observability → Alerts) when `error`
   lines exceed 3 in 10 minutes, sent to `hey@eugenius-works.com`. It is set by hand in

@@ -1,0 +1,72 @@
+name: Errors
+
+# Once a day: asks Analytics Engine how many /api/ requests ended in a 5xx over the
+# last 24 hours. Any at all opens an issue labelled "errors" with a table by path,
+# status and outcome (or comments on the open one); a clean day closes it.
+# Off until the repository secret CLOUDFLARE_ANALYTICS_TOKEN is set: a Cloudflare API
+# token with Account → Account Analytics → Read only.
+on:
+  schedule:
+    - cron: '7 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  errors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Skip when the analytics token is not set
+        id: gate
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CLOUDFLARE_ANALYTICS_TOKEN is not set; no error report." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - if: steps.gate.outputs.ready == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Count yesterday's failed requests
+        id: report
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+        # Exit 1 means failed requests (an issue); exit 2 means the query failed (a red run only).
+        run: |
+          code=0
+          node scripts/error-report.ts > report.md || code=$?
+          cat report.md
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" -le 1 ]
+      - name: Open, update or close the errors issue
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CODE: ${{ steps.report.outputs.code }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --label errors --state open --json number --jq '.[0].number // empty')
+          if [ "$CODE" = 0 ]; then
+            [ -n "$open" ] && gh issue close "$open" --comment "No failed request in the last 24 hours: $RUN"
+            exit 0
+          fi
+          printf '%s\n\nRun: %s\n' "$(cat report.md)" "$RUN" > body.md
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file body.md
+          else
+            gh label create errors --color d93f0b --description "The Worker answered with a 5xx" --force
+            gh issue create --title "Failed API requests" --label errors --body-file body.md
+          fi
+          exit 1
