@@ -8,10 +8,9 @@ export const ENTITY = 'Eugenius Works OÜ';
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/eugenpanov';
 export const X_URL = 'https://x.com/eugeniusiam';
 
-// TODO: the owner must replace this with the real Cloudflare Web Analytics site
-// token from the Cloudflare dashboard. While it is left as the placeholder below,
-// the analytics script is not emitted and the site builds and runs normally.
-export const CLOUDFLARE_ANALYTICS_TOKEN = 'REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN';
+// Cloudflare Web Analytics site token (public: it ends up in every page). Set back to
+// 'REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN' to stop emitting the script.
+export const CLOUDFLARE_ANALYTICS_TOKEN = 'a64a77240ee5471ca871cbdfcd5685c2';
 
 // Legal and registry details. The imprint and the privacy policy both read from
 // here, so these values are never hardcoded in markup.

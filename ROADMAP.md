@@ -52,13 +52,6 @@ All four seed posts are `draft: true` and invented. One of them says the site us
 fonts, which is no longer true. The blog page, the post page and the footer link are
 ready; the footer shows "Blog" when the first post is published.
 
-### cloudflare web analytics token — open
-next: set `CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts`, or soften the analytics section
-of the privacy policy until it is set
-last: 2026-11-06
-The token is still a placeholder, so nothing is collected, while `/privacy/` already
-describes Cloudflare Web Analytics as running.
-
 ### VAT number in the imprint — open
 next: decide whether Eugenius Works OÜ is VAT-registered; add the number or drop the TODO
 last: 2026-09-22
@@ -75,6 +68,10 @@ The design is black and white so that color images can carry the color. No image
 yet. A `cover` field is ready on projects and posts.
 
 ## done
+
+### cloudflare web analytics — 2026-11-06
+The site token is in `src/consts.ts`; every production page loads the Cloudflare beacon,
+as `/privacy/` describes.
 
 ### deploy from CI with gradual rollout — 2026-11-06
 A merge into `main` deploys from CI: the new version gets 0 % and a smoke test, then 10 %

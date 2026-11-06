@@ -153,11 +153,11 @@ to make a skipped receipt check a failure.
 
 Set `E2E_BASE_URL` to test a different host. The default is `https://eugenius-works.com`.
 
-## Before deploying
+## Web Analytics
 
-Set `CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts` to the real Cloudflare Web Analytics
-site token. While it holds the placeholder value the analytics script is not emitted, and
-the site builds and runs normally either way. The script is production-only.
+`CLOUDFLARE_ANALYTICS_TOKEN` in `src/consts.ts` is the Cloudflare Web Analytics site token.
+Production builds load the Cloudflare beacon with it. Set it back to
+`REPLACE_WITH_CLOUDFLARE_ANALYTICS_TOKEN` to stop emitting the script.
 
 ## Deliberately deferred
 

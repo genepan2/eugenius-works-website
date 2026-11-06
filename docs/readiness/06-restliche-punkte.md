@@ -64,3 +64,5 @@ Schlägt eine Prüfung fehl, setzt der Lauf die alte Version wieder auf 100 %. D
 **Was:** Der Code ist schon fertig. Sobald in `src/consts.ts` ein echtes Token in `CLOUDFLARE_ANALYTICS_TOKEN` steht, bindet jede Seite das Skript von Cloudflare ein. Die Sicherheitsregeln in `public/_headers` erlauben es schon, und die Datenschutzseite beschreibt es schon. Solange der Platzhalter dort steht, wird nichts eingebunden und nichts gezählt.
 
 **Warum noch offen:** Das Token gibt es nur im Cloudflare-Dashboard (Analytics & Logs → Web Analytics → Site hinzufügen → `eugenius-works.com`). Es ist kein Geheimnis, es steht später in jeder Seite. Wenn es da ist, trägt ein Agent es ein, baut die Seite und prüft, dass das Skript in `dist/` auftaucht.
+
+**Nachtrag 2026-11-06:** Das Token steht jetzt in `src/consts.ts`. Es kam erst, als im Dashboard „Enable with JS Snippet installation“ gewählt war. Die Einstellung „Enable, excluding visitor data in the EU“ zeigt kein Token. Geprüft: Nach dem Build enthalten `dist/index.html` und `dist/contact/index.html` das Skript mit dem Token, und alle Tests laufen durch.
