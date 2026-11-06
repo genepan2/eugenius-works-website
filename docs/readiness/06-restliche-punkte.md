@@ -15,3 +15,9 @@ _2026-11-06_
 **Was:** Ein Test geht alle Flags in `src/flags.ts` durch. Jedes Flag muss irgendwo in `src/` mit `enabled('…')` abgefragt werden, und seine Variable (zum Beispiel `FLAG_METRICS`) muss in `docs/runbook.md` stehen. Sonst schlägt `npm test` fehl, mit dem Namen des Flags.
 
 **Warum:** Ein Flag, das niemand mehr abfragt, ist ein toter Schalter: Wer ihn im Dashboard umlegt, erwartet eine Wirkung, die es nicht gibt. Ein Flag ohne Eintrag im Runbook findet im Ernstfall niemand. Geprüft: Mit einem erfundenen, ungenutzten Flag schlägt der Test fehl.
+
+## Testdauer (`scripts/test-report.ts`)
+
+**Was:** Nach `npm test` liest ein Skript die JUnit-Berichte in `test-results/` und schreibt in die Zusammenfassung jedes CI-Laufs: wie viele Tests, wie lange insgesamt und welche fünf am langsamsten waren. Braucht ein einzelner Test länger als 2 Sekunden, wird der Lauf rot. Lokal: `node scripts/test-report.ts` nach `npm test`.
+
+**Warum:** Langsame Tests schleichen sich ein, einer nach dem anderen, bis die Rückmeldung für einen Agenten Minuten statt Sekunden dauert. So sieht man jede Änderung der Dauer im Lauf, in dem sie passiert. Heute: 59 Tests in etwa 2 Sekunden, der langsamste braucht 0,6 Sekunden (er wartet absichtlich auf eine Wiederholung).

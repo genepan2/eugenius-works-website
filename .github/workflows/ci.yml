@@ -40,6 +40,9 @@ jobs:
           echo "### Build took $(( $(date +%s) - start )) s" >> "$GITHUB_STEP_SUMMARY"
       - run: npm run size:bundle
       - run: npm test
+      - name: Report test durations
+        if: always()
+        run: node scripts/test-report.ts
       - name: Keep the test reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
