@@ -1,6 +1,6 @@
 # Roadmap: eugenius-works-website
 
-_updated 2026-11-06 by Droid_
+_updated 2026-11-07 by Droid_
 
 The plain "Two words" redesign and the technical hardening are live at
 https://eugenius-works.com since 2026-10-08.
@@ -16,14 +16,6 @@ half asks Resend whether the email was delivered; that half is skipped without a
 can read emails. Also look in the `hey@` mailbox for the subject
 `Contact form: E2E 1791437125705-6agfje`.
 → tests/contact.e2e.ts
-
-### claude review credential — open
-next: install the Claude GitHub App (https://github.com/apps/claude) on this repository,
-then add the secret `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or
-`ANTHROPIC_API_KEY`
-last: 2026-11-06
-Until then the review workflow skips itself.
-→ .github/workflows/claude-review.yml
 
 ### cloudflare dashboard settings — open
 next: turn on SSL/TLS → Edge Certificates → "Always Use HTTPS"; decide about `www`
@@ -50,6 +42,40 @@ next: decide whether Eugenius Works OÜ is VAT-registered; add the number or dro
 last: 2026-09-22
 → src/pages/imprint.astro
 
+## planned
+
+Mission-sized work, each with milestones. A visual change starts with a rendered mockup
+the owner approves (DESIGN.md). Suggested order: images first, then the blog, then the
+public record.
+
+### images for works and blog — planned
+next: write a mission brief; first milestone ends with mockups of a work page and a post
+with a cover, for the owner to approve
+last: 2026-11-07
+Color comes in only through images, and none exist yet. Build the path for them: an image
+pipeline with Astro `<Image>` (AVIF and WebP, fixed sizes, no layout shift), alt text
+required in the content schema, a gallery on the work page, the social card taken from the
+cover, and site tests for image weight and dimensions. The images themselves come from the
+owner; none are invented.
+
+### blog ready to publish — planned
+next: write a mission brief after the first real post exists
+last: 2026-11-07
+Reading time and the share line (X, LinkedIn, Email) are live since 2026-10-08. Still
+open: tag pages, "related works" under a post and "posts about this work" on a work page,
+previous and next post, a full-text RSS feed, footnotes and code blocks to the design
+standard, and a check that blocks publishing while a post still holds seed text. Usual
+extras to decide on: more share targets (Bluesky, Mastodon, Hacker News), a "copy link"
+button (a small script in a file, the CSP allows no inline script), a table of contents
+for long posts.
+
+### works as a public record — planned
+next: write a mission brief
+last: 2026-11-07
+The positioning is "a generalist's public record". Add a status history for each work
+(when it went from idea to prototype to live), the date of the last change read from git,
+a `/now` page with what Eugen works on right now, and an RSS feed of changes to the works.
+Text only: status stays a word.
 ## unsorted
 
 ### links for the live works
@@ -57,10 +83,14 @@ ExtraSeat and Triple Digit are marked "live" but have no `url`, so a visitor can
 it. Add the URLs to the project files when they are public.
 
 ### project images and a portrait
-The design is black and white so that color images can carry the color. No image exists
-yet. A `cover` field is ready on projects and posts.
+No image exists yet. A `cover` field is ready on projects and posts. The pipeline for
+them is planned above; the images and the portrait come from the owner.
 
 ## done
+
+### claude review on every pull request — 2026-11-07
+`.github/workflows/claude-review.yml` reviews each pull request and comments on bugs,
+security issues and broken project rules. First review ran on pull request 19.
 
 ### error report token — 2026-11-06
 The repository secret `CLOUDFLARE_ANALYTICS_TOKEN` is set; `.github/workflows/errors.yml`
@@ -110,5 +140,5 @@ Eleven real projects with the owner's descriptions and a required `status` field
 ## deferred
 
 Not scheduled. Listed so they are not rediscovered as ideas:
-tag index pages · project ↔ post links · multi-language support · dark mode ·
+multi-language support (not needed, owner 2026-11-07) · dark mode ·
 color in the interface (color belongs to the images)
