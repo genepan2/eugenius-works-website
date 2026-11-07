@@ -66,3 +66,11 @@ Schlägt eine Prüfung fehl, setzt der Lauf die alte Version wieder auf 100 %. D
 **Warum noch offen:** Das Token gibt es nur im Cloudflare-Dashboard (Analytics & Logs → Web Analytics → Site hinzufügen → `eugenius-works.com`). Es ist kein Geheimnis, es steht später in jeder Seite. Wenn es da ist, trägt ein Agent es ein, baut die Seite und prüft, dass das Skript in `dist/` auftaucht.
 
 **Nachtrag 2026-11-06:** Das Token steht jetzt in `src/consts.ts`. Es kam erst, als im Dashboard „Enable with JS Snippet installation“ gewählt war. Die Einstellung „Enable, excluding visitor data in the EU“ zeigt kein Token. Geprüft: Nach dem Build enthalten `dist/index.html` und `dist/contact/index.html` das Skript mit dem Token, und alle Tests laufen durch.
+
+## Automatischer Code-Review (`.github/workflows/claude-review.yml`)
+
+**Was:** Claude prüft jeden Pull Request, wenn er geöffnet wird und nach jedem neuen Push. Er liest zuerst `AGENTS.md` und `DESIGN.md` und meldet nur Fehler, Sicherheitsprobleme und Verstöße gegen diese Regeln. Die Funde stehen als Kommentare direkt an den Zeilen, dazu eine kurze Zusammenfassung. Der Review blockiert nichts: Er ist ein Rat, keine Pflichtprüfung. PRs von Bots (Dependabot, release-please) prüft er nicht.
+
+**Warum:** Ein zweiter Blick auf jede Änderung fängt Fehler, bevor sie nach `main` gehen. Das gilt besonders, wenn ein Agent die Änderung geschrieben hat. CodeRabbit war installiert, hat aber alle PRs übersprungen.
+
+**Was dafür nötig ist:** die Claude GitHub App auf dem Repo und ein Repo-Secret, entweder `CLAUDE_CODE_OAUTH_TOKEN` (Claude-Abo) oder `ANTHROPIC_API_KEY`. Ohne Secret überspringt sich der Lauf selbst.

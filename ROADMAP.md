@@ -17,12 +17,13 @@ can read emails. Also look in the `hey@` mailbox for the subject
 `Contact form: E2E 1791437125705-6agfje`.
 → tests/contact.e2e.ts
 
-### error report token — open
-next: create a Cloudflare API token with only Account → Account Analytics → Read and save
-it as the repository secret `CLOUDFLARE_ANALYTICS_TOKEN`, then run the "Errors" workflow once
+### claude review credential — open
+next: install the Claude GitHub App (https://github.com/apps/claude) on this repository,
+then add the secret `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or
+`ANTHROPIC_API_KEY`
 last: 2026-11-06
-Until then the daily error report skips itself.
-→ .github/workflows/errors.yml
+Until then the review workflow skips itself.
+→ .github/workflows/claude-review.yml
 
 ### cloudflare dashboard settings — open
 next: turn on SSL/TLS → Edge Certificates → "Always Use HTTPS"; decide about `www`
@@ -60,6 +61,10 @@ The design is black and white so that color images can carry the color. No image
 yet. A `cover` field is ready on projects and posts.
 
 ## done
+
+### error report token — 2026-11-06
+The repository secret `CLOUDFLARE_ANALYTICS_TOKEN` is set; `.github/workflows/errors.yml`
+runs every day.
 
 ### error alert in Cloudflare — 2026-11-06
 A Cloudflare monitor (Alerts → Monitors, Threshold) counts rows of `eugenius_works_api`
