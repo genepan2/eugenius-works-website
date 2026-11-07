@@ -74,3 +74,9 @@ Schlägt eine Prüfung fehl, setzt der Lauf die alte Version wieder auf 100 %. D
 **Warum:** Ein zweiter Blick auf jede Änderung fängt Fehler, bevor sie nach `main` gehen. Das gilt besonders, wenn ein Agent die Änderung geschrieben hat. CodeRabbit war installiert, hat aber alle PRs übersprungen.
 
 **Was dafür nötig ist:** die Claude GitHub App auf dem Repo und ein Repo-Secret, entweder `CLAUDE_CODE_OAUTH_TOKEN` (Claude-Abo) oder `ANTHROPIC_API_KEY`. Ohne Secret überspringt sich der Lauf selbst.
+
+**Nachtrag 2026-11-07:**
+
+- CodeRabbit hat alle PRs übersprungen, weil es Repos mit weniger als 10 Sternen nicht automatisch prüft. Der Claude-Review ersetzt es.
+- Der Review läuft erst, seit die Workflow-Datei auf `main` liegt. Die Action prüft nur mit einer Workflow-Datei, die genau so schon auf `main` steht. So kann niemand mit einer geänderten Datei in einem PR an das Token kommen.
+- Anthropic bietet auch „Code Review“ als Dienst an: mehrere Agenten pro PR, gründlicher, aber nur für Team- und Enterprise-Pläne und etwa 15 bis 25 Dollar pro PR. Bei den kleinen PRs hier lohnt sich das nicht. Die Action reicht.
